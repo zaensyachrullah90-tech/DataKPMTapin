@@ -125,8 +125,8 @@
                     </div>
                     <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl md:rounded-[2.5rem] p-6 md:p-10 text-white shadow-xl relative overflow-hidden">
                         <i class="fas fa-shield-alt absolute -right-5 -bottom-5 md:-right-10 md:-bottom-10 text-[10rem] md:text-[15rem] opacity-10"></i>
-                        <h4 class="text-xl md:text-2xl font-black mb-2 md:mb-3 relative z-10">Sistem Super Stabil Aktif!</h4>
-                        <p class="text-indigo-100 text-xs md:text-sm font-medium relative z-10 leading-relaxed max-w-3xl opacity-90">Bugs layar macet dan gagal unggah telah diperbaiki dengan penambahan sistem Batching Kargo Firestore. Semua data master (70k dan KPM) kini bisa terunggah tanpa membebani memori HP Bapak.</p>
+                        <h4 class="text-xl md:text-2xl font-black mb-2 md:mb-3 relative z-10">Sistem Unggah Super Stabil Aktif!</h4>
+                        <p class="text-indigo-100 text-xs md:text-sm font-medium relative z-10 leading-relaxed max-w-3xl opacity-90">Bugs layar macet dan gagal unggah telah diperbaiki. Sistem sekarang menggunakan antrean bertahap (Sequential Batching) yang menampilkan indikator loading berjalan, memastikan 100% data masuk ke Database tanpa membebani HP Bapak.</p>
                     </div>
                 </div>
 
@@ -451,42 +451,39 @@
                 
                 Swal.fire({title: 'Autentikasi...', allowOutsideClick: false, didOpen:()=>Swal.showLoading()});
                 
-                // MENGHINDARI BUG LAYAR MACET SAAT LOGIN
-                setTimeout(() => {
-                    if(u.toLowerCase() === 'admin') {
-                        app.currentUser = "Administrator Kabupaten"; app.isAdmin = true; 
-                        document.getElementById('sidebar-role').innerText = "Kontrol Kabupaten";
-                        document.getElementById('header-user-name').innerText = "Admin Kabupaten"; document.getElementById('header-user-role').innerText = "Akses Penuh";
-                        document.getElementById('header-user-avatar').src = "https://ui-avatars.com/api/?name=Admin+Kab&background=ebf4ff&color=4f46e5";
-                        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block'); document.querySelectorAll('.admin-only.hidden').forEach(el => el.classList.remove('hidden')); 
-                        
-                        const allDesas = Object.keys(dataMasterKPM);
+                if(u.toLowerCase() === 'admin') {
+                    app.currentUser = "Administrator Kabupaten"; app.isAdmin = true; 
+                    document.getElementById('sidebar-role').innerText = "Kontrol Kabupaten";
+                    document.getElementById('header-user-name').innerText = "Admin Kabupaten"; document.getElementById('header-user-role').innerText = "Akses Penuh";
+                    document.getElementById('header-user-avatar').src = "https://ui-avatars.com/api/?name=Admin+Kab&background=ebf4ff&color=4f46e5";
+                    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block'); document.querySelectorAll('.admin-only.hidden').forEach(el => el.classList.remove('hidden')); 
+                    
+                    const allDesas = Object.keys(dataMasterKPM);
+                    const selMap = document.getElementById('sel-desa'); const selP2k2 = document.getElementById('p2k2-desa'); const selFilterPeta = document.getElementById('filter-peta-desa');
+                    [selMap, selP2k2, selFilterPeta].forEach(el => { el.innerHTML = '<option value="">-- Pilih Desa --</option>'; allDesas.forEach(desa => { el.innerHTML += `<option value="${desa}">${desa}</option>`; }); });
+
+                    Swal.fire({icon:'success',title:'Login Admin Sukses',timer:1000,showConfirmButton:false}).then(() => { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-container').classList.remove('hidden'); app.loadDashboardStats(); }); return;
+                }
+
+                if(!db) return Swal.fire('Koneksi Terputus', 'Gagal menyambung ke server.', 'error');
+
+                db.collection("users_sdm").where("username", "==", u).where("password", "==", p).get().then(snap => {
+                    if(snap.empty) return Swal.fire('Gagal', 'Username / Password salah. (Atau Database SDM masih kosong, login sebagai admin dulu)', 'error');
+                    const d = snap.docs[0].data(); 
+                    app.currentUser = "SDM: " + d.nama; app.isAdmin = false; 
+                    
+                    document.getElementById('sidebar-role').innerText = "Pendamping Lapangan";
+                    document.getElementById('header-user-name').innerText = d.nama; document.getElementById('header-user-role').innerText = "Pendamping Lapangan";
+                    document.getElementById('header-user-avatar').src = `https://ui-avatars.com/api/?name=${d.nama.replace(/\s+/g, '+')}&background=ebf4ff&color=4f46e5`;
+                    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+                    
+                    if(d.desa) {
+                        app.userDesa = d.desa; const desaArray = d.desa.split(/[/,]/).map(x => x.trim());
                         const selMap = document.getElementById('sel-desa'); const selP2k2 = document.getElementById('p2k2-desa'); const selFilterPeta = document.getElementById('filter-peta-desa');
-                        [selMap, selP2k2, selFilterPeta].forEach(el => { el.innerHTML = '<option value="">-- Pilih Desa --</option>'; allDesas.forEach(desa => { el.innerHTML += `<option value="${desa}">${desa}</option>`; }); });
-
-                        Swal.fire({icon:'success',title:'Login Admin Sukses',timer:1000,showConfirmButton:false}).then(() => { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-container').classList.remove('hidden'); app.loadDashboardStats(); }); return;
+                        [selMap, selP2k2, selFilterPeta].forEach(el => { el.innerHTML = '<option value="">-- Pilih Desa Tugas --</option>'; desaArray.forEach(desa => { el.innerHTML += `<option value="${desa}">${desa}</option>`; }); });
                     }
-
-                    if(!db) return Swal.fire('Koneksi Terputus', 'Gagal menyambung ke server.', 'error');
-
-                    db.collection("users_sdm").where("username", "==", u).where("password", "==", p).get().then(snap => {
-                        if(snap.empty) return Swal.fire('Gagal', 'Username / Password salah. (Atau Database SDM masih kosong, login sebagai admin dulu)', 'error');
-                        const d = snap.docs[0].data(); 
-                        app.currentUser = "SDM: " + d.nama; app.isAdmin = false; 
-                        
-                        document.getElementById('sidebar-role').innerText = "Pendamping Lapangan";
-                        document.getElementById('header-user-name').innerText = d.nama; document.getElementById('header-user-role').innerText = "Pendamping Lapangan";
-                        document.getElementById('header-user-avatar').src = `https://ui-avatars.com/api/?name=${d.nama.replace(/\s+/g, '+')}&background=ebf4ff&color=4f46e5`;
-                        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
-                        
-                        if(d.desa) {
-                            app.userDesa = d.desa; const desaArray = d.desa.split(/[/,]/).map(x => x.trim());
-                            const selMap = document.getElementById('sel-desa'); const selP2k2 = document.getElementById('p2k2-desa'); const selFilterPeta = document.getElementById('filter-peta-desa');
-                            [selMap, selP2k2, selFilterPeta].forEach(el => { el.innerHTML = '<option value="">-- Pilih Desa Tugas --</option>'; desaArray.forEach(desa => { el.innerHTML += `<option value="${desa}">${desa}</option>`; }); });
-                        }
-                        Swal.fire({icon:'success',title:'Login SDM Berhasil',timer:1000,showConfirmButton:false}).then(() => { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-container').classList.remove('hidden'); app.loadDashboardStats(); });
-                    }).catch(handleFirebaseError);
-                }, 500); // Delay penstabil HP
+                    Swal.fire({icon:'success',title:'Login SDM Berhasil',timer:1000,showConfirmButton:false}).then(() => { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-container').classList.remove('hidden'); app.loadDashboardStats(); });
+                }).catch(handleFirebaseError);
             },
             logout: () => location.reload(),
             navigate: (id, el) => {
@@ -833,7 +830,7 @@
                 }).catch(handleFirebaseError);
             },
 
-            // ================= PETA GPS (TOOLTIP PERMANEN & EXPORT PDF GAMBAR) =================
+            // ================= PETA GPS =================
             filterKPMByDesa: () => { const d = document.getElementById('sel-desa').value; const sel = document.getElementById('sel-kpm'); sel.innerHTML = '<option value="">-- Pilih Nama KPM --</option>'; if(d && dataMasterKPM[d]) { sel.disabled = false; dataMasterKPM[d].forEach(n => { sel.innerHTML += `<option value="${n}">${n}</option>`; }); } else sel.disabled = true; },
             pilihTargetGPS: () => { document.getElementById('gps-nama').value = document.getElementById('sel-kpm').value; },
             rekamTitik: () => { if(!document.getElementById('gps-nama').value) return Swal.fire('Peringatan', 'Pilih Nama Dulu', 'warning'); Swal.fire({title:'GPS Aktif...', didOpen:()=>Swal.showLoading()}); navigator.geolocation.getCurrentPosition(p=>{ Swal.close(); document.getElementById('gps-lat').value=p.coords.latitude; document.getElementById('gps-lng').value=p.coords.longitude; Swal.fire('Sukses','','success'); }, e=>Swal.fire('GPS Gagal','Aktifkan Izin Lokasi Browser','error'), {enableHighAccuracy:true}); },
@@ -884,7 +881,7 @@
                 }, 1500);
             },
 
-            // ================= P2K2 (ABSENSI ROLE BASED) =================
+            // ================= P2K2 (ABSENSI) =================
             bukaFormP2K2: () => { document.getElementById('p2k2-list-view').classList.add('hidden'); document.getElementById('p2k2-form-view').classList.remove('hidden'); },
             tutupFormP2K2: () => { document.getElementById('p2k2-form-view').classList.add('hidden'); document.getElementById('p2k2-list-view').classList.remove('hidden'); },
             p2k2LoadKPM: () => { const desa = document.getElementById('p2k2-desa').value; const list = document.getElementById('p2k2-kpm-list'); list.innerHTML = ''; if(desa && dataMasterKPM[desa]) { dataMasterKPM[desa].forEach((nama, i) => { const safeNama = nama.replace(/"/g, '&quot;'); list.innerHTML += `<tr class="bg-white border-b"><td class="p-3 md:p-5 font-black text-slate-800 uppercase text-[10px] md:text-[12px]">${nama} <input type="hidden" class="kpm-nama" value="${safeNama}"></td><td class="p-3 md:p-5 text-center"><label class="mr-2 md:mr-4 font-black text-emerald-600 text-[10px] md:text-xs"><input type="radio" name="abs_${i}" value="hadir" checked onchange="document.getElementById('ket_${i}').disabled=true; document.getElementById('ket_${i}').value=''"> HADIR</label><label class="font-black text-rose-600 text-[10px] md:text-xs"><input type="radio" name="abs_${i}" value="absen" onchange="document.getElementById('ket_${i}').disabled=false"> ALFA</label></td><td class="p-3 md:p-5"><input type="text" id="ket_${i}" disabled class="kpm-ket w-full bg-slate-50 border-2 border-slate-100 rounded-lg p-2 md:p-3 font-bold text-[10px] md:text-xs outline-none focus:border-rose-500 transition-all" placeholder="Alasan..."></td></tr>`; }); } else { list.innerHTML = `<tr><td colspan="3" class="text-center py-10 text-slate-400 font-black uppercase tracking-widest text-[10px]">Pilih desa...</td></tr>`; } },
@@ -912,7 +909,25 @@
             },
             hapusP2K2: (btnEl) => { const id = btnEl.getAttribute('data-id'); Swal.fire({title: 'Hapus Kegiatan?', icon: 'warning', showCancelButton: true}).then(r => { if(r.isConfirmed) db.collection("kegiatan_p2k2").doc(id).delete().then(() => { app.loadP2K2(); app.loadDashboardStats(); }).catch(handleFirebaseError); }); },
 
-            // ================= UPLOAD DATA DENGAN SISTEM BATCH FIREBASE (TRUK KARGO 450 DATA) =================
+            // ================= MESIN UPLOAD ANTI BLANK (ASYNC BATCHING) =================
+            universalFileParser: (e, title, callback) => {
+                const f = e.target.files[0]; if(!f) return;
+                Swal.fire({title: title, html: 'Membaca format file...', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+                const reader = new FileReader();
+                reader.onload = async (ev) => {
+                    try {
+                        const data = new Uint8Array(ev.target.result);
+                        const workbook = XLSX.read(data, {type: 'array'});
+                        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                        const jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1, defval: "", raw: false}); 
+                        if(jsonData.length < 2) throw new Error("Data Kosong");
+                        await callback(jsonData);
+                        e.target.value = ''; // Reset input agar bisa upload file yg sama lagi
+                    } catch(err) { Swal.fire('Error', 'Gagal membaca format. Pastikan file Excel/CSV/TXT yang diupload benar.', 'error'); }
+                };
+                reader.readAsArrayBuffer(f);
+            },
+            
             smartMapRow: (rowArr, headersArr) => {
                 let obj = {}; const dict = { no_kk: ['kk', 'kartu keluarga'], nik: ['nik'], nama: ['nama'], ttl: ['ttl', 'tempat lahir', 'tanggal lahir'], alamat: ['alamat', 'domisili', 'rt'], kategori: ['kategori', 'bantuan', 'pkh', 'sembako'], bank: ['bank', 'penyalur'], nominal: ['nominal', 'uang', 'rp', 'jumlah'], status: ['status', 'aktif', 'graduasi'], kohor: ['kohor', 'tahun kepesertaan'], masa: ['masa', 'kepesertaan', 'lama'], pekerjaan: ['kerja', 'pekerjaan'], kebisaan: ['bisa', 'kebisaan', 'skill', 'keterampilan'], hobi: ['hobi', 'hobbi'], omset: ['omset', 'pendapatan', 'penghasilan'], aset: ['aset', 'harta', 'kekayaan'], minat: ['minat', 'ketertarikan'], bakat: ['bakat', 'potensi'] };
                 for(let key in dict) { let foundIdx = -1; for(let i=0; i<headersArr.length; i++){ let h = String(headersArr[i]).toLowerCase(); if(dict[key].some(alias => h.includes(alias))) { foundIdx = i; break; } } obj[key] = foundIdx !== -1 && rowArr[foundIdx] ? String(rowArr[foundIdx]).trim() : ''; }
@@ -920,13 +935,15 @@
             },
             
             prosesUploadPengurus: (e) => {
-                app.universalFileParser(e, 'Memproses Data Pengurus...', (lines) => {
+                app.universalFileParser(e, 'Memproses Data Pengurus...', async (lines) => {
                     const headers = lines[0].map(h => String(h).trim()); 
-                    let successCount = 0; let opCount = 0;
-                    let batches = []; let currentBatch = db.batch();
+                    let successCount = 0; let opCount = 0; let currentBatch = db.batch();
 
                     for(let i=1; i<lines.length; i++) {
-                        const row = lines[i].map(v => String(v).trim()); if(row.join('') === '') continue;
+                        if (!lines[i] || !Array.isArray(lines[i])) continue;
+                        const row = lines[i].map(v => v !== undefined && v !== null ? String(v).trim() : ''); 
+                        if(row.join('') === '') continue;
+                        
                         const objData = app.smartMapRow(row, headers);
                         if(objData.nama && objData.nik) { 
                             objData.waktu_upload = firebase.firestore.FieldValue.serverTimestamp(); 
@@ -936,27 +953,31 @@
                             currentBatch.set(docRef, objData);
                             successCount++; opCount++;
 
-                            if(opCount === 450) { batches.push(currentBatch.commit()); currentBatch = db.batch(); opCount = 0; }
+                            if(opCount === 400) { 
+                                Swal.update({html: `Mengunggah ke Database:<br><b class="text-indigo-600 text-2xl">${successCount}</b> baris tersimpan...`});
+                                try { await currentBatch.commit(); } catch(err) { return handleFirebaseError(err); }
+                                currentBatch = db.batch(); opCount = 0; 
+                            }
                         }
                     }
-                    if(opCount > 0) batches.push(currentBatch.commit());
+                    if(opCount > 0) { try { await currentBatch.commit(); } catch(err) { return handleFirebaseError(err); } }
 
-                    if(batches.length > 0) { 
-                        Promise.all(batches).then(() => Swal.fire('Sukses!', `${successCount} Data Pengurus berhasil terunggah.`, 'success')).catch(handleFirebaseError); 
-                    } else { Swal.fire('Gagal', 'Tidak ada NIK / Nama yg sesuai di Excel.', 'error'); }
+                    if(successCount > 0) { Swal.fire('Sukses!', `${successCount} Data Pengurus berhasil terunggah ke Firebase.`, 'success'); } 
+                    else { Swal.fire('Gagal', 'Tidak ada NIK / Nama yg sesuai di Excel.', 'error'); }
                 });
             },
             
             prosesUploadMaster70k: (e) => {
-                app.universalFileParser(e, 'Menganalisis Master 70k...', (lines) => {
+                app.universalFileParser(e, 'Menganalisis Master 70k...', async (lines) => {
                     const headers = lines[0].map(h => String(h).trim()); 
-                    let successCount = 0; let opCount = 0;
-                    let batches = []; let currentBatch = db.batch();
-                    
+                    let successCount = 0; let opCount = 0; let currentBatch = db.batch();
                     const tbody = document.getElementById('tbody-master-sync'); tbody.innerHTML = '';
                     
                     for(let i=1; i<lines.length; i++) {
-                        const row = lines[i].map(v => String(v).trim()); if(row.join('') === '') continue;
+                        if (!lines[i] || !Array.isArray(lines[i])) continue;
+                        const row = lines[i].map(v => v !== undefined && v !== null ? String(v).trim() : ''); 
+                        if(row.join('') === '') continue;
+                        
                         const kpmObj = app.smartMapRow(row, headers);
                         if(kpmObj.nama && kpmObj.nik) {
                             kpmObj.waktu_sync = firebase.firestore.FieldValue.serverTimestamp();
@@ -966,14 +987,18 @@
                             successCount++; opCount++;
 
                             if(successCount <= 20) { tbody.innerHTML += `<tr class="bg-white border-b"><td class="p-4 md:p-6 font-black text-slate-800 uppercase text-[10px] md:text-xs">${kpmObj.nama}</td><td class="p-4 md:p-6 font-mono text-[9px] md:text-xs font-bold text-indigo-600">${kpmObj.nik}</td><td class="p-4 md:p-6 font-mono text-[9px] md:text-xs font-bold text-slate-600">${kpmObj.no_kk||'-'}</td><td class="p-4 md:p-6 text-center"><span class="bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-full text-[8px] md:text-[10px] font-black uppercase tracking-widest">Tersinkron</span></td></tr>`; }
-                            if(opCount === 450) { batches.push(currentBatch.commit()); currentBatch = db.batch(); opCount = 0; }
+                            
+                            if(opCount === 400) { 
+                                Swal.update({html: `Menyimpan Master Data:<br><b class="text-indigo-600 text-2xl">${successCount}</b> baris terunggah...`});
+                                try { await currentBatch.commit(); } catch(err) { return handleFirebaseError(err); }
+                                currentBatch = db.batch(); opCount = 0; 
+                            }
                         }
                     }
-                    if(opCount > 0) batches.push(currentBatch.commit());
+                    if(opCount > 0) { try { await currentBatch.commit(); } catch(err) { return handleFirebaseError(err); } }
 
-                    if(batches.length > 0) { 
-                        Promise.all(batches).then(() => { Swal.fire('Sinkronisasi Sukses!', `Total Data (Background Mode): ${successCount} Baris.`, 'success'); }).catch(handleFirebaseError); 
-                    } else { Swal.fire('Gagal', 'Tidak ada NIK/Nama valid.', 'error'); }
+                    if(successCount > 0) { Swal.fire('Sinkronisasi Sukses!', `Total Data Terunggah: ${successCount} Baris.`, 'success'); } 
+                    else { Swal.fire('Gagal', 'Tidak ada NIK/Nama valid.', 'error'); }
                 });
             },
 
@@ -983,32 +1008,36 @@
             },
             
             prosesUploadSDM: (e) => {
-                app.universalFileParser(e, 'Merangkai Akun SDM...', (lines) => {
+                app.universalFileParser(e, 'Merangkai Akun SDM...', async (lines) => {
                     const headers = lines[0].map(h => String(h).trim()); let grps = {};
                     for(let i=1; i<lines.length; i++) { 
-                        const c = lines[i].map(v => String(v).trim()); if(c.join('') === '') continue; 
+                        if (!lines[i] || !Array.isArray(lines[i])) continue;
+                        const c = lines[i].map(v => v !== undefined && v !== null ? String(v).trim() : ''); 
+                        if(c.join('') === '') continue; 
                         const sdmObj = app.smartMapSDM(c, headers); 
                         if(sdmObj.nama && sdmObj.desa) { if(!grps[sdmObj.nama]) grps[sdmObj.nama] = { desas: new Set(), data: sdmObj }; grps[sdmObj.nama].desas.add(sdmObj.desa); } 
                     } 
                     
-                    let count = 0; let opCount = 0;
-                    let batches = []; let currentBatch = db.batch();
+                    let count = 0; let opCount = 0; let currentBatch = db.batch();
                     
                     for(let nm in grps) { 
                         const usr = generateUsernameCerdes(nm); const desaStr = Array.from(grps[nm].desas).join(' / '); const sData = grps[nm].data;
                         let docRef = db.collection("users_sdm").doc(usr);
                         currentBatch.set(docRef, { nama: nm, username: usr, password: "12345", desa: desaStr, role: "SDM", nip: sData.nip||'', nik: sData.nik||'', ttl: sData.ttl||'', alamat: sData.alamat||'', kecamatan: sData.kecamatan||'', minat: sData.minat||'', bakat: sData.bakat||'', hobi: sData.hobi||'', jabatan: sData.jabatan||'', pendidikan: sData.pendidikan||'' }); 
                         count++; opCount++;
-                        if(opCount === 450) { batches.push(currentBatch.commit()); currentBatch = db.batch(); opCount = 0; }
+                        if(opCount === 400) { 
+                            Swal.update({html: `Membuat Akun SDM:<br><b class="text-indigo-600 text-2xl">${count}</b> akun...`});
+                            try { await currentBatch.commit(); } catch(err) { return handleFirebaseError(err); }
+                            currentBatch = db.batch(); opCount = 0; 
+                        }
                     } 
-                    if(opCount > 0) batches.push(currentBatch.commit());
+                    if(opCount > 0) { try { await currentBatch.commit(); } catch(err) { return handleFirebaseError(err); } }
 
                     if(count === 0) return Swal.fire('Gagal', 'Gagal menemukan Header Nama dan Desa di Excel.', 'error');
-                    Promise.all(batches).then(() => { Swal.fire('Sukses Mata Cerdas!', `${count} Akun SDM berhasil dibuat!`, 'success'); app.loadDataSDM(); }).catch(handleFirebaseError); 
+                    Swal.fire('Sukses Mata Cerdas!', `${count} Akun SDM berhasil dibuat ke Database!`, 'success'); app.loadDataSDM(); 
                 });
             },
             
-            // ------------- FITUR ADMIN: HAPUS TOTAL SDM -------------
             hapusSemuaSDM: () => {
                 if(!db) return;
                 Swal.fire({title: 'Kosongkan Semua Akun SDM?', text: 'Seluruh data pendamping tidak dapat dikembalikan!', icon: 'warning', showCancelButton: true}).then(r => {
