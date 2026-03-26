@@ -99,8 +99,8 @@
                         <div class="bg-white rounded-[1.5rem] p-5 shadow-sm border border-slate-100 relative overflow-hidden"><div class="absolute -right-4 -top-4 w-16 h-16 bg-rose-50 rounded-full flex items-center justify-center"><i class="fas fa-map-marker-alt text-rose-200 text-2xl"></i></div><p class="text-sm font-semibold text-slate-500">Tanpa GPS</p><h3 class="text-3xl font-black text-rose-600 mt-1">8,230</h3></div>
                     </div>
                     <div class="bg-gradient-to-r from-indigo-600 to-blue-500 rounded-[1.5rem] p-6 shadow-lg text-white mb-6">
-                        <h4 class="text-xl font-bold mb-2">Penambahan Menu DTKS 2022 Sukses!</h4>
-                        <p class="text-indigo-100 text-sm">Semua data yang telah berhasil terupload dapat langsung dilihat melalui menu baru "DTKS 2022" dengan daftar kolom lengkap dan fitur Pagingasi Data Per Halaman.</p>
+                        <h4 class="text-xl font-bold mb-2">Tombol Kosongkan Database Telah Ditambahkan!</h4>
+                        <p class="text-indigo-100 text-sm">Apabila ada kesalahan file upload, Anda kini bisa dengan mudah menghapus dan mengosongkan seluruh Database Pengurus maupun Master DTKS 2022 hanya dengan menekan 1 tombol di halaman upload terkait.</p>
                     </div>
                 </div>
 
@@ -361,10 +361,11 @@
 
                         <div class="bg-emerald-50 border border-emerald-100 rounded-2xl p-6 mb-6">
                             <p class="text-sm text-emerald-700 mb-3 leading-relaxed"><b>Kolom Otomatis Terdeteksi:</b> No KK, NIK, Nama, TTL, Alamat, Kategori, Bank, Nominal, Status, Kohor, Masa, Pekerjaan, Kebisaan, Hobi, Omset.</p>
-                            <div class="border-2 border-dashed border-emerald-300 bg-white hover:bg-emerald-100/50 rounded-xl p-8 cursor-pointer transition text-center" onclick="document.getElementById('file-master-csv').click()">
+                            <div class="border-2 border-dashed border-emerald-300 bg-white hover:bg-emerald-100/50 rounded-xl p-8 cursor-pointer transition text-center mb-4" onclick="document.getElementById('file-master-csv').click()">
                                 <i class="fas fa-cloud-upload-alt text-4xl text-emerald-400 mb-2 block"></i><h4 class="font-bold text-emerald-700">Klik Pilih File Excel / CSV Master</h4>
                                 <input type="file" id="file-master-csv" class="hidden" accept=".csv, .xlsx, .xls, .txt" onchange="app.prosesUploadMaster70k(event)">
                             </div>
+                            <button type="button" onclick="app.hapusSemuaDTKS()" class="w-full bg-rose-50 text-rose-600 px-6 py-3 rounded-xl font-bold shadow-sm hover:bg-rose-100 transition-all uppercase text-xs tracking-widest"><i class="fas fa-trash-alt mr-2"></i> KOSONGKAN SELURUH DATA DTKS (MASTER)</button>
                         </div>
                         
                         <div class="overflow-x-auto rounded-xl border border-slate-200">
@@ -384,10 +385,11 @@
                             <div><h2 class="text-2xl font-black text-slate-800">Upload Data Pengurus</h2><p class="text-amber-500 text-sm font-bold mt-1">Isi Database KPM</p></div>
                         </div>
                         <div class="bg-amber-50 rounded-2xl p-6 mb-6">
-                            <div class="border-2 border-dashed border-amber-300 bg-white hover:bg-amber-100/50 rounded-xl p-8 cursor-pointer transition text-center" onclick="document.getElementById('file-pengurus-csv').click()">
+                            <div class="border-2 border-dashed border-amber-300 bg-white hover:bg-amber-100/50 rounded-xl p-8 cursor-pointer transition text-center mb-4" onclick="document.getElementById('file-pengurus-csv').click()">
                                 <i class="fas fa-file-excel text-4xl text-amber-400 mb-2 block"></i><h4 class="font-bold text-amber-700 uppercase">KLIK PILIH FILE PENGURUS (.XLS, .CSV)</h4>
                                 <input type="file" id="file-pengurus-csv" class="hidden" accept=".csv, .txt, .xls, .xlsx" onchange="app.prosesUploadPengurus(event)">
                             </div>
+                            <button type="button" onclick="app.hapusSemuaPengurus()" class="w-full bg-rose-50 text-rose-600 px-6 py-3 rounded-xl font-bold shadow-sm hover:bg-rose-100 transition-all uppercase text-xs tracking-widest"><i class="fas fa-trash-alt mr-2"></i> KOSONGKAN SELURUH DATA PENGURUS</button>
                         </div>
                     </div>
                 </div>
@@ -1015,6 +1017,39 @@
                 return obj;
             },
 
+            hapusSemuaDTKS: () => {
+                if(!db) return;
+                Swal.fire({title: 'Kosongkan Semua Data DTKS 2022?', text: 'Seluruh data Master KPM (DTKS) akan dihapus secara permanen!', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Ya, Hapus Semua!'}).then(async (r) => {
+                    if(r.isConfirmed) {
+                        Swal.fire({title:'Menghapus Data DTKS...', html: 'Menghapus: <b class="text-rose-600 text-2xl">0</b> baris', allowOutsideClick: false, didOpen:()=>Swal.showLoading()});
+                        try {
+                            const snap = await db.collection("master_kpm").get();
+                            if(snap.empty) return Swal.fire('Sudah Bersih', 'Tidak ada data DTKS yang perlu dihapus.', 'info');
+                            
+                            let currentBatch = db.batch();
+                            let opCount = 0; let totalDeleted = 0;
+                            for (let i = 0; i < snap.docs.length; i++) {
+                                currentBatch.delete(snap.docs[i].ref);
+                                opCount++; totalDeleted++;
+                                if (opCount >= 400) {
+                                    await currentBatch.commit();
+                                    currentBatch = db.batch(); opCount = 0;
+                                    const b = Swal.getHtmlContainer()?.querySelector('b');
+                                    if(b) b.textContent = totalDeleted;
+                                    await new Promise(res => setTimeout(res, 500));
+                                }
+                            }
+                            if (opCount > 0) await currentBatch.commit();
+                            
+                            Swal.fire('Dikosongkan!', `Sebanyak ${totalDeleted} data DTKS berhasil dihapus.`, 'success');
+                            const tbody = document.getElementById('tbody-master-sync');
+                            if (tbody) tbody.innerHTML = '<tr><td colspan="4" class="text-center py-8 text-slate-500">Belum ada proses sinkronisasi.</td></tr>';
+                            app.dtksData = []; app.renderDTKSTable();
+                        } catch (err) { handleFirebaseError(err); }
+                    }
+                });
+            },
+
             prosesUploadMaster70k: (e) => {
                 app.universalFileParser(e, 'Menganalisis Master Data...', async (lines) => {
                     let hIdx = 0;
@@ -1112,6 +1147,37 @@
                             }
                         };
                         setTimeout(processNextChunk, 500);
+                    }
+                });
+            },
+
+            hapusSemuaPengurus: () => {
+                if(!db) return;
+                Swal.fire({title: 'Kosongkan Data Pengurus?', text: 'Seluruh data KPM Pengurus akan dihapus!', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Ya, Hapus Semua!'}).then(async (r) => {
+                    if(r.isConfirmed) {
+                        Swal.fire({title:'Menghapus Data Pengurus...', html: 'Menghapus: <b class="text-rose-600 text-2xl">0</b> baris', allowOutsideClick: false, didOpen:()=>Swal.showLoading()});
+                        try {
+                            const snap = await db.collection("data_pengurus").get();
+                            if(snap.empty) return Swal.fire('Sudah Bersih', 'Tidak ada data Pengurus yang perlu dihapus.', 'info');
+                            
+                            let currentBatch = db.batch();
+                            let opCount = 0; let totalDeleted = 0;
+                            for (let i = 0; i < snap.docs.length; i++) {
+                                currentBatch.delete(snap.docs[i].ref);
+                                opCount++; totalDeleted++;
+                                if (opCount >= 400) {
+                                    await currentBatch.commit();
+                                    currentBatch = db.batch(); opCount = 0;
+                                    const b = Swal.getHtmlContainer()?.querySelector('b');
+                                    if(b) b.textContent = totalDeleted;
+                                    await new Promise(res => setTimeout(res, 500));
+                                }
+                            }
+                            if (opCount > 0) await currentBatch.commit();
+                            
+                            Swal.fire('Dikosongkan!', `Sebanyak ${totalDeleted} data Pengurus berhasil dihapus.`, 'success');
+                            app.loadMasterPengurus();
+                        } catch (err) { handleFirebaseError(err); }
                     }
                 });
             },
@@ -1324,14 +1390,29 @@
             // ------------- FITUR ADMIN: HAPUS TOTAL SDM -------------
             hapusSemuaSDM: () => {
                 if(!db) return;
-                Swal.fire({title: 'Kosongkan Semua Akun SDM?', text: 'Seluruh data pendamping tidak dapat dikembalikan!', icon: 'warning', showCancelButton: true}).then(r => {
+                Swal.fire({title: 'Kosongkan Semua Akun SDM?', text: 'Seluruh data pendamping tidak dapat dikembalikan!', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Ya, Hapus Semua!'}).then(async r => {
                     if(r.isConfirmed) {
-                        Swal.fire({title:'Menghapus Keseluruhan...', didOpen:()=>Swal.showLoading()});
-                        db.collection("users_sdm").get().then(snap => {
+                        Swal.fire({title:'Menghapus Keseluruhan...', html: 'Dihapus: <b class="text-rose-600 text-2xl">0</b> akun', allowOutsideClick: false, didOpen:()=>Swal.showLoading()});
+                        try {
+                            const snap = await db.collection("users_sdm").get();
                             if(snap.empty) return Swal.fire('Sudah Bersih', 'Tidak ada data SDM yang perlu dihapus.', 'info');
-                            let batch = db.batch(); snap.forEach(doc => batch.delete(doc.ref));
-                            batch.commit().then(() => { Swal.fire('Dikosongkan!', 'Silakan Upload File Buku 19 yang baru.', 'success'); app.loadDataSDM(); }).catch(handleFirebaseError);
-                        }).catch(handleFirebaseError);
+                            let currentBatch = db.batch();
+                            let opCount = 0; let totalDeleted = 0;
+                            for (let i = 0; i < snap.docs.length; i++) {
+                                currentBatch.delete(snap.docs[i].ref);
+                                opCount++; totalDeleted++;
+                                if (opCount >= 400) {
+                                    await currentBatch.commit();
+                                    currentBatch = db.batch(); opCount = 0;
+                                    const b = Swal.getHtmlContainer()?.querySelector('b');
+                                    if(b) b.textContent = totalDeleted;
+                                    await new Promise(res => setTimeout(res, 500));
+                                }
+                            }
+                            if (opCount > 0) await currentBatch.commit();
+                            Swal.fire('Dikosongkan!', 'Silakan Upload File Buku 19 yang baru.', 'success'); 
+                            app.loadDataSDM();
+                        } catch (err) { handleFirebaseError(err); }
                     }
                 });
             },
