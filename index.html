@@ -810,7 +810,7 @@
             loadMasterPengurus: (searchQuery = '') => {
                 if(!db) return;
                 const tb = document.getElementById('tbody-master-pengurus'); tb.innerHTML = '<tr><td colspan="7" class="text-center py-10 font-bold text-slate-400 text-xs">Memuat Data Pengurus...</td></tr>';
-                db.collection("data_pengurus").limit(300).get().then(snap => { 
+                db.collection("data_pengurus").limit(500).get().then(snap => { 
                     tb.innerHTML = '';
                     if(snap.empty) { tb.innerHTML = '<tr><td colspan="7" class="text-center py-10 font-bold text-slate-400 text-xs">Kosong</td></tr>'; return; }
                     snap.forEach(doc => {
@@ -964,7 +964,7 @@
                         const jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1, defval: "", raw: false}); 
                         if(jsonData.length < 2) return Swal.fire('Error', 'Data Excel kosong atau salah format.', 'error');
                         await callback(jsonData);
-                        e.target.value = ''; // Reset input agar bisa upload file yg sama lagi
+                        e.target.value = ''; 
                     } catch(err) { 
                         console.error(err);
                         Swal.fire('Error Parsing', 'Gagal membaca isi Excel. Pastikan file tidak rusak.', 'error'); 
@@ -1014,7 +1014,7 @@
                             if(row.join('') === '') continue;
                             
                             const objData = app.smartMapRow(row, headers);
-                            objData.nik = String(objData.nik || '').replace(/[^a-zA-Z0-9]/g, ''); // Anti-Bug Karakter
+                            objData.nik = String(objData.nik || '').replace(/[^a-zA-Z0-9]/g, ''); 
                             
                             if(objData.nama && objData.nik && objData.nik.length > 5) { 
                                 objData.waktu_upload = firebase.firestore.FieldValue.serverTimestamp(); 
@@ -1035,7 +1035,7 @@
                         }
 
                         if(i < lines.length) {
-                            setTimeout(processChunk, 50); // Jeda bernafas browser 50ms agar HP tidak nge-Hang
+                            setTimeout(processChunk, 800); 
                         } else {
                             if(successCount > 0) { Swal.fire('Sukses!', `${successCount} Data Pengurus berhasil terunggah ke Firebase.`, 'success'); app.loadMasterPengurus(); } 
                             else { Swal.fire('Gagal', 'Sistem tidak mendeteksi kolom "NIK" dan "Nama" di file Excel Anda.', 'error'); }
@@ -1054,7 +1054,7 @@
                     let successCount = 0; 
                     const tbody = document.getElementById('tbody-master-sync'); tbody.innerHTML = '';
                     
-                    Swal.fire({title: 'Sinkronisasi Master 70k...', html: 'Terunggah: <b class="text-indigo-600 text-2xl">0</b> baris', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+                    Swal.fire({title: 'Sinkronisasi Database...', html: 'Mengamankan koneksi server...<br><br>Terunggah: <b class="text-indigo-600 text-2xl">0</b> baris', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
 
                     let i = hIdx + 1;
                     const processChunk = async () => {
@@ -1069,7 +1069,7 @@
                             if(row.join('') === '') continue;
                             
                             const kpmObj = app.smartMapRow(row, headers);
-                            kpmObj.nik = String(kpmObj.nik || '').replace(/[^a-zA-Z0-9]/g, ''); // Anti-Bug Karakter
+                            kpmObj.nik = String(kpmObj.nik || '').replace(/[^a-zA-Z0-9]/g, ''); 
                             
                             if(kpmObj.nama && kpmObj.nik && kpmObj.nik.length > 5) {
                                 kpmObj.waktu_sync = firebase.firestore.FieldValue.serverTimestamp();
@@ -1093,7 +1093,7 @@
                         }
 
                         if(i < lines.length) {
-                            setTimeout(processChunk, 50); // Jeda bernafas browser 50ms agar HP tidak nge-Hang
+                            setTimeout(processChunk, 800); // 800ms Jeda untuk mencegah Firebase Quota Error
                         } else {
                             if(successCount > 0) { Swal.fire('Sinkronisasi Sukses!', `Total Data Terunggah: ${successCount} Baris.`, 'success'); } 
                             else { Swal.fire('Gagal', 'Sistem tidak mendeteksi kolom "NIK" dan "Nama" di file Excel Anda.', 'error'); }
@@ -1147,7 +1147,7 @@
                         }
 
                         if(uIdx < usernames.length) {
-                            setTimeout(processChunk, 50); // Jeda bernafas browser 50ms agar HP tidak nge-Hang
+                            setTimeout(processChunk, 800); 
                         } else {
                             if(count === 0) return Swal.fire('Gagal', 'Tidak menemukan kolom "Nama" dan "Desa" di Excel Bapak.', 'error');
                             Swal.fire('Sukses Mata Cerdas!', `${count} Akun SDM berhasil dibuat ke Database!`, 'success'); 
