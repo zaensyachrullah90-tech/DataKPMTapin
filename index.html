@@ -125,8 +125,8 @@
                     </div>
                     <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl md:rounded-[2.5rem] p-6 md:p-10 text-white shadow-xl relative overflow-hidden">
                         <i class="fas fa-shield-alt absolute -right-5 -bottom-5 md:-right-10 md:-bottom-10 text-[10rem] md:text-[15rem] opacity-10"></i>
-                        <h4 class="text-xl md:text-2xl font-black mb-2 md:mb-3 relative z-10">Sistem Sesi & Anti-Freeze Telah Diaktifkan!</h4>
-                        <p class="text-indigo-100 text-xs md:text-sm font-medium relative z-10 leading-relaxed max-w-3xl opacity-90">Bapak kini tidak akan ter-logout meskipun me-refresh browser. Sistem Upload telah disempurnakan dengan jeda otomatis untuk mencegah HP Hang, sehingga database dipastikan masuk 100% dengan lancar.</p>
+                        <h4 class="text-xl md:text-2xl font-black mb-2 md:mb-3 relative z-10">Sistem Sesi & Stabilizer Upload Aktif!</h4>
+                        <p class="text-indigo-100 text-xs md:text-sm font-medium relative z-10 leading-relaxed max-w-3xl opacity-90">Sistem Upload telah dirancang ulang menggunakan metode Jeda Napas (Sequential Batching) yang secara otomatis akan memproses ratusan data dengan sangat aman. Layar tidak akan stuck dan seluruh fitur lain tetap terkunci sesuai permintaan.</p>
                     </div>
                 </div>
 
@@ -420,7 +420,6 @@
         };
         let absenDataGlobal = [];
 
-        // Pelindung Firebase (Mencegah Layar Blank jika Aturan Terkunci)
         function handleFirebaseError(err) {
             console.error(err);
             if (err && err.message && err.message.includes("Missing or insufficient permissions")) {
@@ -430,6 +429,8 @@
                     html: `Sistem mendeteksi Database Firebase Bapak <b>masih terkunci</b>.<br><br>Mohon segera ubah bagian Rules di Firestore Bapak menjadi:<br><b class="text-rose-600 block mt-2 text-sm bg-rose-50 p-2 rounded">allow read, write: if true;</b>`,
                     confirmButtonText: 'Saya Mengerti'
                 });
+            } else if (err && err.message && (err.message.includes("resource-exhausted") || err.message.includes("Quota exceeded"))) {
+                Swal.fire('Batas Harian Firebase Penuh!', 'Firebase Gratis (Spark Plan) membatasi maksimal 20.000 penyimpanan per hari. Silakan lanjutkan besok hari atau upgrade ke Blaze Plan.', 'warning');
             } else {
                 Swal.fire('Gagal Menyimpan', (err && err.message) ? err.message : 'Terjadi kesalahan sistem/jaringan.', 'error');
             }
@@ -810,7 +811,7 @@
             loadMasterPengurus: (searchQuery = '') => {
                 if(!db) return;
                 const tb = document.getElementById('tbody-master-pengurus'); tb.innerHTML = '<tr><td colspan="7" class="text-center py-10 font-bold text-slate-400 text-xs">Memuat Data Pengurus...</td></tr>';
-                db.collection("data_pengurus").limit(500).get().then(snap => { 
+                db.collection("data_pengurus").limit(300).get().then(snap => { 
                     tb.innerHTML = '';
                     if(snap.empty) { tb.innerHTML = '<tr><td colspan="7" class="text-center py-10 font-bold text-slate-400 text-xs">Kosong</td></tr>'; return; }
                     snap.forEach(doc => {
@@ -997,52 +998,61 @@
                     let hIdx = 0;
                     for(let i=0; i<Math.min(20, lines.length); i++) { if(!lines[i]) continue; let str = lines[i].join('').toLowerCase(); if((str.includes('nama') || str.includes('pengurus')) && (str.includes('nik') || str.includes('kk'))) { hIdx = i; break; } }
                     const headers = lines[hIdx].map(h => String(h).trim()); 
-                    let successCount = 0; 
                     
-                    Swal.fire({title: 'Mengunggah ke Database...', html: 'Tersimpan: <b class="text-indigo-600 text-2xl">0</b> baris', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+                    Swal.fire({title: 'Mengunggah ke Database...', html: 'Mengamankan koneksi server...<br><br>Terunggah: <b class="text-indigo-600 text-2xl">0</b> baris', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
 
-                    let i = hIdx + 1;
-                    const processChunk = async () => {
+                    let validData = [];
+                    for(let i = hIdx + 1; i < lines.length; i++) {
+                        if (!lines[i] || !Array.isArray(lines[i])) continue;
+                        const row = lines[i].map(v => v !== undefined && v !== null ? String(v).trim() : ''); 
+                        if(row.join('') === '') continue;
+                        
+                        const objData = app.smartMapRow(row, headers);
+                        objData.nik = String(objData.nik || '').replace(/[^a-zA-Z0-9]/g, ''); 
+                        
+                        if(objData.nama && objData.nik && objData.nik.length > 5) { 
+                            objData.waktu_upload = firebase.firestore.FieldValue.serverTimestamp(); 
+                            objData.is_synced_with_master = false; 
+                            validData.push(objData);
+                        }
+                    }
+
+                    if(validData.length === 0) return Swal.fire('Gagal', 'Sistem tidak mendeteksi kolom "NIK" dan "Nama" di file Excel Anda.', 'error');
+
+                    let successCount = 0;
+                    const chunkSize = 100; // PENGAMANAN SUPER: Diperkecil jadi 100 baris per batch agar HP dan Firebase tidak hang.
+
+                    for (let i = 0; i < validData.length; i += chunkSize) {
+                        const chunk = validData.slice(i, i + chunkSize);
                         let currentBatch = db.batch();
-                        let opCount = 0;
+                        
+                        for (let j = 0; j < chunk.length; j++) {
+                            const objData = chunk[j];
+                            let docRef = db.collection("data_pengurus").doc(objData.nik);
+                            currentBatch.set(docRef, objData);
+                        }
 
-                        while(i < lines.length && opCount < 250) {
-                            let line = lines[i];
-                            i++;
-                            if (!line || !Array.isArray(line)) continue;
-                            const row = line.map(v => v !== undefined && v !== null ? String(v).trim() : ''); 
-                            if(row.join('') === '') continue;
+                        try { 
+                            await currentBatch.commit(); 
+                            successCount += chunk.length;
+                            const b = Swal.getHtmlContainer()?.querySelector('b');
+                            if(b) b.textContent = successCount;
                             
-                            const objData = app.smartMapRow(row, headers);
-                            objData.nik = String(objData.nik || '').replace(/[^a-zA-Z0-9]/g, ''); 
-                            
-                            if(objData.nama && objData.nik && objData.nik.length > 5) { 
-                                objData.waktu_upload = firebase.firestore.FieldValue.serverTimestamp(); 
-                                objData.is_synced_with_master = false; 
-                                
-                                let docRef = db.collection("data_pengurus").doc(objData.nik);
-                                currentBatch.set(docRef, objData);
-                                successCount++; opCount++;
+                            // Jeda napas yang stabil untuk browser & firebase
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+                        } catch(err) { 
+                            console.error(err);
+                            if (err.message && (err.message.includes('quota') || err.message.includes('resource-exhausted') || err.message.includes('Quota exceeded'))) {
+                                Swal.fire('Batas Harian Penuh!', `Upload terhenti di ${successCount} baris karena batas harian Firebase gratis sudah habis. Lanjutkan sisa datanya besok!`, 'warning');
+                                return;
+                            } else {
+                                return handleFirebaseError(err); 
                             }
                         }
+                    }
 
-                        if(opCount > 0) { 
-                            try { 
-                                await currentBatch.commit(); 
-                                const b = Swal.getHtmlContainer()?.querySelector('b');
-                                if(b) b.textContent = successCount;
-                            } catch(err) { return handleFirebaseError(err); }
-                        }
-
-                        if(i < lines.length) {
-                            setTimeout(processChunk, 800); 
-                        } else {
-                            if(successCount > 0) { Swal.fire('Sukses!', `${successCount} Data Pengurus berhasil terunggah ke Firebase.`, 'success'); app.loadMasterPengurus(); } 
-                            else { Swal.fire('Gagal', 'Sistem tidak mendeteksi kolom "NIK" dan "Nama" di file Excel Anda.', 'error'); }
-                        }
-                    };
-                    
-                    processChunk();
+                    Swal.fire('Sukses!', `${successCount} Data Pengurus berhasil terunggah ke Firebase.`, 'success'); 
+                    app.loadMasterPengurus();
                 });
             },
             
@@ -1051,56 +1061,65 @@
                     let hIdx = 0;
                     for(let i=0; i<Math.min(20, lines.length); i++) { if(!lines[i]) continue; let str = lines[i].join('').toLowerCase(); if((str.includes('nama') || str.includes('pengurus')) && (str.includes('nik') || str.includes('kk'))) { hIdx = i; break; } }
                     const headers = lines[hIdx].map(h => String(h).trim()); 
-                    let successCount = 0; 
                     const tbody = document.getElementById('tbody-master-sync'); tbody.innerHTML = '';
                     
                     Swal.fire({title: 'Sinkronisasi Database...', html: 'Mengamankan koneksi server...<br><br>Terunggah: <b class="text-indigo-600 text-2xl">0</b> baris', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
 
-                    let i = hIdx + 1;
-                    const processChunk = async () => {
+                    let validData = [];
+                    for(let i = hIdx + 1; i < lines.length; i++) {
+                        if (!lines[i] || !Array.isArray(lines[i])) continue;
+                        const row = lines[i].map(v => v !== undefined && v !== null ? String(v).trim() : ''); 
+                        if(row.join('') === '') continue;
+                        
+                        const kpmObj = app.smartMapRow(row, headers);
+                        kpmObj.nik = String(kpmObj.nik || '').replace(/[^a-zA-Z0-9]/g, ''); 
+                        
+                        if(kpmObj.nama && kpmObj.nik && kpmObj.nik.length > 5) {
+                            kpmObj.waktu_sync = firebase.firestore.FieldValue.serverTimestamp();
+                            validData.push(kpmObj);
+                        }
+                    }
+
+                    if(validData.length === 0) return Swal.fire('Gagal', 'Sistem tidak mendeteksi kolom "NIK" dan "Nama" di file Excel Anda.', 'error');
+
+                    let successCount = 0;
+                    const chunkSize = 100; // PENGAMANAN SUPER: 100 baris per antrean
+
+                    for (let i = 0; i < validData.length; i += chunkSize) {
+                        const chunk = validData.slice(i, i + chunkSize);
                         let currentBatch = db.batch();
-                        let opCount = 0;
+                        
+                        for (let j = 0; j < chunk.length; j++) {
+                            const kpmObj = chunk[j];
+                            let docRef = db.collection("master_kpm").doc(kpmObj.nik);
+                            currentBatch.set(docRef, kpmObj);
 
-                        while(i < lines.length && opCount < 250) {
-                            let line = lines[i];
-                            i++;
-                            if (!line || !Array.isArray(line)) continue;
-                            const row = line.map(v => v !== undefined && v !== null ? String(v).trim() : ''); 
-                            if(row.join('') === '') continue;
-                            
-                            const kpmObj = app.smartMapRow(row, headers);
-                            kpmObj.nik = String(kpmObj.nik || '').replace(/[^a-zA-Z0-9]/g, ''); 
-                            
-                            if(kpmObj.nama && kpmObj.nik && kpmObj.nik.length > 5) {
-                                kpmObj.waktu_sync = firebase.firestore.FieldValue.serverTimestamp();
-                                
-                                let docRef = db.collection("master_kpm").doc(kpmObj.nik);
-                                currentBatch.set(docRef, kpmObj);
-                                successCount++; opCount++;
-
-                                if(successCount <= 20) { 
-                                    tbody.innerHTML += `<tr class="bg-white border-b"><td class="p-4 md:p-6 font-black text-slate-800 uppercase text-[10px] md:text-xs">${kpmObj.nama}</td><td class="p-4 md:p-6 font-mono text-[9px] md:text-xs font-bold text-indigo-600">${kpmObj.nik}</td><td class="p-4 md:p-6 font-mono text-[9px] md:text-xs font-bold text-slate-600">${kpmObj.no_kk||'-'}</td><td class="p-4 md:p-6 text-center"><span class="bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-full text-[8px] md:text-[10px] font-black uppercase tracking-widest">Tersinkron</span></td></tr>`; 
-                                }
+                            // Update UI table (only first 20 for performance)
+                            if(successCount + j < 20) { 
+                                tbody.innerHTML += `<tr class="bg-white border-b"><td class="p-4 md:p-6 font-black text-slate-800 uppercase text-[10px] md:text-xs">${kpmObj.nama}</td><td class="p-4 md:p-6 font-mono text-[9px] md:text-xs font-bold text-indigo-600">${kpmObj.nik}</td><td class="p-4 md:p-6 font-mono text-[9px] md:text-xs font-bold text-slate-600">${kpmObj.no_kk||'-'}</td><td class="p-4 md:p-6 text-center"><span class="bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-full text-[8px] md:text-[10px] font-black uppercase tracking-widest">Tersinkron</span></td></tr>`; 
                             }
                         }
 
-                        if(opCount > 0) { 
-                            try { 
-                                await currentBatch.commit(); 
-                                const b = Swal.getHtmlContainer()?.querySelector('b');
-                                if(b) b.textContent = successCount;
-                            } catch(err) { return handleFirebaseError(err); }
+                        try { 
+                            await currentBatch.commit(); 
+                            successCount += chunk.length;
+                            const b = Swal.getHtmlContainer()?.querySelector('b');
+                            if(b) b.textContent = successCount;
+                            
+                            // Jeda napas yang stabil untuk browser & firebase
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+                        } catch(err) { 
+                            console.error(err);
+                            if (err.message && (err.message.includes('quota') || err.message.includes('resource-exhausted') || err.message.includes('Quota exceeded'))) {
+                                Swal.fire('Batas Harian Penuh!', `Upload terhenti di ${successCount} baris karena batas harian Firebase gratis sudah habis. Lanjutkan sisa datanya besok!`, 'warning');
+                                return;
+                            } else {
+                                return handleFirebaseError(err); 
+                            }
                         }
+                    }
 
-                        if(i < lines.length) {
-                            setTimeout(processChunk, 800); // 800ms Jeda untuk mencegah Firebase Quota Error
-                        } else {
-                            if(successCount > 0) { Swal.fire('Sinkronisasi Sukses!', `Total Data Terunggah: ${successCount} Baris.`, 'success'); } 
-                            else { Swal.fire('Gagal', 'Sistem tidak mendeteksi kolom "NIK" dan "Nama" di file Excel Anda.', 'error'); }
-                        }
-                    };
-                    
-                    processChunk();
+                    Swal.fire('Sinkronisasi Sukses!', `Total Data Terunggah: ${successCount} Baris.`, 'success');
                 });
             },
 
@@ -1119,43 +1138,46 @@
                         if(sdmObj.nama && sdmObj.desa) { if(!grps[sdmObj.nama]) grps[sdmObj.nama] = { desas: new Set(), data: sdmObj }; grps[sdmObj.nama].desas.add(sdmObj.desa); } 
                     } 
                     
-                    let count = 0; 
                     const usernames = Object.keys(grps);
-                    let uIdx = 0;
-                    
-                    Swal.fire({title: 'Membuat Akun SDM...', html: 'Terbuat: <b class="text-indigo-600 text-2xl">0</b> akun', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+                    if(usernames.length === 0) return Swal.fire('Gagal', 'Tidak menemukan kolom "Nama" dan "Desa" di Excel Bapak.', 'error');
 
-                    const processChunk = async () => {
+                    Swal.fire({title: 'Membuat Akun SDM...', html: 'Mengamankan koneksi server...<br><br>Terbuat: <b class="text-indigo-600 text-2xl">0</b> akun', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+
+                    let successCount = 0;
+                    const chunkSize = 100;
+
+                    for (let i = 0; i < usernames.length; i += chunkSize) {
+                        const chunk = usernames.slice(i, i + chunkSize);
                         let currentBatch = db.batch();
-                        let opCount = 0;
-
-                        while(uIdx < usernames.length && opCount < 250) {
-                            let nm = usernames[uIdx];
-                            uIdx++;
+                        
+                        for (let j = 0; j < chunk.length; j++) {
+                            let nm = chunk[j];
                             const usr = generateUsernameCerdes(nm); const desaStr = Array.from(grps[nm].desas).join(' / '); const sData = grps[nm].data;
                             let docRef = db.collection("users_sdm").doc(usr);
                             currentBatch.set(docRef, { nama: nm, username: usr, password: "12345", desa: desaStr, role: "SDM", nip: sData.nip||'', nik: sData.nik||'', ttl: sData.ttl||'', alamat: sData.alamat||'', kecamatan: sData.kecamatan||'', minat: sData.minat||'', bakat: sData.bakat||'', hobi: sData.hobi||'', jabatan: sData.jabatan||'', pendidikan: sData.pendidikan||'' }); 
-                            count++; opCount++;
                         }
 
-                        if(opCount > 0) { 
-                            try { 
-                                await currentBatch.commit(); 
-                                const b = Swal.getHtmlContainer()?.querySelector('b');
-                                if(b) b.textContent = count;
-                            } catch(err) { return handleFirebaseError(err); }
+                        try { 
+                            await currentBatch.commit(); 
+                            successCount += chunk.length;
+                            const b = Swal.getHtmlContainer()?.querySelector('b');
+                            if(b) b.textContent = successCount;
+                            
+                            // Jeda napas yang stabil untuk browser & firebase
+                            await new Promise(resolve => setTimeout(resolve, 1000));
+                        } catch(err) { 
+                            console.error(err);
+                            if (err.message && (err.message.includes('quota') || err.message.includes('resource-exhausted') || err.message.includes('Quota exceeded'))) {
+                                Swal.fire('Batas Harian Penuh!', `Upload terhenti di ${successCount} akun karena batas harian Firebase gratis sudah habis. Lanjutkan sisa datanya besok!`, 'warning');
+                                return;
+                            } else {
+                                return handleFirebaseError(err); 
+                            }
                         }
+                    }
 
-                        if(uIdx < usernames.length) {
-                            setTimeout(processChunk, 800); 
-                        } else {
-                            if(count === 0) return Swal.fire('Gagal', 'Tidak menemukan kolom "Nama" dan "Desa" di Excel Bapak.', 'error');
-                            Swal.fire('Sukses Mata Cerdas!', `${count} Akun SDM berhasil dibuat ke Database!`, 'success'); 
-                            app.loadDataSDM(); 
-                        }
-                    };
-                    
-                    processChunk();
+                    Swal.fire('Sukses Mata Cerdas!', `${successCount} Akun SDM berhasil dibuat ke Database!`, 'success'); 
+                    app.loadDataSDM(); 
                 });
             },
             
