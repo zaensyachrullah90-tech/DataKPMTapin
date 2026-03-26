@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SI-PKH TAPIN TERPADU</title>
-    
+    <title>SI-PKH TAPIN Terpadu</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -13,39 +12,25 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    
-    <script>
-        tailwind.config = { theme: { extend: { colors: { primary: '#4f46e5', secondary: '#4338ca', dark: '#1e293b', accent: '#f59e0b', success: '#10b981' } } } }
-    </script>
-    
+    <script>tailwind.config = { theme: { extend: { colors: { primary: '#4f46e5', secondary: '#4338ca', dark: '#1e293b' } } } }</script>
     <style>
-        ::-webkit-scrollbar { width: 5px; height: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .page-section { display: none; animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        .submenu { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; }
-        .submenu.open { max-height: 600px; }
-        .cv-grid { display: grid; grid-template-columns: 110px 1fr; gap: 8px; font-size: 0.8rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; margin-bottom: 8px; }
-        .cv-label { color: #64748b; font-weight: 700; text-transform: uppercase; font-size: 9px; }
-        .cv-value { color: #1e293b; font-weight: 700; text-transform: uppercase; font-size: 11px; }
-        .table-mobile-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; border-radius: 1rem; border: 1px solid #f1f5f9; background: white; }
-        .table-mobile { width: 100%; text-align: left; white-space: nowrap; font-size: 0.8rem; }
+        ::-webkit-scrollbar { width: 5px; height: 6px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .page-section { display: none; animation: fadeIn 0.4s ease-in-out; } @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .submenu { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; } .submenu.open { max-height: 400px; }
+        .cv-grid { display: grid; grid-template-columns: 100px 1fr; gap: 8px; font-size: 0.875rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; margin-bottom: 8px; } .cv-label { color: #64748b; font-weight: 600; } .cv-value { color: #334155; font-weight: 500; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased overflow-hidden">
 
-    <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-indigo-700 to-blue-600 p-4 overflow-y-auto">
-        <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-sm md:max-w-md p-6 md:p-8 text-center border border-white/20">
-            <div class="inline-flex items-center justify-center w-20 h-20 md:w-24 md:h-24 bg-indigo-50 rounded-3xl mb-4 shadow-inner"><i class="fas fa-hands-holding-child text-4xl md:text-5xl text-indigo-600"></i></div>
-            <h2 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tighter">SI-PKH TAPIN</h2>
-            <p class="text-emerald-500 font-bold mt-1 mb-8 text-[10px] md:text-xs uppercase tracking-widest">Sistem Pemantauan Terpadu</p>
-            
-            <div class="space-y-4 text-left">
-                <div><label class="text-[10px] font-black text-slate-400 uppercase ml-2">Username / Email</label><input type="text" id="login-user" class="w-full rounded-2xl border-slate-200 bg-slate-50 border-2 focus:border-indigo-500 py-3 md:py-4 px-5 outline-none font-bold text-sm transition-all" placeholder="Ketik ID..."></div>
-                <div><label class="text-[10px] font-black text-slate-400 uppercase ml-2">Password</label><input type="password" id="login-pass" class="w-full rounded-2xl border-slate-200 bg-slate-50 border-2 focus:border-indigo-500 py-3 md:py-4 px-5 outline-none font-bold text-sm transition-all" placeholder="••••••••" value="12345"></div>
-                <button onclick="app.login()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-2xl shadow-xl shadow-indigo-200 transition-all active:scale-95 mt-4 tracking-widest text-xs md:text-sm"><i class="fas fa-sign-in-alt mr-2"></i> MASUK APLIKASI</button>
-                <p class="text-[9px] font-bold text-slate-400 mt-4 text-center">*Gunakan ID: <span class="text-indigo-500">admin</span> / <span class="text-indigo-500">12345</span> jika Database SDM masih kosong.</p>
+    <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-indigo-600 to-blue-500 p-4">
+        <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-md p-8 text-center">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-indigo-50 rounded-full mb-4 shadow-inner"><i class="fas fa-hands-holding-child text-4xl text-indigo-600"></i></div>
+            <h2 class="text-3xl font-extrabold text-slate-800">SI-PKH TAPIN</h2>
+            <p class="text-slate-500 mt-2 mb-6 text-sm">Portal Database & Monitoring Terpadu</p>
+            <div class="space-y-4">
+                <input type="text" id="login-user" class="w-full rounded-xl border-slate-200 bg-slate-50 border-2 focus:border-indigo-500 py-3 px-4 outline-none font-medium" placeholder="Ketik Admin atau Username...">
+                <input type="password" id="login-pass" class="w-full rounded-xl border-slate-200 bg-slate-50 border-2 focus:border-indigo-500 py-3 px-4 outline-none font-medium" placeholder="Ketik Password..." value="12345">
+                <button type="button" onclick="app.login()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg transition"><i class="fas fa-sign-in-alt me-2"></i> MASUK SEKARANG</button>
             </div>
         </div>
     </div>
@@ -53,117 +38,96 @@
     <div id="app-container" class="hidden h-screen flex w-full">
         <div id="sidebar-overlay" onclick="app.toggleSidebar()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 hidden lg:hidden"></div>
         
-        <aside id="sidebar" class="bg-slate-900 text-white w-64 md:w-72 flex-shrink-0 fixed lg:static inset-y-0 left-0 transform -translate-x-full lg:translate-x-0 z-50 transition-transform duration-300 shadow-2xl flex flex-col h-full border-r border-slate-800">
-            <div class="p-5 border-b border-slate-800/50 flex justify-between items-center">
-                <div><h5 class="text-xl md:text-2xl font-black tracking-tighter text-indigo-400">SI-PKH <span class="text-white">TAPIN</span></h5><p class="text-[9px] md:text-[10px] font-bold text-emerald-400 uppercase tracking-widest mt-1" id="sidebar-role">Hak Akses</p></div>
-                <button onclick="app.toggleSidebar()" class="lg:hidden text-slate-400 text-xl"><i class="fas fa-times"></i></button>
-            </div>
-
-            <div class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-                <a href="#" onclick="app.navigate('dashboard', this)" class="menu-item active flex items-center px-4 py-3 text-sm font-bold rounded-2xl bg-indigo-600 text-white shadow-lg"><i class="fas fa-chart-pie w-8 text-lg"></i> Dashboard</a>
-                <a href="#" onclick="app.navigate('profil-sdm', this); app.loadProfilSDM();" class="menu-item flex items-center px-4 py-3 text-sm font-bold rounded-2xl text-sky-400 hover:bg-sky-500/10 transition-all"><i class="fas fa-user-tie w-8 text-lg"></i> Profil SDM (CV)</a>
+        <aside id="sidebar" class="bg-slate-900 text-white w-72 flex-shrink-0 fixed lg:static inset-y-0 left-0 transform -translate-x-full lg:translate-x-0 z-50 transition-transform duration-300 shadow-2xl flex flex-col h-full border-r border-slate-800">
+            <div class="p-6 border-b border-slate-800/50 flex justify-between"><div><h5 class="text-xl font-bold tracking-wider"><i class="fas fa-database text-indigo-500 me-3"></i>PKH TAPIN</h5><p class="text-xs text-emerald-400 mt-1 font-bold" id="info-login-as">SDM / Admin</p></div><button type="button" onclick="app.toggleSidebar()" class="lg:hidden text-slate-400 text-2xl"><i class="fas fa-times"></i></button></div>
+            <div class="flex-1 overflow-y-auto py-6 px-4 space-y-1.5">
+                <a href="#" onclick="app.navigate('dashboard', this)" class="menu-item active flex items-center px-4 py-3.5 text-sm font-medium rounded-xl bg-indigo-600 text-white shadow-md"><i class="fas fa-chart-pie w-6"></i> Dashboard</a>
                 
-                <div class="pt-3 px-4 pb-1 text-[9px] font-black text-slate-500 uppercase tracking-widest">Pusat Data KPM</div>
-                <button onclick="app.toggleSubmenu('sub-kpm', this)" class="w-full flex items-center justify-between px-4 py-3 text-sm font-bold rounded-2xl text-slate-400 hover:bg-slate-800 transition-all"><div class="flex items-center"><i class="fas fa-id-card w-8 text-lg"></i> Manajemen KPM</div><i class="fas fa-chevron-down text-xs transition-transform dropdown-icon"></i></button>
-                <div id="sub-kpm" class="submenu pl-8 space-y-1 mt-1 open">
-                    <a href="#" onclick="app.navigate('profil-kpm', this)" class="menu-item block px-4 py-3 text-xs text-slate-400 hover:text-white rounded-xl transition-all">Profil KPM & Keluarga</a>
-                    <a href="#" onclick="app.navigate('master-pengurus', this); app.loadMasterPengurus();" class="menu-item block px-4 py-3 text-xs text-amber-500 font-bold hover:bg-amber-500/10 rounded-xl transition-all">Master Pengurus PKH</a>
-                    <a href="#" onclick="app.navigate('keluarga', this); app.loadMasterART();" class="menu-item block px-4 py-3 text-xs text-slate-400 hover:text-white rounded-xl transition-all">Master Tabel Keluarga</a>
-                    <a href="#" onclick="app.navigate('komponen', this); app.loadMasterKomp();" class="menu-item block px-4 py-3 text-xs text-slate-400 hover:text-white rounded-xl transition-all">Master Tabel Komponen</a>
+                <div class="pt-2">
+                    <button type="button" onclick="app.toggleSubmenu('sub-kpm', this)" class="w-full flex items-center justify-between px-4 py-3.5 text-sm font-medium rounded-xl text-slate-400 hover:bg-slate-800"><div class="flex items-center"><i class="fas fa-id-card w-6"></i> Data KPM</div><i class="fas fa-chevron-down text-xs transition-transform dropdown-icon"></i></button>
+                    <div id="sub-kpm" class="submenu pl-10 space-y-1 mt-1 open">
+                        <a href="#" onclick="app.navigate('profil-kpm', this)" class="menu-item block px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg"><i class="fas fa-user-edit w-5"></i> Profil Pengurus (CV)</a>
+                        <a href="#" onclick="app.navigate('master-pengurus', this); app.loadMasterPengurus();" class="menu-item block px-4 py-2 text-sm text-amber-400 font-bold hover:text-white hover:bg-slate-800 rounded-lg"><i class="fas fa-database w-5"></i> Database KPM</a>
+                        <a href="#" onclick="app.navigate('keluarga', this); app.loadMasterART();" class="menu-item block px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg"><i class="fas fa-users w-5"></i> Keluarga (ART)</a>
+                        <a href="#" onclick="app.navigate('komponen', this); app.loadMasterKomp();" class="menu-item block px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg"><i class="fas fa-cubes w-5"></i> Komponen PKH</a>
+                    </div>
                 </div>
 
-                <div class="pt-3 px-4 pb-1 text-[9px] font-black text-slate-500 uppercase tracking-widest">Tugas Lapangan</div>
-                <button onclick="app.toggleSubmenu('sub-mon', this)" class="w-full flex items-center justify-between px-4 py-3 text-sm font-bold rounded-2xl text-slate-400 hover:bg-slate-800 transition-all"><div class="flex items-center"><i class="fas fa-tasks w-8 text-lg"></i> Monitoring</div><i class="fas fa-chevron-down text-xs transition-transform dropdown-icon"></i></button>
-                <div id="sub-mon" class="submenu pl-8 space-y-1 mt-1 open">
-                    <a href="#" onclick="app.navigate('maps', this)" class="menu-item block px-4 py-3 text-xs text-yellow-500 font-bold hover:bg-yellow-500/10 rounded-xl transition-all"><i class="fas fa-map-location-dot w-5"></i> Rekam GPS & Peta</a>
-                    <a href="#" onclick="app.navigate('p2k2', this); app.loadP2K2();" class="menu-item block px-4 py-3 text-xs text-slate-400 hover:text-white rounded-xl transition-all"><i class="fas fa-book-open w-5"></i> Kegiatan P2K2 (Absen)</a>
-                    <a href="#" onclick="app.navigate('penyaluran', this)" class="menu-item block px-4 py-3 text-xs text-slate-400 hover:text-white rounded-xl transition-all"><i class="fas fa-hand-holding-dollar w-5"></i> Penyaluran Bantuan</a>
+                <div class="pt-1">
+                    <button type="button" onclick="app.toggleSubmenu('sub-mon', this)" class="w-full flex items-center justify-between px-4 py-3.5 text-sm font-medium rounded-xl text-slate-400 hover:bg-slate-800"><div class="flex items-center"><i class="fas fa-chalkboard-user w-6"></i> Monitoring</div><i class="fas fa-chevron-down text-xs transition-transform dropdown-icon"></i></button>
+                    <div id="sub-mon" class="submenu pl-10 space-y-1 mt-1 open">
+                        <a href="#" onclick="app.navigate('p2k2', this); app.loadP2K2();" class="menu-item block px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg"><i class="fas fa-book-open w-5"></i> Kegiatan P2K2</a>
+                        <a href="#" onclick="app.navigate('penyaluran', this)" class="menu-item block px-4 py-2 text-sm text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg"><i class="fas fa-hand-holding-dollar w-5"></i> Penyaluran Bantuan</a>
+                        <a href="#" onclick="app.navigate('maps', this)" class="menu-item block px-4 py-2 text-sm text-yellow-500 hover:text-yellow-400 hover:bg-slate-800 rounded-lg font-bold"><i class="fas fa-map-location-dot w-5"></i> GPS & Peta</a>
+                    </div>
                 </div>
 
-                <div class="admin-only hidden">
-                    <div class="pt-3 px-4 pb-1 text-[9px] font-black text-slate-500 uppercase tracking-widest border-t border-slate-800 mt-3">Pusat Kendali Admin</div>
-                    <a href="#" onclick="app.navigate('upload-pengurus', this)" id="nav-upload-pengurus" class="menu-item flex items-center px-4 py-3 text-sm font-bold rounded-2xl text-amber-400 hover:bg-amber-500/10 transition-all"><i class="fas fa-file-invoice w-8 text-lg"></i> Upload Data Pengurus</a>
-                    <a href="#" onclick="app.navigate('database', this)" class="menu-item flex items-center px-4 py-3 text-sm font-bold rounded-2xl text-emerald-400 hover:bg-emerald-500/10 transition-all"><i class="fas fa-server w-8 text-lg"></i> Upload Master Data 70k</a>
-                    <a href="#" onclick="app.navigate('sdm-manajemen', this); app.loadDataSDM();" class="menu-item flex items-center px-4 py-3 text-sm font-bold rounded-2xl text-purple-400 hover:bg-purple-500/10 transition-all"><i class="fas fa-users-gear w-8 text-lg"></i> Manajemen Akun SDM</a>
-                    <a href="#" onclick="app.navigate('tabel-firebase', this); app.loadDataKPMFirebase();" class="menu-item flex items-center px-4 py-3 text-sm font-bold rounded-2xl text-blue-400 hover:bg-blue-500/10 transition-all"><i class="fas fa-cloud-upload w-8 text-lg"></i> Database Peta KPM</a>
-                    <a href="#" onclick="app.navigate('pengaturan', this)" class="menu-item flex items-center px-4 py-3 text-sm font-bold rounded-2xl text-slate-400 hover:bg-slate-800 transition-all"><i class="fas fa-cog w-8 text-lg"></i> Pengaturan Sistem</a>
+                <div class="admin-only" style="display:none;">
+                    <div class="border-t border-slate-800/50 my-4"></div>
+                    <a href="#" onclick="app.navigate('upload-pengurus', this)" class="menu-item flex items-center px-4 py-3.5 text-sm font-bold rounded-xl text-amber-400 hover:bg-amber-500/10"><i class="fas fa-file-invoice w-6"></i> Upload Pengurus</a>
+                    <a href="#" onclick="app.navigate('database', this)" class="menu-item flex items-center px-4 py-3.5 text-sm font-bold rounded-xl text-emerald-400 hover:bg-emerald-500/10"><i class="fas fa-cloud-upload-alt w-6"></i> Upload Master 70k</a>
+                    <a href="#" onclick="app.navigate('sdm-manajemen', this); app.loadDataSDM();" class="menu-item flex items-center px-4 py-3.5 text-sm font-bold rounded-xl text-purple-400 hover:bg-purple-500/10"><i class="fas fa-users-gear w-6"></i> Database SDM</a>
+                    <a href="#" onclick="app.navigate('pengaturan', this)" class="menu-item flex items-center px-4 py-3.5 text-sm font-medium rounded-xl text-slate-400 hover:bg-slate-800"><i class="fas fa-cog w-6"></i> Pengaturan Sistem</a>
                 </div>
             </div>
-            <div class="p-3 border-t border-slate-800/50 mt-auto"><button onclick="app.logout()" class="w-full flex items-center justify-center px-4 py-3 text-[10px] font-black rounded-2xl bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white transition-all uppercase tracking-widest"><i class="fas fa-power-off me-2"></i> Keluar</button></div>
+            <div class="p-4 border-t border-slate-800/50"><button type="button" onclick="app.logout()" class="w-full flex items-center justify-center px-4 py-3.5 text-sm font-bold rounded-xl bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white transition"><i class="fas fa-power-off me-2"></i> KELUAR</button></div>
         </aside>
 
-        <main class="flex-1 flex flex-col h-full overflow-hidden bg-slate-100 w-full">
-            <header class="bg-white px-4 md:px-6 py-4 flex items-center justify-between z-10 shadow-sm border-b border-slate-200">
-                <div class="flex items-center">
-                    <button onclick="app.toggleSidebar()" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 text-slate-500 me-3"><i class="fas fa-bars"></i></button>
-                    <h2 id="page-title" class="text-lg md:text-xl font-black text-slate-800 tracking-tight">Dashboard</h2>
-                </div>
+        <main class="flex-1 flex flex-col h-full overflow-hidden bg-slate-100">
+            <header class="bg-white px-6 py-4 flex items-center justify-between z-10 shadow-sm border-b border-slate-200">
+                <div class="flex items-center"><button type="button" onclick="app.toggleSidebar()" class="lg:hidden text-slate-500 text-2xl me-4"><i class="fas fa-bars"></i></button><h2 id="page-title" class="text-xl font-extrabold text-slate-800">Dashboard</h2></div>
                 <div class="flex items-center gap-3">
-                    <span class="hidden md:inline-flex items-center px-3 py-1.5 rounded-full text-[9px] font-black bg-emerald-100 text-emerald-700 uppercase tracking-widest mr-2"><span class="w-2 h-2 bg-emerald-500 rounded-full mr-1.5 animate-pulse"></span> Online</span>
-                    <div class="text-right hidden sm:block">
-                        <p class="text-[10px] md:text-xs font-black text-slate-800 uppercase" id="header-user-name">Guest</p>
-                        <p class="text-[8px] md:text-[9px] font-bold text-slate-500 uppercase tracking-widest" id="header-user-role">Belum Login</p>
-                    </div>
-                    <div class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-indigo-100 border-2 border-indigo-200 flex items-center justify-center overflow-hidden shadow-sm">
-                        <img src="https://ui-avatars.com/api/?name=U&background=ebf4ff&color=4f46e5" id="header-user-avatar" class="w-full h-full object-cover">
-                    </div>
+                    <span class="hidden sm:inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700"><span class="w-2 h-2 bg-emerald-500 rounded-full mr-2 animate-pulse"></span> Firebase Aktif</span>
+                    <div class="text-right hidden sm:block"><p class="text-xs font-black text-slate-800" id="header-user-name">Guest</p><p class="text-[9px] font-bold text-slate-500 uppercase" id="header-user-role">Belum Login</p></div>
+                    <img src="https://ui-avatars.com/api/?name=U&background=ebf4ff&color=4f46e5" id="header-user-avatar" class="w-10 h-10 rounded-full border-2 border-indigo-200">
                 </div>
             </header>
 
-            <div class="flex-1 overflow-y-auto p-4 md:p-8 pb-24 w-full">
+            <div class="flex-1 overflow-y-auto p-4 md:p-6 pb-20">
                 
                 <!-- 1. DASHBOARD -->
                 <div id="page-dashboard" class="page-section" style="display: block;">
-                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
-                        <div class="bg-white rounded-2xl md:rounded-[2rem] p-4 md:p-6 shadow-sm border border-slate-100"><p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest">Total KPM</p><h3 class="text-2xl md:text-3xl font-black text-indigo-600 mt-1 md:mt-2">12,450</h3></div>
-                        <div class="bg-white rounded-2xl md:rounded-[2rem] p-4 md:p-6 shadow-sm border border-slate-100"><p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest">Sembako</p><h3 class="text-2xl md:text-3xl font-black text-emerald-600 mt-1 md:mt-2">35,100</h3></div>
-                        <div class="bg-white rounded-2xl md:rounded-[2rem] p-4 md:p-6 shadow-sm border border-slate-100"><p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest">SDM Aktif</p><h3 class="text-2xl md:text-3xl font-black text-purple-600 mt-1 md:mt-2" id="dash-sdm-tot">0</h3></div>
-                        <div class="bg-rose-50 rounded-2xl md:rounded-[2rem] p-4 md:p-6 shadow-sm border border-rose-100 cursor-pointer hover:bg-rose-100 transition-all group" onclick="app.showAbsenKPM()">
-                            <p class="text-[9px] md:text-[10px] font-black text-rose-600 uppercase tracking-widest flex justify-between items-center">Absen P2K2 <i class="fas fa-hand-pointer text-rose-400 group-hover:animate-bounce"></i></p>
-                            <h3 class="text-2xl md:text-3xl font-black text-rose-700 mt-1 md:mt-2" id="dash-absen-p2k2">0</h3>
-                        </div>
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                        <div class="bg-white rounded-[1.5rem] p-5 shadow-sm border border-slate-100 relative overflow-hidden"><div class="absolute -right-4 -top-4 w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center"><i class="fas fa-users text-indigo-200 text-2xl"></i></div><p class="text-sm font-semibold text-slate-500">KPM PKH</p><h3 class="text-3xl font-black text-slate-800 mt-1">12,450</h3></div>
+                        <div class="bg-white rounded-[1.5rem] p-5 shadow-sm border border-slate-100 relative overflow-hidden"><div class="absolute -right-4 -top-4 w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center"><i class="fas fa-box-open text-emerald-200 text-2xl"></i></div><p class="text-sm font-semibold text-slate-500">Sembako</p><h3 class="text-3xl font-black text-slate-800 mt-1">35,100</h3></div>
+                        <div class="bg-white rounded-[1.5rem] p-5 shadow-sm border border-slate-100 relative overflow-hidden"><div class="absolute -right-4 -top-4 w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center"><i class="fas fa-user-tie text-amber-200 text-2xl"></i></div><p class="text-sm font-semibold text-slate-500">Pengurus / SDM</p><h3 class="text-3xl font-black text-slate-800 mt-1">35</h3></div>
+                        <div class="bg-white rounded-[1.5rem] p-5 shadow-sm border border-slate-100 relative overflow-hidden"><div class="absolute -right-4 -top-4 w-16 h-16 bg-rose-50 rounded-full flex items-center justify-center"><i class="fas fa-map-marker-alt text-rose-200 text-2xl"></i></div><p class="text-sm font-semibold text-slate-500">Tanpa GPS</p><h3 class="text-3xl font-black text-rose-600 mt-1">8,230</h3></div>
                     </div>
-                    <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl md:rounded-[2.5rem] p-6 md:p-10 text-white shadow-xl relative overflow-hidden">
-                        <i class="fas fa-shield-alt absolute -right-5 -bottom-5 md:-right-10 md:-bottom-10 text-[10rem] md:text-[15rem] opacity-10"></i>
-                        <h4 class="text-xl md:text-2xl font-black mb-2 md:mb-3 relative z-10">Sistem Sesi & Stabilizer Upload Aktif!</h4>
-                        <p class="text-indigo-100 text-xs md:text-sm font-medium relative z-10 leading-relaxed max-w-3xl opacity-90">Sistem Upload telah dirancang ulang menggunakan metode Jeda Napas (Sequential Batching) yang secara otomatis akan memproses ratusan data dengan sangat aman. Layar tidak akan stuck dan seluruh fitur lain tetap terkunci sesuai permintaan.</p>
+                    <div class="bg-gradient-to-r from-indigo-600 to-blue-500 rounded-[1.5rem] p-6 shadow-lg text-white mb-6">
+                        <h4 class="text-xl font-bold mb-2">Upload Anti-Stuck & Sesi Permanen Aktif!</h4>
+                        <p class="text-indigo-100 text-sm">Sistem upload file kini tidak lagi memiliki batasan waktu putus otomatis (No Timeout). Ribuan data dijamin terunggah dengan lancar. Anda juga tidak akan ter-logout lagi saat me-refresh halaman.</p>
                     </div>
                 </div>
 
                 <!-- 1.5 PROFIL SDM (CV KEREN BARU) -->
-                <div id="page-profil-sdm" class="page-section w-full">
-                    <div class="bg-white rounded-2xl md:rounded-[2.5rem] shadow-sm overflow-hidden border border-slate-100 w-full mb-6">
-                        <div class="h-32 md:h-48 bg-gradient-to-r from-blue-600 to-indigo-700 relative overflow-hidden">
-                            <i class="fas fa-user-tie absolute -right-10 -bottom-10 text-[10rem] opacity-20 text-white"></i>
+                <div id="page-profil-sdm" class="page-section">
+                    <div class="bg-white rounded-[2.5rem] shadow-sm overflow-hidden border border-slate-100 mb-6">
+                        <div class="h-40 bg-gradient-to-r from-blue-600 to-indigo-700 relative"></div>
+                        <div class="px-8 -mt-16 flex justify-between items-end mb-6 relative z-10">
+                            <img id="sdm-photo-preview" src="https://ui-avatars.com/api/?name=SDM&background=random&color=fff&size=256" class="w-32 h-32 rounded-[2rem] border-4 border-white shadow-lg object-cover bg-white">
+                            <button onclick="app.editProfilSDM()" class="bg-indigo-600 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-md"><i class="fas fa-pen mr-2"></i> Edit CV</button>
                         </div>
-                        <div class="px-5 md:px-10 -mt-16 md:-mt-20 flex justify-between items-end mb-6 relative z-10">
-                            <div class="relative group cursor-pointer" onclick="document.getElementById('foto-sdm-up').click()">
-                                <img id="sdm-photo-preview" src="https://ui-avatars.com/api/?name=SDM&background=random&color=fff&size=256" class="w-32 h-32 md:w-40 md:h-40 rounded-[2rem] border-4 border-white shadow-xl object-cover bg-white">
-                                <input type="file" id="foto-sdm-up" class="hidden" accept="image/*" onchange="app.gantiFotoSDM(event)">
-                            </div>
-                            <button onclick="app.editProfilSDM()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 md:px-6 md:py-3 rounded-xl md:rounded-2xl text-[10px] md:text-xs font-black shadow-lg transition-all uppercase tracking-widest"><i class="fas fa-pen mr-2"></i> Edit CV</button>
-                        </div>
-                        <div class="px-5 md:px-10 pb-8 md:pb-10">
-                            <h1 id="cv-sdm-nama" class="text-2xl md:text-4xl font-black text-slate-800 tracking-tight uppercase">NAMA SDM</h1>
-                            <p id="cv-sdm-jabatan" class="text-emerald-600 text-sm md:text-base font-bold mt-1 uppercase tracking-widest">Pendamping PKH</p>
-                            <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6">
+                        <div class="px-8 pb-8">
+                            <h1 id="cv-sdm-nama" class="text-3xl font-black text-slate-800 uppercase">NAMA SDM</h1>
+                            <p id="cv-sdm-jabatan" class="text-emerald-600 font-bold uppercase tracking-widest text-sm">Pendamping PKH</p>
+                            <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div>
-                                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 border-b border-slate-100 pb-2">Informasi Pribadi</h3>
-                                    <div class="space-y-3">
-                                        <div class="flex justify-between border-b border-slate-50 pb-2"><span class="text-xs font-bold text-slate-500">NIP / ID</span><span class="text-xs font-black text-indigo-600" id="cv-sdm-nip">-</span></div>
-                                        <div class="flex justify-between border-b border-slate-50 pb-2"><span class="text-xs font-bold text-slate-500">NIK Utama</span><span class="text-xs font-black text-slate-800" id="cv-sdm-nik">-</span></div>
-                                        <div class="flex justify-between border-b border-slate-50 pb-2"><span class="text-xs font-bold text-slate-500">Tempat, Tgl Lahir</span><span class="text-xs font-black text-slate-800" id="cv-sdm-ttl">-</span></div>
-                                        <div class="flex justify-between border-b border-slate-50 pb-2"><span class="text-xs font-bold text-slate-500">Alamat Lengkap</span><span class="text-xs font-black text-slate-800 text-right max-w-[200px]" id="cv-sdm-alamat">-</span></div>
+                                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 border-b pb-2">Informasi Pribadi</h3>
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between border-b border-slate-50 pb-1"><span class="text-xs text-slate-500">NIP / ID</span><span class="text-xs font-bold text-indigo-600" id="cv-sdm-nip">-</span></div>
+                                        <div class="flex justify-between border-b border-slate-50 pb-1"><span class="text-xs text-slate-500">NIK Utama</span><span class="text-xs font-bold text-slate-800" id="cv-sdm-nik">-</span></div>
+                                        <div class="flex justify-between border-b border-slate-50 pb-1"><span class="text-xs text-slate-500">TTL</span><span class="text-xs font-bold text-slate-800" id="cv-sdm-ttl">-</span></div>
+                                        <div class="flex justify-between border-b border-slate-50 pb-1"><span class="text-xs text-slate-500">Alamat Lengkap</span><span class="text-xs font-bold text-slate-800 text-right max-w-[200px]" id="cv-sdm-alamat">-</span></div>
                                     </div>
                                 </div>
                                 <div>
-                                    <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 border-b border-slate-100 pb-2">Profil Penugasan & Skill</h3>
-                                    <div class="space-y-3">
-                                        <div class="flex justify-between border-b border-slate-50 pb-2"><span class="text-xs font-bold text-slate-500">Kecamatan Tugas</span><span class="text-xs font-black text-slate-800" id="cv-sdm-kecamatan">-</span></div>
-                                        <div class="flex justify-between border-b border-slate-50 pb-2"><span class="text-xs font-bold text-slate-500">Desa Dampingan</span><span class="text-xs font-black text-emerald-600 text-right max-w-[200px]" id="cv-sdm-desa">-</span></div>
-                                        <div class="flex justify-between border-b border-slate-50 pb-2"><span class="text-xs font-bold text-slate-500">Pend. Terakhir</span><span class="text-xs font-black text-slate-800 text-right max-w-[200px]" id="cv-sdm-pendidikan">-</span></div>
-                                        <div class="flex justify-between border-b border-slate-50 pb-2"><span class="text-xs font-bold text-slate-500">Minat & Bakat</span><span class="text-xs font-black text-blue-600 text-right max-w-[200px]" id="cv-sdm-minatbakat">-</span></div>
-                                        <div class="flex justify-between border-b border-slate-50 pb-2"><span class="text-xs font-bold text-slate-500">Hobi Terdaftar</span><span class="text-xs font-black text-amber-600" id="cv-sdm-hobi">-</span></div>
+                                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 border-b pb-2">Penugasan & Skill</h3>
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between border-b border-slate-50 pb-1"><span class="text-xs text-slate-500">Kecamatan</span><span class="text-xs font-bold text-slate-800" id="cv-sdm-kecamatan">-</span></div>
+                                        <div class="flex justify-between border-b border-slate-50 pb-1"><span class="text-xs text-slate-500">Desa Dampingan</span><span class="text-xs font-bold text-emerald-600 text-right max-w-[200px]" id="cv-sdm-desa">-</span></div>
+                                        <div class="flex justify-between border-b border-slate-50 pb-1"><span class="text-xs text-slate-500">Pend. Terakhir</span><span class="text-xs font-bold text-slate-800 text-right max-w-[200px]" id="cv-sdm-pendidikan">-</span></div>
+                                        <div class="flex justify-between border-b border-slate-50 pb-1"><span class="text-xs text-slate-500">Minat & Bakat</span><span class="text-xs font-bold text-blue-600 text-right max-w-[200px]" id="cv-sdm-minatbakat">-</span></div>
+                                        <div class="flex justify-between border-b border-slate-50 pb-1"><span class="text-xs text-slate-500">Hobi</span><span class="text-xs font-bold text-amber-600" id="cv-sdm-hobi">-</span></div>
                                     </div>
                                 </div>
                             </div>
@@ -172,251 +136,257 @@
                 </div>
 
                 <!-- 2. PROFIL KPM -->
-                <div id="page-profil-kpm" class="page-section w-full">
-                    <div class="bg-white rounded-2xl md:rounded-[2rem] shadow-sm p-4 md:p-6 mb-6 border border-slate-100 flex flex-col md:flex-row gap-3 items-center w-full">
-                        <div class="relative w-full">
-                            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm md:text-lg"></i>
-                            <input type="text" id="search-nik" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl md:rounded-2xl pl-10 md:pl-12 py-3 md:py-4 outline-none font-black focus:border-indigo-500 transition-all text-xs md:text-sm uppercase" placeholder="Ketik NIK Pengurus PKH...">
-                        </div>
-                        <div class="flex flex-col md:flex-row gap-2 w-full md:w-auto">
-                            <button onclick="app.cariKPM()" class="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-6 md:px-10 py-3 md:py-4 rounded-xl md:rounded-2xl font-black shadow-lg transition-all tracking-widest text-[10px] md:text-xs uppercase">Cari Data</button>
-                            <button onclick="app.loadDummyKPM()" class="w-full md:w-auto bg-slate-200 hover:bg-slate-300 text-slate-600 px-6 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl font-black shadow-sm transition-all tracking-widest text-[10px] md:text-xs uppercase"><i class="fas fa-eye md:mr-2"></i> Lihat Dummy</button>
-                            <button onclick="app.navigate('upload-pengurus', document.getElementById('nav-upload-pengurus'))" class="admin-only hidden w-full md:w-auto bg-amber-500 hover:bg-amber-600 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-black shadow-lg transition-all tracking-widest text-[10px] md:text-xs uppercase"><i class="fas fa-file-import md:mr-2"></i> Import Pengurus</button>
+                <div id="page-profil-kpm" class="page-section">
+                    <div class="bg-white rounded-[1.5rem] shadow-sm p-4 mb-6 border border-slate-100">
+                        <div class="flex gap-2">
+                            <div class="relative flex-1"><i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i><input type="number" id="search-nik" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 p-3.5 outline-none font-medium" placeholder="Cari NIK KPM..."></div>
+                            <button type="button" onclick="app.cariKPM()" class="bg-indigo-600 text-white px-5 rounded-xl font-bold shadow-md"><span class="hidden sm:inline">Cari Data</span><i class="fas fa-search sm:hidden"></i></button>
                         </div>
                     </div>
-                    
-                    <div id="cv-kpm" class="hidden space-y-4 md:space-y-6 w-full">
-                        <div class="bg-white rounded-2xl md:rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-sm relative w-full">
-                            <div class="h-24 md:h-32 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
-                            <div class="px-5 md:px-8 -mt-10 md:-mt-12 flex justify-between items-end mb-4 md:mb-6">
-                                <div onclick="document.getElementById('foto-kpm-up').click()" class="relative cursor-pointer group">
-                                    <img id="kpm-photo-preview" src="https://ui-avatars.com/api/?name=Ibu+KPM&background=random&color=fff&size=128" class="w-24 h-24 md:w-32 md:h-32 rounded-[2rem] border-4 border-white shadow-xl object-cover bg-white">
-                                    <input type="file" id="foto-kpm-up" class="hidden" accept="image/*" onchange="app.gantiFotoProfil(event)">
-                                </div>
-                                <span class="bg-emerald-100 text-emerald-700 px-3 md:px-5 py-1.5 md:py-2 rounded-full text-[8px] md:text-[10px] font-black uppercase tracking-widest shadow-sm border border-emerald-200"><i class="fas fa-check-circle mr-1"></i> Tersinkron</span>
+                    <div id="cv-kpm" class="hidden space-y-0">
+                        <div class="bg-white rounded-t-[2rem] shadow-sm overflow-hidden relative border border-b-0 border-slate-100">
+                            <div class="h-32 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+                            <div class="px-6 relative flex justify-between items-end -mt-12 mb-4">
+                                <img id="kpm-photo" src="https://ui-avatars.com/api/?name=KPM&background=random&size=128" class="w-28 h-28 rounded-2xl border-4 border-white shadow-lg object-cover bg-white">
+                                <span class="bg-emerald-100 text-emerald-700 px-4 py-1.5 rounded-full text-xs font-bold border border-emerald-200"><i class="fas fa-check-circle mr-1"></i> Tersinkron Master</span>
                             </div>
-                            <div class="px-5 md:px-8 pb-6 md:pb-8">
-                                <h1 id="cv-nama" class="text-xl md:text-3xl font-black text-slate-800 tracking-tight uppercase">Nama KPM</h1>
-                                <p id="cv-almt" class="text-slate-500 text-xs md:text-sm font-bold mt-1 uppercase tracking-wider"><i class="fas fa-map-marker-alt text-rose-500 mr-2"></i> Alamat Tidak Diketahui</p>
+                            <div class="px-6 pb-6 border-b border-slate-100"><h1 class="text-2xl font-black text-slate-800" id="cv-nama">Nama KPM</h1><p class="text-slate-500 text-sm font-medium mt-1" id="cv-almt"><i class="fas fa-map-marker-alt text-rose-400 mr-1"></i> Alamat Tidak Diketahui</p></div>
+                        </div>
+                        <div class="bg-white p-6 shadow-sm border border-y-0 border-slate-100">
+                            <div class="flex justify-between items-center mb-4"><h3 class="text-sm font-bold text-indigo-600 uppercase tracking-wider"><i class="fas fa-address-card mr-2"></i> Biodata Lengkap</h3></div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1">
+                                <div class="cv-grid"><span class="cv-label">No. KK</span><span class="cv-value" id="cv-val-kk">-</span></div><div class="cv-grid"><span class="cv-label">NIK</span><span class="cv-value" id="cv-val-nik">-</span></div>
+                                <div class="cv-grid"><span class="cv-label">TTL</span><span class="cv-value" id="cv-val-ttl">-</span></div><div class="cv-grid"><span class="cv-label">Umur</span><span class="cv-value" id="cv-val-umur">-</span></div>
+                                <div class="cv-grid"><span class="cv-label">Alamat</span><span class="cv-value" id="cv-val-alamat">-</span></div><div class="cv-grid"><span class="cv-label">Kecamatan</span><span class="cv-value" id="cv-val-kecamatan">-</span></div>
+                                <div class="cv-grid"><span class="cv-label">Pekerjaan</span><span class="cv-value" id="cv-val-pekerjaan">-</span></div><div class="cv-grid"><span class="cv-label">Pendapatan</span><span class="cv-value text-emerald-600 font-bold" id="cv-val-omset">-</span></div>
+                                <div class="cv-grid"><span class="cv-label">Kebisaan/Skill</span><span class="cv-value" id="cv-val-kebisaan">-</span></div><div class="cv-grid"><span class="cv-label">Hobi/Minat</span><span class="cv-value" id="cv-val-hobi">-</span></div>
+                                <div class="cv-grid"><span class="cv-label">Aset</span><span class="cv-value" id="cv-val-aset">-</span></div><div class="cv-grid"><span class="cv-label">Kohor</span><span class="cv-value" id="cv-val-kohor">-</span></div>
+                                <div class="cv-grid"><span class="cv-label">Kategori</span><span class="cv-value text-indigo-600 font-bold" id="cv-val-kategori">-</span></div>
                             </div>
                         </div>
-
-                        <div class="bg-white p-5 md:p-8 rounded-2xl md:rounded-[2.5rem] shadow-sm border border-slate-100 w-full">
-                            <h3 class="text-[10px] md:text-xs font-black text-indigo-600 uppercase tracking-widest md:tracking-[0.2em] mb-4 md:mb-6 border-b pb-3 md:pb-4"><i class="fas fa-address-card mr-2 text-sm md:text-lg"></i> Biodata Lengkap Pengurus</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 md:gap-x-10 gap-y-2">
-                                <div class="cv-grid"><span class="cv-label">No. KK</span><span class="cv-value text-indigo-600 font-black" id="cv-val-kk">-</span></div>
-                                <div class="cv-grid"><span class="cv-label">NIK Utama</span><span class="cv-value text-slate-800" id="cv-val-nik">-</span></div>
-                                <div class="cv-grid"><span class="cv-label">T.T.L</span><span class="cv-value text-slate-600" id="cv-val-ttl">-</span></div>
-                                <div class="cv-grid"><span class="cv-label">Umur</span><span class="cv-value text-slate-600" id="cv-val-umur">-</span></div>
-                                <div class="cv-grid"><span class="cv-label">Alamat Lengkap</span><span class="cv-value text-slate-600" id="cv-val-alamat">-</span></div>
-                                <div class="cv-grid"><span class="cv-label">Kategori Bansos</span><span class="cv-value text-emerald-600 font-black" id="cv-val-kategori">-</span></div>
-                                <div class="cv-grid"><span class="cv-label">Bank Penyalur</span><span class="cv-value text-blue-600" id="cv-val-bank">-</span></div>
-                                <div class="cv-grid"><span class="cv-label">Nominal /Uang</span><span class="cv-value text-rose-600 font-bold" id="cv-val-nominal">-</span></div>
-                                <div class="cv-grid"><span class="cv-label">Status KPM</span><span class="cv-value" id="cv-val-status">-</span></div>
-                                <div class="cv-grid"><span class="cv-label">Pekerjaan</span><span class="cv-value" id="cv-val-pekerjaan">-</span></div>
-                                <div class="cv-grid"><span class="cv-label">Pendapatan/Bln</span><span class="cv-value text-emerald-600 font-bold" id="cv-val-omset">-</span></div>
-                                <div class="cv-grid"><span class="cv-label">Aset Utama</span><span class="cv-value text-indigo-600 font-bold" id="cv-val-aset">-</span></div>
-                                <div class="cv-grid"><span class="cv-label">Kebisaan/Skill</span><span class="cv-value text-slate-600" id="cv-val-kebisaan">-</span></div>
-                                <div class="cv-grid"><span class="cv-label">Minat & Bakat</span><span class="cv-value text-slate-600" id="cv-val-minatbakat">-</span></div>
-                            </div>
+                        <div class="bg-indigo-50/50 p-6 shadow-sm border-x border-slate-100">
+                            <div class="flex justify-between items-center mb-4"><h3 class="text-sm font-bold text-indigo-600 uppercase tracking-wider"><i class="fas fa-users mr-2"></i> Anggota Keluarga (ART)</h3><button onclick="app.crudKeluarga('tambah')" class="text-xs bg-indigo-600 text-white px-3 py-1 rounded shadow">Tambah ART</button></div>
+                            <div class="overflow-x-auto rounded-xl border border-slate-200"><table class="w-full text-sm text-left text-slate-600 whitespace-nowrap"><thead class="text-xs text-slate-700 uppercase bg-slate-50"><tr><th class="px-4 py-3">Nama Lengkap</th><th class="px-4 py-3 text-center">Umur</th><th class="px-4 py-3">Hubungan</th><th class="px-4 py-3 text-center">Aksi</th></tr></thead><tbody id="tbody-art"></tbody></table></div>
                         </div>
-
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 w-full">
-                            <div class="bg-indigo-50/30 p-5 md:p-8 rounded-2xl md:rounded-[2.5rem] shadow-sm border border-indigo-100/50 w-full overflow-hidden">
-                                <div class="flex justify-between items-center mb-4 md:mb-6 border-b border-indigo-100 pb-3 md:pb-4">
-                                    <h3 class="text-[9px] md:text-[10px] font-black text-indigo-700 uppercase tracking-widest"><i class="fas fa-users mr-2"></i> Anggota Keluarga</h3>
-                                    <button onclick="app.crudKeluarga('tambah', null)" class="bg-indigo-600 text-white w-7 h-7 md:w-8 md:h-8 rounded-lg md:rounded-xl flex items-center justify-center shadow-md hover:bg-indigo-700 transition-all"><i class="fas fa-plus text-xs"></i></button>
-                                </div>
-                                <div class="table-mobile-wrapper"><table class="table-mobile w-full"><thead class="text-[8px] md:text-[9px] text-slate-400 uppercase tracking-widest bg-white border-b"><tr><th class="p-2 md:p-3">Nama ART</th><th class="p-2 md:p-3">Umur</th><th class="p-2 md:p-3">Hubungan</th><th class="p-2 md:p-3">Pekerjaan</th><th class="p-2 md:p-3 text-center">Opt</th></tr></thead><tbody id="tbody-art" class="divide-y divide-slate-100"></tbody></table></div>
-                            </div>
-                            
-                            <div class="bg-white p-5 md:p-8 rounded-2xl md:rounded-[2.5rem] shadow-sm border border-slate-100 w-full overflow-hidden">
-                                <div class="flex justify-between items-center mb-4 md:mb-6 border-b border-slate-100 pb-3 md:pb-4">
-                                    <h3 class="text-[9px] md:text-[10px] font-black text-indigo-700 uppercase tracking-widest"><i class="fas fa-cubes mr-2"></i> Syarat Komponen</h3>
-                                    <button onclick="app.crudKomponen('tambah', null)" class="bg-indigo-600 text-white w-7 h-7 md:w-8 md:h-8 rounded-lg md:rounded-xl flex items-center justify-center shadow-md hover:bg-indigo-700 transition-all"><i class="fas fa-plus text-xs"></i></button>
-                                </div>
-                                <div class="table-mobile-wrapper"><table class="table-mobile w-full"><thead class="text-[8px] md:text-[9px] text-slate-400 uppercase tracking-widest bg-slate-50 border-b"><tr><th class="p-2 md:p-3">Nama</th><th class="p-2 md:p-3 text-center">Kategori</th><th class="p-2 md:p-3">Ket/Sekolah</th><th class="p-2 md:p-3 text-center">Opt</th></tr></thead><tbody id="tbody-komp" class="divide-y divide-slate-50"></tbody></table></div>
-                            </div>
+                        <div class="bg-white p-6 rounded-b-[2rem] shadow-sm border border-t-0 border-slate-100 mb-6">
+                            <div class="flex justify-between items-center mb-4"><h3 class="text-sm font-bold text-indigo-600 uppercase tracking-wider"><i class="fas fa-cubes mr-2"></i> Komponen PKH Terdaftar</h3><button onclick="app.crudKomponen('tambah')" class="text-xs bg-indigo-600 text-white px-3 py-1 rounded shadow">Tambah Komponen</button></div>
+                            <div class="overflow-x-auto rounded-xl border border-slate-200"><table class="w-full text-sm text-left text-slate-600 whitespace-nowrap"><thead class="text-xs text-slate-700 uppercase bg-slate-50"><tr><th class="px-4 py-3">Nama Anggota</th><th class="px-4 py-3 text-center">Kategori</th><th class="px-4 py-3">Keterangan</th><th class="px-4 py-3 text-center">Aksi</th></tr></thead><tbody id="tbody-komp"></tbody></table></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 2.5 MENU BARU: MASTER PENGURUS PKH -->
-                <div id="page-master-pengurus" class="page-section w-full">
-                    <div class="bg-white rounded-2xl md:rounded-[2rem] shadow-sm p-5 md:p-8 border border-slate-100 mb-6">
-                        <div class="flex flex-col md:flex-row justify-between mb-6 gap-4 border-b pb-4 border-slate-50">
-                            <div><h3 class="text-lg md:text-xl font-black text-slate-800 tracking-tight"><i class="fas fa-user-shield text-amber-500 mr-2 md:mr-3"></i> Master Tabel Pengurus PKH</h3><p class="text-[10px] md:text-xs text-slate-400 font-bold mt-1">Data lengkap yang bisa diubah/dicari</p></div>
-                            <div class="relative w-full md:w-64"><i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i><input type="text" oninput="app.loadMasterPengurus(this.value)" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl pl-11 p-3 text-xs md:text-sm font-bold focus:border-amber-500 outline-none uppercase" placeholder="Cari Nama / NIK..."></div>
+                <!-- 2.5 MENU BARU: DATABASE KPM PENGURUS -->
+                <div id="page-master-pengurus" class="page-section">
+                    <div class="bg-white rounded-[1.5rem] shadow-sm p-6 border border-slate-100 mb-6">
+                        <div class="flex flex-col md:flex-row justify-between mb-6 gap-4">
+                            <div><h3 class="text-lg font-bold text-slate-800"><i class="fas fa-database text-amber-500 mr-2"></i> Database KPM (Pengurus)</h3><p class="text-xs text-slate-500">Data hasil upload Pengurus PKH.</p></div>
+                            <div class="relative flex-1 md:w-64"><i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i><input type="text" oninput="app.loadMasterPengurus(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 p-2 text-sm outline-none focus:border-amber-500" placeholder="Cari Nama / NIK..."></div>
                         </div>
-                        <div class="table-mobile-wrapper"><table class="table-mobile w-full"><thead class="text-[9px] md:text-[10px] text-slate-500 uppercase tracking-widest bg-slate-50 border-b"><tr><th class="px-4 md:px-6 py-4">NIK Utama</th><th class="px-4 md:px-6 py-4">No. KK</th><th class="px-4 md:px-6 py-4">Nama Pengurus</th><th class="px-4 md:px-6 py-4">Kategori Bansos</th><th class="px-4 md:px-6 py-4">Status KPM</th><th class="px-4 md:px-6 py-4">Alamat Lengkap</th><th class="px-4 md:px-6 py-4 text-center">Aksi</th></tr></thead><tbody id="tbody-master-pengurus" class="divide-y divide-slate-50"></tbody></table></div>
+                        <div class="overflow-x-auto rounded-xl border border-slate-200"><table class="w-full text-sm text-left text-slate-600 whitespace-nowrap"><thead class="text-xs text-slate-700 uppercase bg-slate-50"><tr><th class="px-4 py-4">NIK Utama</th><th class="px-4 py-4">No. KK</th><th class="px-4 py-4">Nama Pengurus</th><th class="px-4 py-4">Kategori Bansos</th><th class="px-4 py-4 text-center">Aksi</th></tr></thead><tbody id="tbody-master-pengurus"></tbody></table></div>
                     </div>
                 </div>
 
-                <!-- 3. MASTER KELUARGA LENGKAP -->
-                <div id="page-keluarga" class="page-section w-full">
-                    <div class="bg-white rounded-2xl md:rounded-[2rem] shadow-sm p-5 md:p-8 border border-slate-100 mb-6">
-                        <div class="flex flex-col md:flex-row justify-between mb-6 gap-4 border-b pb-4 border-slate-50">
-                            <div><h3 class="text-lg md:text-xl font-black text-slate-800 tracking-tight"><i class="fas fa-users text-indigo-500 mr-2 md:mr-3"></i> Master Tabel Keluarga (ART)</h3></div>
-                            <div class="relative w-full md:w-64"><i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i><input type="text" oninput="app.loadMasterART(this.value)" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl pl-11 p-3 text-xs md:text-sm font-bold focus:border-indigo-500 outline-none uppercase" placeholder="Cari Nama ART..."></div>
+                <!-- 3. TABEL KELUARGA (STANDALONE) -->
+                <div id="page-keluarga" class="page-section">
+                    <div class="bg-white rounded-[1.5rem] shadow-sm p-6 border border-slate-100 mb-6">
+                        <div class="flex flex-col md:flex-row justify-between mb-6 gap-4">
+                            <div><h3 class="text-lg font-bold text-slate-800"><i class="fas fa-users text-indigo-500 mr-2"></i> Anggota Keluarga (ART)</h3><p class="text-xs text-slate-500">Tabel master seluruh ART</p></div>
+                            <div class="relative flex-1 md:w-64"><i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i><input type="text" oninput="app.loadMasterART(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 p-2 text-sm outline-none focus:border-indigo-500" placeholder="Cari Nama ART..."></div>
                         </div>
-                        <div class="table-mobile-wrapper"><table class="table-mobile w-full"><thead class="text-[9px] md:text-[10px] text-slate-500 uppercase tracking-widest bg-slate-50 border-b"><tr><th class="px-4 md:px-6 py-4">NIK ART</th><th class="px-4 md:px-6 py-4">Nama ART</th><th class="px-4 md:px-6 py-4">T.T.L</th><th class="px-4 md:px-6 py-4">Umur</th><th class="px-4 md:px-6 py-4">Hubungan</th><th class="px-4 md:px-6 py-4">Pekerjaan</th><th class="px-4 md:px-6 py-4">Pengurus Inti</th><th class="px-4 md:px-6 py-4 text-center">Aksi</th></tr></thead><tbody id="tbody-master-art" class="divide-y divide-slate-50"></tbody></table></div>
+                        <div class="overflow-x-auto rounded-xl border border-slate-200"><table class="w-full text-sm text-left text-slate-600 whitespace-nowrap"><thead class="text-xs text-slate-700 uppercase bg-slate-50"><tr><th class="px-4 py-4">NIK ART</th><th class="px-4 py-4">Nama ART</th><th class="px-4 py-4">T.T.L</th><th class="px-4 py-4 text-center">Umur</th><th class="px-4 py-4">Hubungan</th><th class="px-4 py-4 text-indigo-700 font-bold">Pengurus Inti</th><th class="px-4 py-4 text-center">Aksi</th></tr></thead><tbody id="tbody-master-art"></tbody></table></div>
                     </div>
                 </div>
 
-                <!-- 4. MASTER KOMPONEN LENGKAP -->
-                <div id="page-komponen" class="page-section w-full">
-                    <div class="bg-white rounded-2xl md:rounded-[2rem] shadow-sm p-5 md:p-8 border border-slate-100 mb-6">
-                        <div class="flex flex-col md:flex-row justify-between mb-6 gap-4 border-b pb-4 border-slate-50">
-                            <div><h3 class="text-lg md:text-xl font-black text-slate-800 tracking-tight"><i class="fas fa-cubes text-indigo-500 mr-2 md:mr-3"></i> Master Tabel Komponen PKH</h3></div>
-                            <div class="relative w-full md:w-64"><i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i><input type="text" oninput="app.loadMasterKomp(this.value)" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl pl-11 p-3 text-xs md:text-sm font-bold focus:border-indigo-500 outline-none uppercase" placeholder="Cari Nama Komponen..."></div>
+                <!-- 4. TABEL KOMPONEN (STANDALONE) -->
+                <div id="page-komponen" class="page-section">
+                    <div class="bg-white rounded-[1.5rem] shadow-sm p-6 border border-slate-100 mb-6">
+                        <div class="flex flex-col md:flex-row justify-between mb-6 gap-4">
+                            <div><h3 class="text-lg font-bold text-slate-800"><i class="fas fa-cubes text-indigo-500 mr-2"></i> Komponen PKH</h3><p class="text-xs text-slate-500">Tabel master komponen</p></div>
+                            <div class="relative flex-1 md:w-64"><i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i><input type="text" oninput="app.loadMasterKomp(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 p-2 text-sm outline-none focus:border-indigo-500" placeholder="Cari Nama Komponen..."></div>
                         </div>
-                        <div class="table-mobile-wrapper"><table class="table-mobile w-full"><thead class="text-[9px] md:text-[10px] text-slate-500 uppercase tracking-widest bg-slate-50 border-b"><tr><th class="px-4 md:px-6 py-4">Nama Komponen</th><th class="px-4 md:px-6 py-4 text-center">Kategori</th><th class="px-4 md:px-6 py-4">Sekolah / Keterangan</th><th class="px-4 md:px-6 py-4">Pengurus Inti</th><th class="px-4 md:px-6 py-4 text-center">Aksi</th></tr></thead><tbody id="tbody-master-komp" class="divide-y divide-slate-50"></tbody></table></div>
+                        <div class="overflow-x-auto rounded-xl border border-slate-200"><table class="w-full text-sm text-left text-slate-600 whitespace-nowrap"><thead class="text-xs text-slate-700 uppercase bg-slate-50"><tr><th class="px-4 py-4">Nama Komponen</th><th class="px-4 py-4 text-center">Kategori</th><th class="px-4 py-4">Sekolah / Keterangan</th><th class="px-4 py-4 text-indigo-700 font-bold">Pengurus Inti</th><th class="px-4 py-4 text-center">Aksi</th></tr></thead><tbody id="tbody-master-komp"></tbody></table></div>
                     </div>
                 </div>
 
-                <!-- 5. MAPS (GPS & EXPORT PDF GAMBAR) -->
-                <div id="page-maps" class="page-section w-full">
-                    <div class="bg-white rounded-2xl md:rounded-[2.5rem] p-5 md:p-8 border border-slate-100 shadow-sm mb-6">
-                        <h3 class="text-lg md:text-xl font-black text-slate-800 mb-6 tracking-tight"><i class="fas fa-map-location-dot text-rose-500 mr-2 md:mr-3"></i> Rekam Koordinat Lokasi</h3>
-                        <div class="grid grid-cols-1 gap-3 md:gap-4 mb-4 md:mb-6">
-                            <select id="sel-desa" onchange="app.filterKPMByDesa()" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 md:p-4 font-bold outline-none focus:border-indigo-500 text-xs md:text-sm"><option value="">-- Pilih Desa --</option></select>
-                            <select id="sel-kpm" onchange="app.pilihTargetGPS()" disabled class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 md:p-4 font-bold outline-none focus:border-indigo-500 text-xs md:text-sm"><option value="">Pilih Desa Dulu</option></select>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3 mb-4 md:mb-6">
-                            <input type="text" id="gps-lat" class="bg-slate-100 p-3 md:p-4 rounded-xl font-mono text-xs font-black text-rose-500 border-2 border-transparent w-full" readonly placeholder="Lat">
-                            <input type="text" id="gps-lng" class="bg-slate-100 p-3 md:p-4 rounded-xl font-mono text-xs font-black text-rose-500 border-2 border-transparent w-full" readonly placeholder="Lng">
-                        </div>
-                        <input type="hidden" id="gps-nama">
-                        <div class="flex flex-col md:flex-row gap-3">
-                            <button onclick="app.rekamTitik()" class="w-full bg-rose-500 text-white font-black py-3 md:py-4 rounded-xl shadow-lg active:scale-95 transition-all text-xs">AMBIL LOKASI</button>
-                            <button onclick="app.simpanTitikFirebase()" class="w-full bg-indigo-600 text-white font-black py-3 md:py-4 rounded-xl shadow-lg active:scale-95 transition-all text-xs">SIMPAN FIREBASE</button>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-white rounded-2xl md:rounded-[2rem] p-5 md:p-6 border border-slate-100 shadow-sm overflow-hidden">
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
-                            <h3 class="text-md md:text-lg font-black text-slate-800"><i class="fas fa-map-marked-alt text-amber-500 mr-2"></i> Peta Sebaran KPM</h3>
-                            <div class="flex flex-col sm:flex-row w-full md:w-auto gap-2">
-                                <select id="filter-peta-desa" class="bg-slate-50 border border-slate-200 rounded-xl p-2 outline-none font-bold text-[10px] md:text-xs focus:border-indigo-500">
-                                    <option value="">-- Semua Desa --</option>
-                                </select>
-                                <div class="flex gap-2 w-full md:w-auto">
-                                    <button onclick="app.tampilkanPeta()" class="flex-1 bg-indigo-50 text-indigo-700 px-4 py-2 rounded-xl text-[10px] md:text-xs font-bold border border-indigo-100"><i class="fas fa-satellite-dish mr-1"></i>Tarik</button>
-                                    <button onclick="app.exportPetaPDF()" class="flex-1 bg-rose-50 text-rose-700 px-4 py-2 rounded-xl text-[10px] md:text-xs font-bold border border-rose-100"><i class="fas fa-file-pdf mr-1"></i>Export PDF</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="wadah-peta" class="h-[300px] md:h-[400px] rounded-2xl md:rounded-[2rem] bg-slate-100 flex items-center justify-center font-bold text-slate-400 z-0 relative border-4 border-white shadow-inner w-full">Peta Siap Dimuat</div>
-                    </div>
-                </div>
-
-                <!-- 6. P2K2 (ABSENSI) -->
-                <div id="page-p2k2" class="page-section w-full">
+                <!-- 5. MONITORING P2K2 (DENGAN ABSENSI BARU) -->
+                <div id="page-p2k2" class="page-section">
                     <div id="p2k2-list-view">
-                        <div class="flex flex-col md:flex-row justify-between mb-6 md:mb-10 items-start md:items-center gap-4">
-                            <div><h3 class="text-xl md:text-2xl font-black text-slate-800 tracking-tight"><i class="fas fa-book-open text-indigo-500 mr-2 md:mr-3"></i> Monitoring P2K2</h3></div>
-                            <button onclick="app.bukaFormP2K2()" class="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-black shadow-xl text-[10px] md:text-xs uppercase tracking-widest transition-all"><i class="fas fa-plus-circle mr-2 text-sm md:text-lg"></i> BUAT KEGIATAN BARU</button>
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-bold text-slate-800"><i class="fas fa-book-open text-indigo-500 mr-2"></i> Monitoring P2K2</h3>
+                            <button onclick="app.bukaFormP2K2()" class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md hover:bg-indigo-700"><i class="fas fa-plus mr-1"></i> Tambah Kegiatan</button>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 mb-8">
-                            <div class="bg-white border border-slate-100 rounded-2xl md:rounded-3xl p-5 md:p-6 text-center shadow-sm"><p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Kegiatan</p><h3 class="text-3xl md:text-4xl font-black text-indigo-600" id="p2k2-tot-keg">0</h3></div>
-                            <div class="bg-emerald-50/50 border border-emerald-100 rounded-2xl md:rounded-3xl p-5 md:p-6 text-center shadow-sm"><p class="text-[9px] font-black text-emerald-600 uppercase tracking-widest mb-1">Kehadiran (Ibu)</p><h3 class="text-3xl md:text-4xl font-black text-emerald-700" id="p2k2-tot-hdr">0</h3></div>
-                            <div class="bg-rose-50/50 border border-rose-100 rounded-2xl md:rounded-3xl p-5 md:p-6 text-center shadow-sm"><p class="text-[9px] font-black text-rose-600 uppercase tracking-widest mb-1">Tdk Hadir (Alfa)</p><h3 class="text-3xl md:text-4xl font-black text-rose-700" id="p2k2-tot-absen">0</h3></div>
+                        
+                        <div class="grid grid-cols-3 gap-3 mb-6">
+                            <div class="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 text-center"><p class="text-xs font-bold text-slate-500">Total Kegiatan</p><h3 class="text-2xl font-black text-indigo-600 mt-1" id="p2k2-tot-keg">0</h3></div>
+                            <div class="bg-emerald-50 rounded-2xl p-4 shadow-sm border border-emerald-100 text-center"><p class="text-xs font-bold text-emerald-600">Total Hadir</p><h3 class="text-2xl font-black text-emerald-700 mt-1" id="p2k2-tot-hdr">0</h3></div>
+                            <div class="bg-rose-50 rounded-2xl p-4 shadow-sm border border-rose-100 text-center"><p class="text-xs font-bold text-rose-600">Tidak Hadir</p><h3 class="text-2xl font-black text-rose-700 mt-1" id="p2k2-tot-absen">0</h3></div>
                         </div>
-                        <h4 class="font-black text-slate-800 mb-3 text-[10px] md:text-xs uppercase tracking-widest">Riwayat Kegiatan Terbaru</h4>
-                        <div id="p2k2-riwayat" class="space-y-3 md:space-y-4 mb-8"></div>
-                        <h4 class="font-black text-rose-500 mb-3 text-[10px] md:text-xs uppercase tracking-widest"><i class="fas fa-exclamation-circle mr-2"></i>Rekap KPM Tidak Hadir</h4>
-                        <div class="table-mobile-wrapper"><table class="table-mobile w-full text-left"><thead class="text-[9px] text-slate-400 uppercase tracking-widest bg-slate-50 border-b"><tr><th class="p-4 md:p-5">Nama KPM</th><th class="p-4 md:p-5">Desa</th><th class="p-4 md:p-5">Modul</th><th class="p-4 md:p-5">Alasan</th></tr></thead><tbody id="tbody-p2k2-rekap" class="divide-y divide-slate-50"></tbody></table></div>
+
+                        <h4 class="font-bold text-slate-700 mb-3">Riwayat Kegiatan</h4>
+                        <div id="p2k2-riwayat" class="space-y-3 mb-8"></div>
+
+                        <h4 class="font-bold text-slate-700 mb-3">Rekap KPM Tidak Hadir (Bulan Ini)</h4>
+                        <div class="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                            <table class="w-full text-sm text-left text-slate-600 whitespace-nowrap">
+                                <thead class="text-xs text-slate-700 uppercase bg-slate-50">
+                                    <tr><th class="px-4 py-3">Nama KPM</th><th class="px-4 py-3">Desa</th><th class="px-4 py-3">Kegiatan</th><th class="px-4 py-3">Keterangan (Alasan)</th></tr>
+                                </thead>
+                                <tbody id="tbody-p2k2-rekap">
+                                    <tr><td colspan="4" class="text-center py-4 text-slate-400">Tidak ada data rekap.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
 
-                    <div id="p2k2-form-view" class="hidden bg-white rounded-2xl md:rounded-[2.5rem] p-5 md:p-8 shadow-2xl border border-indigo-100 w-full">
-                        <div class="flex justify-between items-center mb-6 md:mb-8 border-b border-slate-100 pb-4 md:pb-6"><h3 class="text-lg md:text-2xl font-black text-slate-800 tracking-tight text-indigo-700">Form Absensi</h3><button onclick="app.tutupFormP2K2()" class="w-8 h-8 md:w-10 md:h-10 bg-rose-50 text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition-all"><i class="fas fa-times md:text-xl"></i></button></div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-6">
-                            <div><label class="block text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Nama Modul</label><input type="text" id="p2k2-nama" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl md:rounded-2xl p-3 md:p-4 font-black outline-none focus:border-indigo-500 text-xs md:text-sm"></div>
-                            <div><label class="block text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Tanggal</label><input type="date" id="p2k2-tgl" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl md:rounded-2xl p-3 md:p-4 font-black outline-none focus:border-indigo-500 text-indigo-700 text-xs md:text-sm"></div>
-                            <div class="md:col-span-2"><label class="block text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-2 ml-1">Pilih Desa</label><select id="p2k2-desa" onchange="app.p2k2LoadKPM()" class="w-full bg-indigo-50 border-2 border-indigo-100 text-indigo-800 rounded-xl md:rounded-2xl p-3 md:p-4 font-black outline-none focus:border-indigo-500 uppercase text-xs tracking-widest"><option value="">-- Pilih Desa --</option></select></div>
+                    <div id="p2k2-form-view" class="hidden bg-white rounded-[1.5rem] p-6 shadow-sm border border-slate-100">
+                        <div class="flex justify-between items-center mb-6 border-b pb-4">
+                            <h3 class="text-lg font-bold text-slate-800">Buat Kegiatan P2K2 Baru</h3>
+                            <button onclick="app.tutupFormP2K2()" class="text-slate-400 hover:text-rose-500"><i class="fas fa-times text-xl"></i></button>
                         </div>
-                        <div class="table-mobile-wrapper border-2 border-slate-100 mb-6 md:mb-8"><table class="table-mobile w-full"><thead class="text-[9px] text-slate-500 uppercase tracking-widest bg-slate-50 border-b border-slate-100"><tr><th class="p-3 md:p-5">Nama</th><th class="p-3 md:p-5 text-center">Status</th><th class="p-3 md:p-5 w-1/2">Keterangan</th></tr></thead><tbody id="p2k2-kpm-list" class="divide-y divide-slate-50"><tr><td colspan="3" class="text-center py-8 text-slate-400 font-bold uppercase tracking-widest text-[10px]">Pilih desa dulu...</td></tr></tbody></table></div>
-                        <button onclick="app.simpanP2K2()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 md:py-5 rounded-xl md:rounded-2xl shadow-xl shadow-emerald-200 uppercase tracking-widest text-xs transition-all active:scale-95"><i class="fas fa-save mr-2"></i> SIMPAN HASIL</button>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <div><label class="block text-xs font-bold text-slate-500 mb-1">Nama Modul/Kegiatan</label><input type="text" id="p2k2-nama" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 outline-none focus:border-indigo-500" placeholder="Misal: Modul Ekonomi Sesi 1"></div>
+                            <div><label class="block text-xs font-bold text-slate-500 mb-1">Tanggal</label><input type="date" id="p2k2-tgl" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 outline-none focus:border-indigo-500"></div>
+                            <div class="md:col-span-2"><label class="block text-xs font-bold text-slate-500 mb-1">Pilih Desa (Otomatis memuat KPM)</label><select id="p2k2-desa" onchange="app.p2k2LoadKPM()" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 outline-none font-bold focus:border-indigo-500"><option value="">-- Pilih Desa --</option></select></div>
+                        </div>
+
+                        <div class="overflow-x-auto rounded-xl border border-slate-200 mb-6">
+                            <table class="w-full text-sm text-left text-slate-600 whitespace-nowrap">
+                                <thead class="text-xs text-slate-700 uppercase bg-slate-50">
+                                    <tr><th class="px-4 py-3">Nama KPM</th><th class="px-4 py-3 text-center">Kehadiran</th><th class="px-4 py-3">Ket. (Jika Tidak Hadir)</th></tr>
+                                </thead>
+                                <tbody id="p2k2-kpm-list">
+                                    <tr><td colspan="3" class="text-center py-6 text-slate-400">Silakan pilih desa terlebih dahulu.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button onclick="app.simpanP2K2()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition">SIMPAN ABSENSI KEGIATAN</button>
                     </div>
                 </div>
 
-                <div id="page-penyaluran" class="page-section w-full">
-                    <div class="bg-white rounded-2xl md:rounded-[2.5rem] p-6 md:p-10 border shadow-sm w-full"><h3 class="text-lg md:text-xl font-black text-slate-800 mb-6 md:mb-8 tracking-tight"><i class="fas fa-hand-holding-dollar text-emerald-500 mr-2 md:mr-3"></i> Penyaluran Bantuan KPM</h3><div class="bg-emerald-600 rounded-2xl md:rounded-[2rem] p-6 md:p-10 text-white text-center shadow-xl shadow-emerald-200 relative overflow-hidden"><i class="fas fa-money-bill-wave absolute -right-5 -top-5 md:-right-10 md:-top-10 text-[6rem] md:text-[10rem] opacity-20 transform rotate-12"></i><h4 class="text-[10px] md:text-xs font-black uppercase tracking-widest md:tracking-[0.3em] mb-2 md:mb-4 opacity-80 relative z-10">Progress Penyaluran Tahap 1</h4><div class="text-5xl md:text-7xl font-black mb-4 md:mb-6 relative z-10">85%</div><div class="w-full max-w-lg mx-auto bg-emerald-800/50 rounded-full h-3 md:h-4 mb-4 md:mb-6 p-1 relative z-10"><div class="bg-white h-full rounded-full shadow-lg" style="width: 85%"></div></div><div class="flex flex-col sm:flex-row gap-3 md:gap-4 max-w-lg mx-auto relative z-10"><input type="text" class="flex-1 bg-white text-slate-800 px-4 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl font-black outline-none text-center sm:text-left text-xs md:text-sm" placeholder="SCAN KKS / NIK..."><button class="w-full sm:w-auto bg-emerald-800 hover:bg-emerald-900 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-black text-[10px] md:text-xs uppercase tracking-widest transition-all" onclick="app.simpanAlert('Penyaluran KPM ini sukses ditandai!')">TANDAI</button></div></div></div>
+                <div id="page-penyaluran" class="page-section">
+                    <div class="bg-white rounded-[1.5rem] p-6 shadow-sm border border-slate-100 mb-6">
+                        <h3 class="text-lg font-bold text-slate-800 mb-4"><i class="fas fa-hand-holding-dollar text-emerald-500 mr-2"></i> Penyaluran Bantuan Sosial</h3>
+                        <div class="bg-emerald-50 border border-emerald-100 rounded-2xl p-5 mb-6 text-center"><h4 class="text-emerald-800 font-bold">Progress Tahap 1</h4><div class="text-4xl font-black text-emerald-600 my-2">85%</div><div class="w-full bg-emerald-200 rounded-full h-2 mb-2"><div class="bg-emerald-500 h-2 rounded-full" style="width: 85%"></div></div><p class="text-xs text-emerald-700">10.582 dari 12.450 KPM telah disalurkan.</p></div>
+                        <div class="flex gap-2 mb-4"><div class="relative flex-1"><i class="fas fa-barcode absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i><input type="text" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 p-3.5 outline-none focus:border-emerald-500" placeholder="Scan KKS / NIK..."></div><button type="button" onclick="app.simpanAlert('Penyaluran KPM ini sukses ditandai!')" class="bg-emerald-500 text-white px-5 rounded-xl font-bold shadow-md"><i class="fas fa-check-circle mr-1"></i> Tandai</button></div>
+                    </div>
                 </div>
 
-                <!-- 8, 9, 10. UPLOAD UNIVERSAL (XLS, XLSX, CSV, TXT) -->
+                <!-- 7. MAPS GPS & PETA -->
+                <div id="page-maps" class="page-section">
+                    <div class="bg-white rounded-[1.5rem] shadow-sm p-6 mb-6 border border-slate-100">
+                        <div class="flex flex-col md:flex-row justify-between mb-4 items-start md:items-center">
+                            <h3 class="font-bold text-slate-800 text-lg"><i class="fas fa-location-crosshairs text-rose-500 me-2"></i> Rekam & Simpan Koordinat</h3>
+                            <button type="button" onclick="app.rekamGPS()" class="bg-rose-500 hover:bg-rose-600 text-white px-6 py-2 rounded-xl font-bold mt-3 md:mt-0 shadow-md transition"><i class="fas fa-crosshairs me-2"></i> AMBIL LOKASI</button>
+                        </div>
+                        <div class="flex flex-col md:flex-row gap-4 mb-4">
+                            <input type="text" id="gps-nama" class="w-full md:w-1/3 bg-slate-50 p-3 rounded-xl border text-sm outline-none focus:border-indigo-500" placeholder="Ketik Nama KPM...">
+                            <input type="text" id="gps-lat" class="w-full md:w-1/3 bg-slate-50 p-3 rounded-xl border text-sm outline-none" readonly placeholder="Latitude">
+                            <input type="text" id="gps-lng" class="w-full md:w-1/3 bg-slate-50 p-3 rounded-xl border text-sm outline-none" readonly placeholder="Longitude">
+                        </div>
+                        <button type="button" onclick="app.simpanKeDatabase()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition mb-2"><i class="fas fa-cloud-upload-alt me-2"></i> SIMPAN KE FIREBASE SEKARANG</button>
+                    </div>
+
+                    <div class="bg-white rounded-[1.5rem] shadow-sm p-6 border border-slate-100">
+                        <div class="flex flex-col md:flex-row justify-between mb-6 gap-4">
+                            <div><h3 class="text-lg font-bold text-slate-800"><i class="fas fa-map-marked-alt text-yellow-500 mr-2"></i> Peta Sebaran KPM Per Desa</h3></div>
+                            <button type="button" onclick="app.exportPetaPDF()" class="bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-md"><i class="fas fa-file-pdf mr-2"></i> Export Peta PDF</button>
+                        </div>
+                        <div class="flex gap-2 mb-4">
+                            <select id="filter-peta-desa" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl p-3 outline-none font-medium text-slate-700 focus:border-indigo-500"><option value="">-- Pilih Desa --</option></select>
+                            <button type="button" onclick="app.tampilkanPetaDesa()" class="bg-indigo-600 text-white px-6 rounded-xl font-bold shadow-md"><i class="fas fa-search"></i> Tarik Data</button>
+                        </div>
+                        <div id="wadah-peta" class="w-full h-[400px] rounded-xl border border-slate-200 bg-slate-100 flex items-center justify-center z-0 relative overflow-hidden"><div class="text-slate-400 text-center"><i class="fas fa-map-marked text-5xl opacity-50 mb-3 block"></i>Pilih desa untuk merender peta</div></div>
+                    </div>
+                </div>
+
+                <!-- 8. MASTER DATA 70K ADMIN ONLY -->
+                <div id="page-database" class="page-section">
+                    <div class="bg-white rounded-[2rem] shadow-sm p-6 md:p-10 max-w-5xl mx-auto border border-slate-100">
+                        <div class="flex items-center gap-4 mb-6 border-b pb-4">
+                            <div class="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600 text-2xl"><i class="fas fa-server"></i></div>
+                            <div><h2 class="text-2xl font-black text-slate-800">Upload Master Data KPM (70.000)</h2><p class="text-slate-500 text-sm">Sistem membaca kolom sesuai standar Database Kabupaten secara otomatis.</p></div>
+                        </div>
+
+                        <div class="bg-emerald-50 border border-emerald-100 rounded-2xl p-6 mb-6">
+                            <p class="text-sm text-emerald-700 mb-3 leading-relaxed"><b>Kolom Otomatis Terdeteksi:</b> No KK, NIK, Nama, TTL, Alamat, Kategori, Bank, Nominal, Status, Kohor, Masa, Pekerjaan, Kebisaan, Hobi, Omset.</p>
+                            <div class="border-2 border-dashed border-emerald-300 bg-white hover:bg-emerald-100/50 rounded-xl p-8 cursor-pointer transition text-center" onclick="document.getElementById('file-master-csv').click()">
+                                <i class="fas fa-cloud-upload-alt text-4xl text-emerald-400 mb-2 block"></i><h4 class="font-bold text-emerald-700">Klik Pilih File Excel / CSV Master</h4>
+                                <input type="file" id="file-master-csv" class="hidden" accept=".csv, .xlsx, .xls, .txt" onchange="app.prosesUploadMaster70k(event)">
+                            </div>
+                        </div>
+                        
+                        <div class="overflow-x-auto rounded-xl border border-slate-200">
+                            <table class="w-full text-sm text-left text-slate-600 whitespace-nowrap">
+                                <thead class="text-xs text-slate-700 uppercase bg-slate-50 border-b"><tr><th class="px-4 py-3">Nama KPM</th><th class="px-4 py-3">NIK</th><th class="px-4 py-3">No. KK</th><th class="px-4 py-3 text-center">Status Sync</th></tr></thead>
+                                <tbody id="tbody-master-sync"><tr><td colspan="4" class="text-center py-8 text-slate-500">Belum ada proses sinkronisasi.</td></tr></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 9. UPLOAD DATA PENGURUS -->
                 <div id="page-upload-pengurus" class="page-section w-full">
-                    <div class="bg-white rounded-2xl md:rounded-[2.5rem] shadow-sm p-5 md:p-10 w-full border border-slate-100">
-                        <div class="flex items-center gap-4 md:gap-6 mb-6 md:mb-10 border-b border-slate-50 pb-6 md:pb-8"><div class="w-12 h-12 md:w-16 md:h-16 bg-amber-100 rounded-2xl md:rounded-3xl flex items-center justify-center text-amber-600 text-xl md:text-3xl"><i class="fas fa-file-invoice"></i></div><div><h2 class="text-lg md:text-2xl font-black text-slate-800 tracking-tight">Upload Data Pengurus</h2><p class="text-amber-500 text-[10px] md:text-sm font-bold uppercase tracking-widest mt-1">Smart Parse (Semua Format)</p></div></div>
-                        <div class="bg-amber-500 rounded-2xl md:rounded-[2.5rem] p-6 md:p-10 mb-6 text-white relative overflow-hidden text-center cursor-pointer shadow-xl shadow-amber-200" onclick="document.getElementById('file-pengurus-csv').click()">
-                            <i class="fas fa-file-excel absolute -right-5 -bottom-5 text-[8rem] md:text-[15rem] opacity-10"></i>
-                            <div class="relative z-10 border-2 md:border-4 border-dashed border-white/50 bg-amber-600/50 hover:bg-amber-600 rounded-xl md:rounded-3xl p-6 md:p-10 transition-all"><i class="fas fa-file-import text-4xl md:text-6xl text-amber-200 mb-3 md:mb-4 block"></i><h4 class="font-black uppercase text-[10px] md:text-sm tracking-widest text-white">KLIK PILIH FILE (.XLS, .CSV, .TXT)</h4></div>
-                            <input type="file" id="file-pengurus-csv" class="hidden" accept=".csv, .txt, .xls, .xlsx" onchange="app.prosesUploadPengurus(event)">
+                    <div class="bg-white rounded-[2.5rem] shadow-sm p-6 md:p-10 border border-slate-100 max-w-5xl mx-auto mb-6">
+                        <div class="flex items-center gap-4 mb-6 border-b border-slate-50 pb-4">
+                            <div class="w-14 h-14 bg-amber-100 rounded-full flex items-center justify-center text-amber-600 text-2xl"><i class="fas fa-file-invoice"></i></div>
+                            <div><h2 class="text-2xl font-black text-slate-800">Upload Data Pengurus</h2><p class="text-amber-500 text-sm font-bold mt-1">Isi Database KPM</p></div>
+                        </div>
+                        <div class="bg-amber-50 rounded-2xl p-6 mb-6">
+                            <div class="border-2 border-dashed border-amber-300 bg-white hover:bg-amber-100/50 rounded-xl p-8 cursor-pointer transition text-center" onclick="document.getElementById('file-pengurus-csv').click()">
+                                <i class="fas fa-file-excel text-4xl text-amber-400 mb-2 block"></i><h4 class="font-bold text-amber-700 uppercase">KLIK PILIH FILE PENGURUS (.XLS, .CSV)</h4>
+                                <input type="file" id="file-pengurus-csv" class="hidden" accept=".csv, .txt, .xls, .xlsx" onchange="app.prosesUploadPengurus(event)">
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div id="page-database" class="page-section w-full">
-                    <div class="bg-white rounded-2xl md:rounded-[2.5rem] shadow-sm p-5 md:p-10 w-full border border-slate-100">
-                        <div class="flex items-center gap-4 md:gap-6 mb-6 md:mb-10 border-b border-slate-50 pb-6 md:pb-8"><div class="w-12 h-12 md:w-16 md:h-16 bg-emerald-100 rounded-2xl md:rounded-3xl flex items-center justify-center text-emerald-600 text-xl md:text-3xl"><i class="fas fa-database"></i></div><div><h2 class="text-lg md:text-2xl font-black text-slate-800 tracking-tight">Upload Master 70k</h2><p class="text-emerald-500 text-[10px] md:text-sm font-bold uppercase tracking-widest mt-1">Kamus Induk Auto-Sync</p></div></div>
-                        <div class="bg-emerald-600 rounded-2xl md:rounded-[2.5rem] p-6 md:p-10 mb-6 text-white relative overflow-hidden text-center cursor-pointer shadow-xl shadow-emerald-200" onclick="document.getElementById('file-master-csv').click()">
-                            <i class="fas fa-server absolute -right-5 -bottom-5 text-[8rem] md:text-[15rem] opacity-10"></i>
-                            <div class="relative z-10 border-2 md:border-4 border-dashed border-white/50 bg-emerald-700/50 hover:bg-emerald-800 rounded-xl md:rounded-3xl p-6 md:p-10 transition-all"><i class="fas fa-upload text-4xl md:text-6xl text-emerald-300 mb-3 md:mb-4 block"></i><h4 class="font-black uppercase text-[10px] md:text-sm tracking-widest text-white">KLIK PILIH FILE 70k (.XLS, .CSV, .TXT)</h4></div>
-                            <input type="file" id="file-master-csv" class="hidden" accept=".csv, .txt, .xls, .xlsx" onchange="app.prosesUploadMaster70k(event)">
-                        </div>
-                        <div class="table-mobile-wrapper"><table class="table-mobile w-full"><thead class="text-[9px] md:text-[10px] text-slate-400 uppercase tracking-widest bg-slate-50 border-b"><tr><th class="p-4 md:p-6">Nama KPM</th><th class="p-4 md:p-6">NIK</th><th class="p-4 md:p-6">No. KK</th><th class="p-4 md:p-6 text-center">Status</th></tr></thead><tbody id="tbody-master-sync"><tr><td colspan="4" class="text-center py-10 md:py-20 text-slate-300 font-bold uppercase tracking-widest text-[10px] md:text-xs">Belum ada proses upload 70k.</td></tr></tbody></table></div>
-                    </div>
-                </div>
-
-                <div id="page-sdm-manajemen" class="page-section w-full">
-                    <div class="bg-white rounded-2xl md:rounded-[2.5rem] p-5 md:p-10 border border-slate-100 shadow-sm w-full">
-                        <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 md:mb-10 border-b border-slate-50 pb-6 md:pb-8 gap-4"><div class="flex items-center gap-4 md:gap-6"><div class="w-12 h-12 md:w-16 md:h-16 bg-purple-100 rounded-2xl md:rounded-3xl flex items-center justify-center text-purple-600 text-xl md:text-3xl shadow-inner"><i class="fas fa-users-gear"></i></div><div><h2 class="text-lg md:text-2xl font-black text-slate-800 tracking-tight">Manajemen Akun SDM</h2><p class="text-[10px] md:text-sm text-slate-400 font-bold uppercase tracking-wider mt-1">Kontrol Akses Pendamping</p></div></div><button onclick="app.loadDataSDM()" class="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white transition-all shadow-sm"><i class="fas fa-sync-alt"></i></button></div>
-                        <div class="bg-purple-600 rounded-2xl md:rounded-[2.5rem] p-6 md:p-10 mb-6 md:mb-10 text-white shadow-2xl shadow-purple-200 relative overflow-hidden">
-                            <i class="fas fa-file-excel absolute -right-5 -bottom-5 text-[8rem] md:text-[12rem] opacity-10 transform -rotate-6"></i>
-                            <h4 class="text-[10px] md:text-sm font-black uppercase tracking-widest md:tracking-[0.2em] mb-2 md:mb-4 opacity-90 relative z-10">Mata Cerdas & Multi Format</h4>
-                            <p class="text-[10px] md:text-xs font-medium opacity-90 mb-6 max-w-xl leading-relaxed relative z-10">Kini mendukung Excel (.xlsx), Text (.txt), dan .csv. Sistem akan mencari Header Nama, NIP, Jabatan, dan Desa secara otomatis.</p>
-                            <div class="flex flex-col sm:flex-row gap-3 relative z-10">
-                                <button onclick="document.getElementById('file-sdm-csv').click()" class="w-full sm:w-auto bg-white text-purple-700 px-6 md:px-8 py-4 md:py-5 rounded-xl md:rounded-2xl font-black shadow-lg hover:bg-purple-50 transition-all uppercase text-[10px] md:text-xs tracking-widest"><i class="fas fa-upload mr-2 md:mr-3 text-sm md:text-lg"></i> UPLOAD BUKU 19</button>
-                                <button onclick="app.hapusSemuaSDM()" class="w-full sm:w-auto bg-rose-500 text-white px-6 md:px-8 py-4 md:py-5 rounded-xl md:rounded-2xl font-black shadow-lg hover:bg-rose-600 transition-all uppercase text-[10px] md:text-xs tracking-widest"><i class="fas fa-trash-alt mr-2 md:mr-3 text-sm md:text-lg"></i> KOSONGKAN SDM</button>
+                <!-- 10. DATABASE SDM -->
+                <div id="page-sdm-manajemen" class="page-section">
+                    <div class="bg-white rounded-[2.5rem] p-6 md:p-10 border border-slate-100 shadow-sm max-w-6xl mx-auto">
+                        <div class="flex items-center justify-between mb-8 border-b border-slate-50 pb-6"><div class="flex items-center gap-4"><div class="w-14 h-14 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-2xl shadow-inner"><i class="fas fa-users-gear"></i></div><div><h2 class="text-2xl font-black text-slate-800 tracking-tight">Database SDM (Akun)</h2><p class="text-sm text-slate-400 font-bold uppercase tracking-wider mt-1">Kontrol Akses Pendamping</p></div></div><button onclick="app.loadDataSDM()" class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white transition-all shadow-sm"><i class="fas fa-sync-alt"></i></button></div>
+                        
+                        <div class="bg-purple-50 border border-purple-100 rounded-2xl p-6 mb-8 text-slate-700">
+                            <h4 class="text-sm font-black uppercase tracking-[0.2em] mb-2 text-purple-800">Sinkronisasi File Buku 19</h4>
+                            <p class="text-xs font-medium mb-4">Sistem otomatis mendeteksi Header Nama, NIP, Jabatan, dan Desa dari file Excel. Username otomatis digenerate.</p>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <button onclick="document.getElementById('file-sdm-csv').click()" class="w-full sm:w-auto bg-purple-600 text-white px-6 py-3 rounded-xl font-bold shadow-md hover:bg-purple-700 transition-all uppercase text-xs tracking-widest"><i class="fas fa-upload mr-2"></i> UPLOAD BUKU 19</button>
+                                <button onclick="app.hapusSemuaSDM()" class="w-full sm:w-auto bg-rose-50 text-rose-600 px-6 py-3 rounded-xl font-bold shadow-sm hover:bg-rose-100 transition-all uppercase text-xs tracking-widest"><i class="fas fa-trash-alt mr-2"></i> KOSONGKAN SDM</button>
                             </div>
                             <input type="file" id="file-sdm-csv" class="hidden" accept=".csv, .txt, .xls, .xlsx" onchange="app.prosesUploadSDM(event)">
                         </div>
-                        <div class="table-mobile-wrapper"><table class="table-mobile w-full"><thead class="text-[9px] md:text-[10px] text-slate-500 uppercase tracking-widest bg-slate-50 border-b"><tr><th class="px-4 md:px-8 py-4 md:py-6">Nama Pendamping</th><th class="px-4 md:px-8 py-4 md:py-6">Username</th><th class="px-4 md:px-8 py-4 md:py-6">Desa Dampingan</th><th class="px-4 md:px-8 py-4 md:py-6 text-center">Aksi</th></tr></thead><tbody id="tbody-sdm-list"><tr><td colspan="4" class="text-center py-10 md:py-20 text-slate-300 font-bold text-[10px] md:text-xs">Data SDM kosong. Upload file atau tekan Refresh.</td></tr></tbody></table></div>
+                        <div class="overflow-x-auto rounded-xl border border-slate-100"><table class="w-full text-sm text-left"><thead class="text-xs text-slate-500 uppercase tracking-widest bg-slate-50 border-b"><tr><th class="px-6 py-4">Nama Pendamping</th><th class="px-6 py-4">Username</th><th class="px-6 py-4">Desa Dampingan</th><th class="px-6 py-4 text-center">Aksi</th></tr></thead><tbody id="tbody-sdm-list"><tr><td colspan="4" class="text-center py-10 text-slate-300 font-bold text-xs">Data SDM kosong. Upload file atau tekan Refresh.</td></tr></tbody></table></div>
                     </div>
                 </div>
 
-                <div id="page-tabel-firebase" class="page-section w-full">
-                    <div class="bg-white rounded-2xl md:rounded-[2.5rem] p-5 md:p-10 border shadow-sm w-full"><div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-10 border-b pb-4 md:pb-6 gap-3"><h3 class="text-lg md:text-2xl font-black text-slate-800 tracking-tight"><i class="fas fa-cloud-upload-alt text-blue-500 mr-2 md:mr-3"></i> Database Peta KPM</h3><button onclick="app.loadDataKPMFirebase()" class="w-full md:w-auto bg-blue-600 text-white px-5 md:px-6 py-3 rounded-xl md:rounded-2xl text-[10px] md:text-xs font-black uppercase tracking-widest shadow-lg shadow-blue-100">Refresh Data</button></div><div class="table-mobile-wrapper"><table class="table-mobile w-full"><thead class="bg-slate-50 border-b text-[9px] md:text-[10px] text-slate-400 uppercase tracking-widest font-black"><tr><th class="p-4 md:p-6">Nama KPM</th><th class="p-4 md:p-6">Koordinat</th><th class="p-4 md:p-6">Oleh SDM</th><th class="p-4 md:p-6 text-center">Aksi</th></tr></thead><tbody id="tbody-kpm-firebase" class="divide-y divide-slate-50"></tbody></table></div></div>
-                </div>
-
-                <div id="page-pengaturan" class="page-section w-full">
-                    <div class="bg-white rounded-2xl md:rounded-[2.5rem] p-5 md:p-10 border max-w-2xl shadow-sm w-full"><h3 class="text-lg md:text-2xl font-black text-slate-800 mb-6 md:mb-8 tracking-tight"><i class="fas fa-cog text-indigo-500 mr-2 md:mr-3"></i> Pengaturan Sistem</h3><button onclick="app.simpanAlert('Sistem HP & Aplikasi Dibersihkan!')" class="bg-amber-500 hover:bg-amber-600 text-white px-6 md:px-8 py-4 md:py-5 rounded-xl md:rounded-2xl font-black text-[10px] md:text-xs uppercase tracking-widest mb-6 md:mb-8 w-full shadow-xl shadow-amber-100 transition-all"><i class="fas fa-broom mr-2 text-sm md:text-lg"></i>Bersihkan Memori Cache</button><div class="border-t border-slate-100 pt-6 md:pt-8"><label class="block text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 md:mb-3 ml-1">Ganti Password Admin</label><input type="password" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl md:rounded-2xl p-4 md:p-5 font-black outline-none focus:border-indigo-500 mb-4 text-xs md:text-sm" placeholder="Ketik Password Baru..."><button onclick="app.simpanAlert('Password Admin Berhasil Diubah')" class="bg-indigo-600 text-white px-6 md:px-8 py-4 md:py-5 rounded-xl md:rounded-2xl font-black text-[10px] md:text-xs uppercase tracking-widest w-full shadow-lg transition-all">Update Password Master</button></div></div>
+                <div id="page-pengaturan" class="page-section">
+                    <div class="bg-white rounded-[1.5rem] p-6 shadow-sm border border-slate-100 max-w-3xl">
+                        <h3 class="text-lg font-bold text-slate-800 mb-6 border-b pb-3"><i class="fas fa-cog text-indigo-500 mr-2"></i> Pengaturan Sistem</h3>
+                        <div class="mb-8"><h4 class="font-bold text-slate-700 mb-2">Penyimpanan Lokal</h4><button type="button" onclick="app.simpanAlert('Cache Offline Dibersihkan!', null)" class="bg-amber-500 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md"><i class="fas fa-broom mr-2"></i> Bersihkan Cache Lokal</button></div>
+                        <div><h4 class="font-bold text-slate-700 mb-3 border-t pt-6">Ganti Password</h4><div class="space-y-3"><input type="password" placeholder="Password Baru" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:border-indigo-500"><button type="button" onclick="app.simpanAlert('Password Diubah!', null)" class="bg-indigo-600 text-white px-5 py-3 rounded-xl text-sm font-bold shadow-md">Simpan Password Baru</button></div></div>
+                    </div>
                 </div>
 
             </div>
         </main>
     </div>
 
+    <!-- FIREBASE JS v8 -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
     <script>
-        // INIT FIREBASE TERKUNCI (Jangan diubah agar database tetap nyambung ke Tapin)
+        // INIT FIREBASE TERKUNCI
         let db = null;
         try {
-            const firebaseConfig = { 
-                apiKey: "AIzaSyDfwKDVRlD6cNEHiUKPRTtdpdtViW1oSgA", authDomain: "pkh-tapin.firebaseapp.com", 
-                projectId: "pkh-tapin", storageBucket: "pkh-tapin.firebasestorage.app", 
-                messagingSenderId: "647888686405", appId: "1:647888686405:web:747a554d874a157411022c" 
-            };
+            const firebaseConfig = { apiKey: "AIzaSyDfwKDVRlD6cNEHiUKPRTtdpdtViW1oSgA", authDomain: "pkh-tapin.firebaseapp.com", projectId: "pkh-tapin", storageBucket: "pkh-tapin.firebasestorage.app", messagingSenderId: "647888686405", appId: "1:647888686405:web:747a554d874a157411022c" };
             if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
             db = firebase.firestore();
-        } catch (e) { console.error("Firebase offline", e); }
+        } catch (e) { Swal.fire('Error', 'Database Offline', 'error'); }
 
-        const dataMasterKPM = { 
-            "Tambarangan": ["Siti Aminah", "Norhayati", "Rusmini", "Karmila"], 
-            "Binuang": ["Hj. Maimunah", "Juleha", "Fatmawati"], 
-            "Bakarangan": ["Ibu Tati", "Rina S", "Yulianti"] 
+        const dataMasterKPM = {
+            "Tambarangan": ["Ibu Siti Aminah", "Norhayati", "Rusmini", "Karmila"],
+            "Binuang": ["Hj. Maimunah", "Juleha", "Fatmawati"],
+            "Bakarangan": ["Ibu Tati", "Rina S", "Yulianti"]
         };
         let absenDataGlobal = [];
 
@@ -458,7 +428,7 @@
                         
                         const allDesas = Object.keys(dataMasterKPM);
                         const selMap = document.getElementById('sel-desa'); const selP2k2 = document.getElementById('p2k2-desa'); const selFilterPeta = document.getElementById('filter-peta-desa');
-                        [selMap, selP2k2, selFilterPeta].forEach(el => { el.innerHTML = '<option value="">-- Pilih Desa --</option>'; allDesas.forEach(desa => { el.innerHTML += `<option value="${desa}">${desa}</option>`; }); });
+                        [selMap, selP2k2, selFilterPeta].forEach(el => { if(el) { el.innerHTML = '<option value="">-- Pilih Desa --</option>'; allDesas.forEach(desa => { el.innerHTML += `<option value="${desa}">${desa}</option>`; }); } });
 
                         document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-container').classList.remove('hidden'); app.loadDashboardStats();
                     } else if(sessData.role === 'sdm') {
@@ -472,7 +442,7 @@
                         if(d.desa) {
                             app.userDesa = d.desa; const desaArray = d.desa.split(/[/,]/).map(x => x.trim());
                             const selMap = document.getElementById('sel-desa'); const selP2k2 = document.getElementById('p2k2-desa'); const selFilterPeta = document.getElementById('filter-peta-desa');
-                            [selMap, selP2k2, selFilterPeta].forEach(el => { el.innerHTML = '<option value="">-- Pilih Desa Tugas --</option>'; desaArray.forEach(desa => { el.innerHTML += `<option value="${desa}">${desa}</option>`; }); });
+                            [selMap, selP2k2, selFilterPeta].forEach(el => { if(el) { el.innerHTML = '<option value="">-- Pilih Desa Tugas --</option>'; desaArray.forEach(desa => { el.innerHTML += `<option value="${desa}">${desa}</option>`; }); } });
                         }
                         document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-container').classList.remove('hidden'); app.loadDashboardStats();
                     }
@@ -496,17 +466,16 @@
                         
                         const allDesas = Object.keys(dataMasterKPM);
                         const selMap = document.getElementById('sel-desa'); const selP2k2 = document.getElementById('p2k2-desa'); const selFilterPeta = document.getElementById('filter-peta-desa');
-                        [selMap, selP2k2, selFilterPeta].forEach(el => { el.innerHTML = '<option value="">-- Pilih Desa --</option>'; allDesas.forEach(desa => { el.innerHTML += `<option value="${desa}">${desa}</option>`; }); });
+                        [selMap, selP2k2, selFilterPeta].forEach(el => { if(el) { el.innerHTML = '<option value="">-- Pilih Desa --</option>'; allDesas.forEach(desa => { el.innerHTML += `<option value="${desa}">${desa}</option>`; }); } });
 
                         localStorage.setItem('pkh_session', JSON.stringify({role: 'admin'}));
-
                         Swal.fire({icon:'success',title:'Login Admin Sukses',timer:1000,showConfirmButton:false}).then(() => { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-container').classList.remove('hidden'); app.loadDashboardStats(); }); return;
                     }
 
                     if(!db) return Swal.fire('Koneksi Terputus', 'Gagal menyambung ke server.', 'error');
 
                     db.collection("users_sdm").where("username", "==", u).where("password", "==", p).get().then(snap => {
-                        if(snap.empty) return Swal.fire('Gagal', 'Username / Password salah. (Atau Database SDM masih kosong, login sebagai admin dulu)', 'error');
+                        if(snap.empty) return Swal.fire('Gagal', 'Username / Password salah.', 'error');
                         const d = snap.docs[0].data(); 
                         app.currentUser = "SDM: " + d.nama; app.isAdmin = false; 
                         
@@ -518,11 +487,10 @@
                         if(d.desa) {
                             app.userDesa = d.desa; const desaArray = d.desa.split(/[/,]/).map(x => x.trim());
                             const selMap = document.getElementById('sel-desa'); const selP2k2 = document.getElementById('p2k2-desa'); const selFilterPeta = document.getElementById('filter-peta-desa');
-                            [selMap, selP2k2, selFilterPeta].forEach(el => { el.innerHTML = '<option value="">-- Pilih Desa Tugas --</option>'; desaArray.forEach(desa => { el.innerHTML += `<option value="${desa}">${desa}</option>`; }); });
+                            [selMap, selP2k2, selFilterPeta].forEach(el => { if(el) { el.innerHTML = '<option value="">-- Pilih Desa Tugas --</option>'; desaArray.forEach(desa => { el.innerHTML += `<option value="${desa}">${desa}</option>`; }); } });
                         }
 
                         localStorage.setItem('pkh_session', JSON.stringify({role: 'sdm', data: d}));
-
                         Swal.fire({icon:'success',title:'Login SDM Berhasil',timer:1000,showConfirmButton:false}).then(() => { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-container').classList.remove('hidden'); app.loadDashboardStats(); });
                     }).catch(handleFirebaseError);
                 }, 500); 
@@ -558,6 +526,28 @@
                 Swal.fire({title: 'Daftar KPM Tidak Hadir', html: html, width: '90%', confirmButtonText: 'Tutup Tabel', customClass: {confirmButton:'bg-slate-800 rounded-xl px-5 py-3'}});
             },
 
+            // ================= UNIVERSAL PARSER (Membaca file di HP tanpa ngehang) =================
+            universalFileParser: (e, title, callback) => {
+                const f = e.target.files[0]; if(!f) return;
+                Swal.fire({title: title, text: 'Membaca format file...', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+                const reader = new FileReader();
+                reader.onload = async (ev) => {
+                    try {
+                        const data = new Uint8Array(ev.target.result);
+                        const workbook = XLSX.read(data, {type: 'array'});
+                        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                        const jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1, defval: "", raw: false}); 
+                        if(jsonData.length < 2) throw new Error("Data Kosong");
+                        await callback(jsonData);
+                        e.target.value = '';
+                    } catch(err) { 
+                        Swal.fire('Error', 'Gagal membaca format. Pastikan file Excel/CSV/TXT yang diupload benar dan tidak kosong.', 'error'); 
+                    }
+                };
+                reader.readAsArrayBuffer(f);
+            },
+
+            // ================= FUNGSI PROFIL & MENU =================
             loadProfilSDM: () => {
                 if(!db || !app.currentUser) return;
                 Swal.fire({title: 'Memuat CV...', didOpen: () => Swal.showLoading()});
@@ -599,16 +589,15 @@
                             <div class="col-span-2"><label class="text-[10px] font-black text-slate-500">TEMPAT, TANGGAL LAHIR</label><input id="es-ttl" class="w-full border-2 p-2 rounded-xl text-xs font-bold" value="${d.ttl||''}"></div>
                             <div class="col-span-2"><label class="text-[10px] font-black text-slate-500">ALAMAT</label><input id="es-almt" class="w-full border-2 p-2 rounded-xl text-xs font-bold" value="${d.alamat||''}"></div>
                             <div><label class="text-[10px] font-black text-slate-500">KECAMATAN</label><input id="es-kec" class="w-full border-2 p-2 rounded-xl text-xs font-bold" value="${d.kecamatan||''}"></div>
-                            <div><label class="text-[10px] font-black text-slate-500">DESA DAMPINGAN</label><input id="es-des" class="w-full border-2 p-2 rounded-xl text-xs font-bold" value="${d.desa||''}"></div>
                             <div><label class="text-[10px] font-black text-slate-500">JABATAN</label><input id="es-jab" class="w-full border-2 p-2 rounded-xl text-xs font-bold" value="${d.jabatan||''}"></div>
-                            <div><label class="text-[10px] font-black text-slate-500">PENDIDIKAN</label><input id="es-pend" class="w-full border-2 p-2 rounded-xl text-xs font-bold" value="${d.pendidikan||''}"></div>
+                            <div class="col-span-2"><label class="text-[10px] font-black text-slate-500">PENDIDIKAN</label><input id="es-pend" class="w-full border-2 p-2 rounded-xl text-xs font-bold" value="${d.pendidikan||''}"></div>
                             <div><label class="text-[10px] font-black text-slate-500">MINAT</label><input id="es-min" class="w-full border-2 p-2 rounded-xl text-xs font-bold" value="${d.minat||''}"></div>
                             <div><label class="text-[10px] font-black text-slate-500">BAKAT</label><input id="es-bak" class="w-full border-2 p-2 rounded-xl text-xs font-bold" value="${d.bakat||''}"></div>
                             <div class="col-span-2"><label class="text-[10px] font-black text-slate-500">HOBI</label><input id="es-hob" class="w-full border-2 p-2 rounded-xl text-xs font-bold" value="${d.hobi||''}"></div>
                         </div>
                     `;
                     Swal.fire({title: 'Edit CV SDM', html: htmlForm, width:'90%', max_width: '450px', preConfirm: () => {
-                        return { nama: document.getElementById('es-n').value, nip: document.getElementById('es-nip').value, nik: document.getElementById('es-nik').value, ttl: document.getElementById('es-ttl').value, alamat: document.getElementById('es-almt').value, kecamatan: document.getElementById('es-kec').value, desa: document.getElementById('es-des').value, jabatan: document.getElementById('es-jab').value, pendidikan: document.getElementById('es-pend').value, minat: document.getElementById('es-min').value, bakat: document.getElementById('es-bak').value, hobi: document.getElementById('es-hob').value };
+                        return { nama: document.getElementById('es-n').value, nip: document.getElementById('es-nip').value, nik: document.getElementById('es-nik').value, ttl: document.getElementById('es-ttl').value, alamat: document.getElementById('es-almt').value, kecamatan: document.getElementById('es-kec').value, jabatan: document.getElementById('es-jab').value, pendidikan: document.getElementById('es-pend').value, minat: document.getElementById('es-min').value, bakat: document.getElementById('es-bak').value, hobi: document.getElementById('es-hob').value };
                     }}).then(res => { if(res.isConfirmed) { db.collection("users_sdm").doc(app.currentSDMId).update(res.value).then(() => { Swal.fire('Tersimpan', '', 'success'); app.loadProfilSDM(); }).catch(handleFirebaseError); } });
                 });
             },
@@ -638,6 +627,7 @@
                 if(!val) return Swal.fire('Peringatan', 'Masukkan NIK Pengurus!', 'warning');
                 Swal.fire({title: 'Menarik Database...', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
                 if(!db) { setTimeout(() => { Swal.close(); document.getElementById('cv-kpm').classList.remove('hidden'); }, 800); return; }
+                
                 db.collection("data_pengurus").doc(val).get().then(doc => {
                     if(doc.exists) { app.checkAndSyncKPM(doc.data()); } else {
                         db.collection("master_kpm").doc(val).get().then(mDoc => {
@@ -808,12 +798,13 @@
                 }).catch(handleFirebaseError); 
             },
 
+            // ================= DATABASE PENGURUS KPM =================
             loadMasterPengurus: (searchQuery = '') => {
                 if(!db) return;
-                const tb = document.getElementById('tbody-master-pengurus'); tb.innerHTML = '<tr><td colspan="7" class="text-center py-10 font-bold text-slate-400 text-xs">Memuat Data Pengurus...</td></tr>';
+                const tb = document.getElementById('tbody-master-pengurus'); tb.innerHTML = '<tr><td colspan="7" class="text-center py-10 font-bold text-slate-400 text-xs">Memuat Database KPM...</td></tr>';
                 db.collection("data_pengurus").limit(300).get().then(snap => { 
                     tb.innerHTML = '';
-                    if(snap.empty) { tb.innerHTML = '<tr><td colspan="7" class="text-center py-10 font-bold text-slate-400 text-xs">Kosong</td></tr>'; return; }
+                    if(snap.empty) { tb.innerHTML = '<tr><td colspan="7" class="text-center py-10 font-bold text-slate-400 text-xs">Database KPM Masih Kosong</td></tr>'; return; }
                     snap.forEach(doc => {
                         const d = doc.data();
                         if(searchQuery && !d.nama.toLowerCase().includes(searchQuery.toLowerCase()) && !d.nik.includes(searchQuery)) return;
@@ -952,7 +943,7 @@
             },
             hapusP2K2: (btnEl) => { const id = btnEl.getAttribute('data-id'); Swal.fire({title: 'Hapus Kegiatan?', icon: 'warning', showCancelButton: true}).then(r => { if(r.isConfirmed) db.collection("kegiatan_p2k2").doc(id).delete().then(() => { app.loadP2K2(); app.loadDashboardStats(); }).catch(handleFirebaseError); }); },
 
-            // ================= MESIN UPLOAD ANTI BLANK (ASYNC CHUNKING BATCH) =================
+            // ================= UPLOAD MENGGUNAKAN TRUK KARGO ASYNC (ANTI MACET) =================
             universalFileParser: (e, title, callback) => {
                 const f = e.target.files[0]; if(!f) return;
                 Swal.fire({title: title, html: 'Membaca file Excel...', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
@@ -983,7 +974,7 @@
                     alamat: ['alamat', 'domisili', 'jalan', 'rt'], kecamatan: ['kecamatan', 'kec'], 
                     desa: ['desa', 'kelurahan', 'wilayah'], pendapatan: ['pendapatan', 'omset', 'penghasilan'], 
                     usaha: ['usaha', 'bisnis'], hobi: ['hobi', 'hobbi'], kebisaan: ['bisa', 'kebisaan', 'skill', 'keterampilan'], 
-                    pekerjaan: ['kerja', 'pekerjaan'], no_hp: ['hp', 'telepon', 'whatsapp', 'wa', 'telp'], 
+                    pekerjaan: ['kerja', 'pekerjaan'], no_hp: ['hp', 'telepon', 'whatsapp', 'wa', 'telp', 'no hp'], 
                     ket_pengurus: ['ket pengurus', 'keterangan pengurus', 'keterangan'], kohor: ['kohor', 'tahun kepesertaan'],
                     ttl: ['ttl', 'tempat lahir', 'tanggal lahir'], nominal: ['nominal', 'uang', 'rp', 'jumlah'], 
                     status: ['status', 'aktif', 'graduasi'], masa: ['masa', 'kepesertaan', 'lama'], 
@@ -999,7 +990,7 @@
                     for(let i=0; i<Math.min(20, lines.length); i++) { if(!lines[i]) continue; let str = lines[i].join('').toLowerCase(); if((str.includes('nama') || str.includes('pengurus')) && (str.includes('nik') || str.includes('kk'))) { hIdx = i; break; } }
                     const headers = lines[hIdx].map(h => String(h).trim()); 
                     
-                    Swal.fire({title: 'Mengunggah ke Database...', html: 'Mengamankan koneksi server...<br><br>Terunggah: <b class="text-indigo-600 text-2xl">0</b> baris', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+                    Swal.fire({title: 'Database KPM (Pengurus)...', html: 'Mengunggah: <b class="text-indigo-600 text-2xl">0</b> baris', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
 
                     let validData = [];
                     for(let i = hIdx + 1; i < lines.length; i++) {
@@ -1017,42 +1008,43 @@
                         }
                     }
 
-                    if(validData.length === 0) return Swal.fire('Gagal', 'Sistem tidak mendeteksi kolom "NIK" dan "Nama" di file Excel Anda.', 'error');
+                    if(validData.length === 0) return Swal.fire('Gagal', 'Sistem tidak mendeteksi kolom "NIK" dan "Nama" di file.', 'error');
 
                     let successCount = 0;
-                    const chunkSize = 100; // PENGAMANAN SUPER: Diperkecil jadi 100 baris per batch agar HP dan Firebase tidak hang.
+                    let currentIndex = 0;
+                    const chunkSize = 250; // Aman untuk Firebase tanpa Timeout
 
-                    for (let i = 0; i < validData.length; i += chunkSize) {
-                        const chunk = validData.slice(i, i + chunkSize);
+                    const processNextChunk = async () => {
+                        if (currentIndex >= validData.length) {
+                            app.loadMasterPengurus();
+                            return Swal.fire('Sukses!', `Total Data Pengurus: ${successCount} Baris masuk ke Database.`, 'success');
+                        }
+
                         let currentBatch = db.batch();
-                        
-                        for (let j = 0; j < chunk.length; j++) {
-                            const objData = chunk[j];
+                        let chunkEnd = Math.min(currentIndex + chunkSize, validData.length);
+
+                        for (let j = currentIndex; j < chunkEnd; j++) {
+                            const objData = validData[j];
                             let docRef = db.collection("data_pengurus").doc(objData.nik);
                             currentBatch.set(docRef, objData);
                         }
 
                         try { 
-                            await currentBatch.commit(); 
-                            successCount += chunk.length;
+                            await currentBatch.commit(); // HAPUS TIMEOUT, BIARKAN JALAN NATURAL
+                            successCount += (chunkEnd - currentIndex);
+                            currentIndex = chunkEnd;
+
                             const b = Swal.getHtmlContainer()?.querySelector('b');
                             if(b) b.textContent = successCount;
                             
-                            // Jeda napas yang stabil untuk browser & firebase
-                            await new Promise(resolve => setTimeout(resolve, 1000));
+                            setTimeout(processNextChunk, 100); // Istirahat 100ms
                         } catch(err) { 
                             console.error(err);
-                            if (err.message && (err.message.includes('quota') || err.message.includes('resource-exhausted') || err.message.includes('Quota exceeded'))) {
-                                Swal.fire('Batas Harian Penuh!', `Upload terhenti di ${successCount} baris karena batas harian Firebase gratis sudah habis. Lanjutkan sisa datanya besok!`, 'warning');
-                                return;
-                            } else {
-                                return handleFirebaseError(err); 
-                            }
+                            handleFirebaseError(err);
                         }
-                    }
+                    };
 
-                    Swal.fire('Sukses!', `${successCount} Data Pengurus berhasil terunggah ke Firebase.`, 'success'); 
-                    app.loadMasterPengurus();
+                    processNextChunk();
                 });
             },
             
@@ -1063,7 +1055,7 @@
                     const headers = lines[hIdx].map(h => String(h).trim()); 
                     const tbody = document.getElementById('tbody-master-sync'); tbody.innerHTML = '';
                     
-                    Swal.fire({title: 'Sinkronisasi Database...', html: 'Mengamankan koneksi server...<br><br>Terunggah: <b class="text-indigo-600 text-2xl">0</b> baris', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+                    Swal.fire({title: 'Sinkronisasi 70k...', html: 'Mengunggah: <b class="text-indigo-600 text-2xl">0</b> baris', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
 
                     let validData = [];
                     for(let i = hIdx + 1; i < lines.length; i++) {
@@ -1083,43 +1075,43 @@
                     if(validData.length === 0) return Swal.fire('Gagal', 'Sistem tidak mendeteksi kolom "NIK" dan "Nama" di file Excel Anda.', 'error');
 
                     let successCount = 0;
-                    const chunkSize = 100; // PENGAMANAN SUPER: 100 baris per antrean
+                    let currentIndex = 0;
+                    const chunkSize = 250; 
 
-                    for (let i = 0; i < validData.length; i += chunkSize) {
-                        const chunk = validData.slice(i, i + chunkSize);
+                    const processNextChunk = async () => {
+                        if (currentIndex >= validData.length) {
+                            return Swal.fire('Sinkronisasi Sukses!', `Total Data Terunggah: ${successCount} Baris.`, 'success');
+                        }
+
                         let currentBatch = db.batch();
-                        
-                        for (let j = 0; j < chunk.length; j++) {
-                            const kpmObj = chunk[j];
+                        let chunkEnd = Math.min(currentIndex + chunkSize, validData.length);
+
+                        for (let j = currentIndex; j < chunkEnd; j++) {
+                            const kpmObj = validData[j];
                             let docRef = db.collection("master_kpm").doc(kpmObj.nik);
                             currentBatch.set(docRef, kpmObj);
 
-                            // Update UI table (only first 20 for performance)
-                            if(successCount + j < 20) { 
+                            if(successCount + (j - currentIndex) < 20) { 
                                 tbody.innerHTML += `<tr class="bg-white border-b"><td class="p-4 md:p-6 font-black text-slate-800 uppercase text-[10px] md:text-xs">${kpmObj.nama}</td><td class="p-4 md:p-6 font-mono text-[9px] md:text-xs font-bold text-indigo-600">${kpmObj.nik}</td><td class="p-4 md:p-6 font-mono text-[9px] md:text-xs font-bold text-slate-600">${kpmObj.no_kk||'-'}</td><td class="p-4 md:p-6 text-center"><span class="bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-full text-[8px] md:text-[10px] font-black uppercase tracking-widest">Tersinkron</span></td></tr>`; 
                             }
                         }
 
                         try { 
                             await currentBatch.commit(); 
-                            successCount += chunk.length;
+                            successCount += (chunkEnd - currentIndex);
+                            currentIndex = chunkEnd;
+
                             const b = Swal.getHtmlContainer()?.querySelector('b');
                             if(b) b.textContent = successCount;
                             
-                            // Jeda napas yang stabil untuk browser & firebase
-                            await new Promise(resolve => setTimeout(resolve, 1000));
+                            setTimeout(processNextChunk, 100); // Istirahat 100ms
                         } catch(err) { 
                             console.error(err);
-                            if (err.message && (err.message.includes('quota') || err.message.includes('resource-exhausted') || err.message.includes('Quota exceeded'))) {
-                                Swal.fire('Batas Harian Penuh!', `Upload terhenti di ${successCount} baris karena batas harian Firebase gratis sudah habis. Lanjutkan sisa datanya besok!`, 'warning');
-                                return;
-                            } else {
-                                return handleFirebaseError(err); 
-                            }
+                            handleFirebaseError(err);
                         }
-                    }
+                    };
 
-                    Swal.fire('Sinkronisasi Sukses!', `Total Data Terunggah: ${successCount} Baris.`, 'success');
+                    processNextChunk();
                 });
             },
 
@@ -1139,19 +1131,25 @@
                     } 
                     
                     const usernames = Object.keys(grps);
-                    if(usernames.length === 0) return Swal.fire('Gagal', 'Tidak menemukan kolom "Nama" dan "Desa" di Excel Bapak.', 'error');
+                    if(usernames.length === 0) return Swal.fire('Gagal', 'Tidak menemukan kolom "Nama" dan "Desa" di Excel.', 'error');
 
-                    Swal.fire({title: 'Membuat Akun SDM...', html: 'Mengamankan koneksi server...<br><br>Terbuat: <b class="text-indigo-600 text-2xl">0</b> akun', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+                    Swal.fire({title: 'Database SDM (Akun)...', html: 'Terbuat: <b class="text-indigo-600 text-2xl">0</b> akun', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
 
-                    let successCount = 0;
-                    const chunkSize = 100;
+                    let count = 0;
+                    let currentIndex = 0;
+                    const chunkSize = 250;
 
-                    for (let i = 0; i < usernames.length; i += chunkSize) {
-                        const chunk = usernames.slice(i, i + chunkSize);
+                    const processNextChunk = async () => {
+                        if (currentIndex >= usernames.length) {
+                            app.loadDataSDM();
+                            return Swal.fire('Sukses Mata Cerdas!', `${count} Akun SDM berhasil dibuat ke Database!`, 'success');
+                        }
+
                         let currentBatch = db.batch();
-                        
-                        for (let j = 0; j < chunk.length; j++) {
-                            let nm = chunk[j];
+                        let chunkEnd = Math.min(currentIndex + chunkSize, usernames.length);
+
+                        for (let j = currentIndex; j < chunkEnd; j++) {
+                            let nm = usernames[j];
                             const usr = generateUsernameCerdes(nm); const desaStr = Array.from(grps[nm].desas).join(' / '); const sData = grps[nm].data;
                             let docRef = db.collection("users_sdm").doc(usr);
                             currentBatch.set(docRef, { nama: nm, username: usr, password: "12345", desa: desaStr, role: "SDM", nip: sData.nip||'', nik: sData.nik||'', ttl: sData.ttl||'', alamat: sData.alamat||'', kecamatan: sData.kecamatan||'', minat: sData.minat||'', bakat: sData.bakat||'', hobi: sData.hobi||'', jabatan: sData.jabatan||'', pendidikan: sData.pendidikan||'' }); 
@@ -1159,25 +1157,20 @@
 
                         try { 
                             await currentBatch.commit(); 
-                            successCount += chunk.length;
+                            count += (chunkEnd - currentIndex);
+                            currentIndex = chunkEnd;
+
                             const b = Swal.getHtmlContainer()?.querySelector('b');
-                            if(b) b.textContent = successCount;
+                            if(b) b.textContent = count;
                             
-                            // Jeda napas yang stabil untuk browser & firebase
-                            await new Promise(resolve => setTimeout(resolve, 1000));
+                            setTimeout(processNextChunk, 100);
                         } catch(err) { 
                             console.error(err);
-                            if (err.message && (err.message.includes('quota') || err.message.includes('resource-exhausted') || err.message.includes('Quota exceeded'))) {
-                                Swal.fire('Batas Harian Penuh!', `Upload terhenti di ${successCount} akun karena batas harian Firebase gratis sudah habis. Lanjutkan sisa datanya besok!`, 'warning');
-                                return;
-                            } else {
-                                return handleFirebaseError(err); 
-                            }
+                            handleFirebaseError(err);
                         }
-                    }
+                    };
 
-                    Swal.fire('Sukses Mata Cerdas!', `${successCount} Akun SDM berhasil dibuat ke Database!`, 'success'); 
-                    app.loadDataSDM(); 
+                    processNextChunk();
                 });
             },
             
@@ -1200,6 +1193,7 @@
                 if(!db) return; const t = document.getElementById('tbody-sdm-list'); t.innerHTML = '<tr><td colspan="4" class="text-center py-10 md:py-20 font-black text-purple-400 text-xs uppercase tracking-widest">Menarik Database...</td></tr>'; 
                 db.collection("users_sdm").get().then(snap => { 
                     t.innerHTML = ''; let ds = 0; 
+                    if(snap.empty) { t.innerHTML = '<tr><td colspan="4" class="text-center py-10 text-slate-300 font-bold text-[10px] md:text-xs">Database SDM Kosong.</td></tr>'; return; }
                     snap.forEach(doc => { 
                         const d = doc.data(); ds++; 
                         t.innerHTML += `<tr class="bg-white border-b hover:bg-slate-50 transition-all"><td class="px-4 md:px-8 py-4 md:py-6 font-black text-slate-800 uppercase text-[10px] md:text-xs">${d.nama}</td><td class="px-4 md:px-8 py-4 md:py-6 font-mono text-[10px] md:text-xs text-indigo-600 font-bold">${d.username}</td><td class="px-4 md:px-8 py-4 md:py-6 text-[9px] md:text-[10px] font-black text-slate-500 max-w-[150px] md:max-w-xs truncate uppercase tracking-widest" title="${d.desa}">${d.desa}</td><td class="px-4 md:px-8 py-4 md:py-6 text-center"><button data-id="${doc.id}" onclick="app.editAdminSDM(this)" class="text-blue-400 hover:text-blue-600 bg-blue-50 w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl transition-all mr-2"><i class="fas fa-pen"></i></button><button data-id="${doc.id}" onclick="app.hapusSDM(this)" class="text-rose-400 hover:text-rose-600 bg-rose-50 w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl transition-all"><i class="fas fa-trash-alt"></i></button></td></tr>`; 
@@ -1245,7 +1239,6 @@
             hapusDataKPM: (btnEl) => { const id = btnEl.getAttribute('data-id'); db.collection("data_kpm").doc(id).delete().then(() => app.loadDataKPMFirebase()).catch(handleFirebaseError); }
         };
 
-        // Otomatis cek apakah user sudah login sebelumnya setiap kali web direfresh
         window.onload = () => {
             if(app && app.checkSession) {
                 app.checkSession();
