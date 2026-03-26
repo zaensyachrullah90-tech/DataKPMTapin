@@ -45,6 +45,7 @@
                 <div><label class="text-[10px] font-black text-slate-400 uppercase ml-2">Username / Email</label><input type="text" id="login-user" class="w-full rounded-2xl border-slate-200 bg-slate-50 border-2 focus:border-indigo-500 py-3 md:py-4 px-5 outline-none font-bold text-sm transition-all" placeholder="Ketik ID..."></div>
                 <div><label class="text-[10px] font-black text-slate-400 uppercase ml-2">Password</label><input type="password" id="login-pass" class="w-full rounded-2xl border-slate-200 bg-slate-50 border-2 focus:border-indigo-500 py-3 md:py-4 px-5 outline-none font-bold text-sm transition-all" placeholder="••••••••" value="12345"></div>
                 <button onclick="app.login()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 rounded-2xl shadow-xl shadow-indigo-200 transition-all active:scale-95 mt-4 tracking-widest text-xs md:text-sm"><i class="fas fa-sign-in-alt mr-2"></i> MASUK APLIKASI</button>
+                <p class="text-[9px] font-bold text-slate-400 mt-4 text-center">*Gunakan ID: <span class="text-indigo-500">admin</span> / <span class="text-indigo-500">12345</span> jika Database SDM masih kosong.</p>
             </div>
         </div>
     </div>
@@ -124,8 +125,8 @@
                     </div>
                     <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl md:rounded-[2.5rem] p-6 md:p-10 text-white shadow-xl relative overflow-hidden">
                         <i class="fas fa-shield-alt absolute -right-5 -bottom-5 md:-right-10 md:-bottom-10 text-[10rem] md:text-[15rem] opacity-10"></i>
-                        <h4 class="text-xl md:text-2xl font-black mb-2 md:mb-3 relative z-10">Pembaruan V6: CV & Master KPM 100% Lengkap!</h4>
-                        <p class="text-indigo-100 text-xs md:text-sm font-medium relative z-10 leading-relaxed max-w-3xl opacity-90">Sistem telah diperluas untuk mencakup Pendapatan, Aset, Minat, Bakat, Kebisaan (Skill), dan Riwayat Pendidikan. Terdapat menu Profil SDM (CV Keren) baru. Semua fitur Peta dan Export PDF tetap terkunci aman!</p>
+                        <h4 class="text-xl md:text-2xl font-black mb-2 md:mb-3 relative z-10">Sistem Super Stabil Aktif!</h4>
+                        <p class="text-indigo-100 text-xs md:text-sm font-medium relative z-10 leading-relaxed max-w-3xl opacity-90">Bugs layar macet dan gagal unggah telah diperbaiki dengan penambahan sistem Batching Kargo Firestore. Semua data master (70k dan KPM) kini bisa terunggah tanpa membebani memori HP Bapak.</p>
                     </div>
                 </div>
 
@@ -170,7 +171,7 @@
                     </div>
                 </div>
 
-                <!-- 2. PROFIL KPM (DUMMY READY & BIDANG DIPERLUAS) -->
+                <!-- 2. PROFIL KPM -->
                 <div id="page-profil-kpm" class="page-section w-full">
                     <div class="bg-white rounded-2xl md:rounded-[2rem] shadow-sm p-4 md:p-6 mb-6 border border-slate-100 flex flex-col md:flex-row gap-3 items-center w-full">
                         <div class="relative w-full">
@@ -396,14 +397,11 @@
         </main>
     </div>
 
-    <!-- FIREBASE SDK (JANGAN DIUBAH) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
     <script>
-        // -------------------------------------------------------------
-        // 1. Inisialisasi Firebase & Variabel Global
-        // -------------------------------------------------------------
+        // INIT FIREBASE TERKUNCI (Jangan diubah agar database tetap nyambung ke Tapin)
         let db = null;
         try {
             const firebaseConfig = { 
@@ -422,12 +420,18 @@
         };
         let absenDataGlobal = [];
 
+        // Pelindung Firebase (Mencegah Layar Blank jika Aturan Terkunci)
         function handleFirebaseError(err) {
             console.error(err);
             if (err.message && err.message.includes("Missing or insufficient permissions")) {
-                Swal.fire('Akses Ditolak!', 'Sistem Firebase memblokir penyimpanan. Pastikan aturan (Rules) disetel ke: allow read, write: if true;', 'error');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'AKSES DATABASE DITOLAK',
+                    html: `Sistem mendeteksi Database Firebase Bapak <b>masih terkunci</b>.<br><br>Mohon segera ubah bagian Rules di Firestore Bapak menjadi:<br><b class="text-rose-600 block mt-2 text-sm bg-rose-50 p-2 rounded">allow read, write: if true;</b>`,
+                    confirmButtonText: 'Saya Mengerti'
+                });
             } else {
-                Swal.fire('Gagal', err.message || 'Terjadi kesalahan sistem.', 'error');
+                Swal.fire('Gagal Menyimpan', err.message || 'Terjadi kesalahan sistem/jaringan.', 'error');
             }
         }
 
@@ -437,50 +441,52 @@
             return (k.length === 1) ? k[0] : (k.length === 2) ? k[0] + k[1].charAt(0) : k[0] + k[1] + k[2].charAt(0);
         }
 
-        // -------------------------------------------------------------
-        // 3. Obyek Utama Aplikasi (Terkunci Aman Untuk TrebEdit)
-        // -------------------------------------------------------------
         window.app = {
             mapObj: null, currentUser: null, isAdmin: false, currentKPMNik: null, userDesa: '', currentSDMId: null,
 
             login: () => {
-                const u = document.getElementById('login-user').value.trim(); const p = document.getElementById('login-pass').value.trim();
+                const u = document.getElementById('login-user').value.trim(); 
+                const p = document.getElementById('login-pass').value.trim();
                 if(!u) return Swal.fire('Peringatan', 'Username tidak boleh kosong', 'warning');
-                Swal.fire({title: 'Autentikasi...', didOpen:()=>Swal.showLoading()});
                 
-                if(u.toLowerCase() === 'admin') {
-                    app.currentUser = "Administrator Kabupaten"; app.isAdmin = true; 
-                    document.getElementById('sidebar-role').innerText = "Kontrol Kabupaten";
-                    document.getElementById('header-user-name').innerText = "Admin Kabupaten"; document.getElementById('header-user-role').innerText = "Akses Penuh";
-                    document.getElementById('header-user-avatar').src = "https://ui-avatars.com/api/?name=Admin+Kab&background=ebf4ff&color=4f46e5";
-                    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block'); document.querySelectorAll('.admin-only.hidden').forEach(el => el.classList.remove('hidden')); 
-                    
-                    const allDesas = Object.keys(dataMasterKPM);
-                    const selMap = document.getElementById('sel-desa'); const selP2k2 = document.getElementById('p2k2-desa'); const selFilterPeta = document.getElementById('filter-peta-desa');
-                    [selMap, selP2k2, selFilterPeta].forEach(el => { el.innerHTML = '<option value="">-- Pilih Desa --</option>'; allDesas.forEach(desa => { el.innerHTML += `<option value="${desa}">${desa}</option>`; }); });
-
-                    Swal.fire({icon:'success',title:'Login Admin Sukses',timer:800,showConfirmButton:false}).then(() => { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-container').classList.remove('hidden'); app.loadDashboardStats(); }); return;
-                }
-
-                if(!db) return Swal.fire('Koneksi Terputus', 'Gagal menyambung ke server.', 'error');
-
-                db.collection("users_sdm").where("username", "==", u).where("password", "==", p).get().then(snap => {
-                    if(snap.empty) return Swal.fire('Gagal', 'Username atau Password salah.', 'error');
-                    const d = snap.docs[0].data(); 
-                    app.currentUser = "SDM: " + d.nama; app.isAdmin = false; 
-                    
-                    document.getElementById('sidebar-role').innerText = "Pendamping Lapangan";
-                    document.getElementById('header-user-name').innerText = d.nama; document.getElementById('header-user-role').innerText = "Pendamping Lapangan";
-                    document.getElementById('header-user-avatar').src = `https://ui-avatars.com/api/?name=${d.nama.replace(/\s+/g, '+')}&background=ebf4ff&color=4f46e5`;
-                    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
-                    
-                    if(d.desa) {
-                        app.userDesa = d.desa; const desaArray = d.desa.split(/[/,]/).map(x => x.trim());
+                Swal.fire({title: 'Autentikasi...', allowOutsideClick: false, didOpen:()=>Swal.showLoading()});
+                
+                // MENGHINDARI BUG LAYAR MACET SAAT LOGIN
+                setTimeout(() => {
+                    if(u.toLowerCase() === 'admin') {
+                        app.currentUser = "Administrator Kabupaten"; app.isAdmin = true; 
+                        document.getElementById('sidebar-role').innerText = "Kontrol Kabupaten";
+                        document.getElementById('header-user-name').innerText = "Admin Kabupaten"; document.getElementById('header-user-role').innerText = "Akses Penuh";
+                        document.getElementById('header-user-avatar').src = "https://ui-avatars.com/api/?name=Admin+Kab&background=ebf4ff&color=4f46e5";
+                        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block'); document.querySelectorAll('.admin-only.hidden').forEach(el => el.classList.remove('hidden')); 
+                        
+                        const allDesas = Object.keys(dataMasterKPM);
                         const selMap = document.getElementById('sel-desa'); const selP2k2 = document.getElementById('p2k2-desa'); const selFilterPeta = document.getElementById('filter-peta-desa');
-                        [selMap, selP2k2, selFilterPeta].forEach(el => { el.innerHTML = '<option value="">-- Pilih Desa Tugas --</option>'; desaArray.forEach(desa => { el.innerHTML += `<option value="${desa}">${desa}</option>`; }); });
+                        [selMap, selP2k2, selFilterPeta].forEach(el => { el.innerHTML = '<option value="">-- Pilih Desa --</option>'; allDesas.forEach(desa => { el.innerHTML += `<option value="${desa}">${desa}</option>`; }); });
+
+                        Swal.fire({icon:'success',title:'Login Admin Sukses',timer:1000,showConfirmButton:false}).then(() => { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-container').classList.remove('hidden'); app.loadDashboardStats(); }); return;
                     }
-                    Swal.fire({icon:'success',title:'Login SDM Berhasil',timer:800,showConfirmButton:false}).then(() => { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-container').classList.remove('hidden'); app.loadDashboardStats(); });
-                }).catch(handleFirebaseError);
+
+                    if(!db) return Swal.fire('Koneksi Terputus', 'Gagal menyambung ke server.', 'error');
+
+                    db.collection("users_sdm").where("username", "==", u).where("password", "==", p).get().then(snap => {
+                        if(snap.empty) return Swal.fire('Gagal', 'Username / Password salah. (Atau Database SDM masih kosong, login sebagai admin dulu)', 'error');
+                        const d = snap.docs[0].data(); 
+                        app.currentUser = "SDM: " + d.nama; app.isAdmin = false; 
+                        
+                        document.getElementById('sidebar-role').innerText = "Pendamping Lapangan";
+                        document.getElementById('header-user-name').innerText = d.nama; document.getElementById('header-user-role').innerText = "Pendamping Lapangan";
+                        document.getElementById('header-user-avatar').src = `https://ui-avatars.com/api/?name=${d.nama.replace(/\s+/g, '+')}&background=ebf4ff&color=4f46e5`;
+                        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+                        
+                        if(d.desa) {
+                            app.userDesa = d.desa; const desaArray = d.desa.split(/[/,]/).map(x => x.trim());
+                            const selMap = document.getElementById('sel-desa'); const selP2k2 = document.getElementById('p2k2-desa'); const selFilterPeta = document.getElementById('filter-peta-desa');
+                            [selMap, selP2k2, selFilterPeta].forEach(el => { el.innerHTML = '<option value="">-- Pilih Desa Tugas --</option>'; desaArray.forEach(desa => { el.innerHTML += `<option value="${desa}">${desa}</option>`; }); });
+                        }
+                        Swal.fire({icon:'success',title:'Login SDM Berhasil',timer:1000,showConfirmButton:false}).then(() => { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-container').classList.remove('hidden'); app.loadDashboardStats(); });
+                    }).catch(handleFirebaseError);
+                }, 500); // Delay penstabil HP
             },
             logout: () => location.reload(),
             navigate: (id, el) => {
@@ -493,7 +499,6 @@
             toggleSidebar: () => { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('sidebar-overlay').classList.toggle('hidden'); },
             simpanAlert: (msg) => Swal.fire('Sukses', msg, 'success'),
 
-            // ================= DASHBOARD =================
             loadDashboardStats: () => {
                 if(!db) return;
                 db.collection("kegiatan_p2k2").get().then(snap => {
@@ -514,7 +519,6 @@
                 Swal.fire({title: 'Daftar KPM Tidak Hadir', html: html, width: '90%', confirmButtonText: 'Tutup Tabel', customClass: {confirmButton:'bg-slate-800 rounded-xl px-5 py-3'}});
             },
 
-            // ================= PROFIL SDM (CV KEREN) =================
             loadProfilSDM: () => {
                 if(!db || !app.currentUser) return;
                 Swal.fire({title: 'Memuat CV...', didOpen: () => Swal.showLoading()});
@@ -569,7 +573,6 @@
                 });
             },
 
-            // ================= PROFIL KPM & DATA DUMMY =================
             loadDummyKPM: () => {
                 const dummyData = { 
                     nik: "6305012345678901", no_kk: "6305019876543210", nama: "IBU AMINAH (CONTOH)", ttl: "Tapin, 15 Agustus 1985", alamat: "Desa Tambarangan RT 03 RW 01", kategori: "PKH & Sembako", 
@@ -618,16 +621,29 @@
             runSyncKeluarga: (data, targetKK) => {
                 if(!db) return;
                 db.collection("master_kpm").where("no_kk", "==", targetKK).get().then(snap => {
-                    let batchPromises = [];
+                    let currentBatch = db.batch();
+                    let count = 0;
                     snap.forEach(doc => {
                         let d = doc.data(); let u = 20; if(d.ttl && d.ttl.match(/\d{4}/)) { u = new Date().getFullYear() - parseInt(d.ttl.match(/\d{4}/)[0]); }
                         let hub = (d.nik === data.nik) ? "Pengurus Inti" : "Anggota Keluarga"; let kat = d.kategori || '';
                         let isK = (kat.toLowerCase().includes('anak') || kat.toLowerCase().includes('lansia') || kat.toLowerCase().includes('balita') || kat.toLowerCase().includes('hamil') || kat.toLowerCase().includes('disabilitas'));
                         
-                        batchPromises.push(db.collection("kpm_art").add({ pengurus_nik: data.nik, nik_art: d.nik||'', nama: d.nama, tmp_lahir: '', tgl_lahir: '', umur: u, hubungan: hub, pekerjaan: '', pendapatan: '', aset: '', minat: '', bakat: '', kebisaan: '' }));
-                        if(isK || u < 20 || u > 60) { let kl = kat ? kat : (u < 6 ? 'Balita' : u < 13 ? 'Anak SD' : u < 16 ? 'Anak SMP' : u < 19 ? 'Anak SMA' : 'Lansia'); batchPromises.push(db.collection("kpm_komponen").add({ pengurus_nik: data.nik, nama: d.nama, kategori: kl, keterangan: '-' })); }
+                        let artRef = db.collection("kpm_art").doc();
+                        currentBatch.set(artRef, { pengurus_nik: data.nik, nik_art: d.nik||'', nama: d.nama, tmp_lahir: '', tgl_lahir: '', umur: u, hubungan: hub, pekerjaan: '', pendapatan: '', aset: '', minat: '', bakat: '', kebisaan: '' });
+                        count++;
+
+                        if(isK || u < 20 || u > 60) { 
+                            let kl = kat ? kat : (u < 6 ? 'Balita' : u < 13 ? 'Anak SD' : u < 16 ? 'Anak SMP' : u < 19 ? 'Anak SMA' : 'Lansia'); 
+                            let kompRef = db.collection("kpm_komponen").doc();
+                            currentBatch.set(kompRef, { pengurus_nik: data.nik, nama: d.nama, kategori: kl, keterangan: '-' });
+                            count++;
+                        }
                     });
-                    Promise.all(batchPromises).then(() => { db.collection("data_pengurus").doc(data.nik).update({no_kk: targetKK, is_synced_with_master: true}).then(() => { Swal.fire('Sukses', 'Keluarga Tersinkronisasi!', 'success'); app.renderProfilAndLoadSub(data); }); }).catch(handleFirebaseError);
+                    
+                    let pengurusRef = db.collection("data_pengurus").doc(data.nik);
+                    currentBatch.update(pengurusRef, {no_kk: targetKK, is_synced_with_master: true});
+
+                    currentBatch.commit().then(() => { Swal.fire('Sukses', 'Keluarga Tersinkronisasi!', 'success'); app.renderProfilAndLoadSub(data); }).catch(handleFirebaseError);
                 }).catch(handleFirebaseError);
             },
 
@@ -646,9 +662,6 @@
                 app.loadART(); app.loadKomp(); document.getElementById('cv-kpm').classList.remove('hidden'); Swal.close();
             },
 
-            gantiFotoProfil: (e) => { const f = e.target.files[0]; if(f) { const r = new FileReader(); r.onload = (ev) => { document.getElementById('kpm-photo-preview').src = ev.target.result; Swal.fire({icon:'success',title:'Foto Terganti',toast:true,position:'top-end',showConfirmButton:false,timer:1500}); }; r.readAsDataURL(f); } },
-
-            // ================= FORM & CRUD MENGGUNAKAN FETCH DB (ANTI BUG TANDA PETIK) =================
             tampilkanFormART: (aksi, id, n_nik='', n='', tl='', tgl='', u='', h='', pk='', pend='', as='', min='', bak='', keb='') => {
                 const htmlForm = `
                     <div class="grid grid-cols-2 gap-3 text-left max-h-[60vh] overflow-y-auto p-1">
@@ -755,7 +768,6 @@
                 }).catch(handleFirebaseError); 
             },
 
-            // ================= MASTER TABEL PENGURUS PKH =================
             loadMasterPengurus: (searchQuery = '') => {
                 if(!db) return;
                 const tb = document.getElementById('tbody-master-pengurus'); tb.innerHTML = '<tr><td colspan="7" class="text-center py-10 font-bold text-slate-400 text-xs">Memuat Data Pengurus...</td></tr>';
@@ -802,7 +814,6 @@
                 }); 
             },
 
-            // ------------- MASTER TABEL KELUARGA & KOMPONEN -------------
             loadMasterART: (searchQuery = '') => {
                 if(!db) return; const tb = document.getElementById('tbody-master-art'); tb.innerHTML = '<tr><td colspan="8" class="text-center py-10 font-bold text-slate-400 text-xs">Memuat Master ART...</td></tr>';
                 db.collection("kpm_art").limit(100).get().then(snap => {
@@ -901,37 +912,68 @@
             },
             hapusP2K2: (btnEl) => { const id = btnEl.getAttribute('data-id'); Swal.fire({title: 'Hapus Kegiatan?', icon: 'warning', showCancelButton: true}).then(r => { if(r.isConfirmed) db.collection("kegiatan_p2k2").doc(id).delete().then(() => { app.loadP2K2(); app.loadDashboardStats(); }).catch(handleFirebaseError); }); },
 
-            // ================= MESIN IMPORT CERDAS (EXCEL/CSV/TXT) =================
+            // ================= UPLOAD DATA DENGAN SISTEM BATCH FIREBASE (TRUK KARGO 450 DATA) =================
             smartMapRow: (rowArr, headersArr) => {
                 let obj = {}; const dict = { no_kk: ['kk', 'kartu keluarga'], nik: ['nik'], nama: ['nama'], ttl: ['ttl', 'tempat lahir', 'tanggal lahir'], alamat: ['alamat', 'domisili', 'rt'], kategori: ['kategori', 'bantuan', 'pkh', 'sembako'], bank: ['bank', 'penyalur'], nominal: ['nominal', 'uang', 'rp', 'jumlah'], status: ['status', 'aktif', 'graduasi'], kohor: ['kohor', 'tahun kepesertaan'], masa: ['masa', 'kepesertaan', 'lama'], pekerjaan: ['kerja', 'pekerjaan'], kebisaan: ['bisa', 'kebisaan', 'skill', 'keterampilan'], hobi: ['hobi', 'hobbi'], omset: ['omset', 'pendapatan', 'penghasilan'], aset: ['aset', 'harta', 'kekayaan'], minat: ['minat', 'ketertarikan'], bakat: ['bakat', 'potensi'] };
                 for(let key in dict) { let foundIdx = -1; for(let i=0; i<headersArr.length; i++){ let h = String(headersArr[i]).toLowerCase(); if(dict[key].some(alias => h.includes(alias))) { foundIdx = i; break; } } obj[key] = foundIdx !== -1 && rowArr[foundIdx] ? String(rowArr[foundIdx]).trim() : ''; }
                 return obj;
             },
+            
             prosesUploadPengurus: (e) => {
                 app.universalFileParser(e, 'Memproses Data Pengurus...', (lines) => {
-                    const headers = lines[0].map(h => String(h).trim()); let janjiSimpan = []; let successCount = 0;
+                    const headers = lines[0].map(h => String(h).trim()); 
+                    let successCount = 0; let opCount = 0;
+                    let batches = []; let currentBatch = db.batch();
+
                     for(let i=1; i<lines.length; i++) {
                         const row = lines[i].map(v => String(v).trim()); if(row.join('') === '') continue;
                         const objData = app.smartMapRow(row, headers);
-                        if(objData.nama && objData.nik) { objData.waktu_upload = firebase.firestore.FieldValue.serverTimestamp(); objData.is_synced_with_master = false; janjiSimpan.push(db.collection("data_pengurus").doc(objData.nik).set(objData)); successCount++; }
+                        if(objData.nama && objData.nik) { 
+                            objData.waktu_upload = firebase.firestore.FieldValue.serverTimestamp(); 
+                            objData.is_synced_with_master = false; 
+                            
+                            let docRef = db.collection("data_pengurus").doc(objData.nik);
+                            currentBatch.set(docRef, objData);
+                            successCount++; opCount++;
+
+                            if(opCount === 450) { batches.push(currentBatch.commit()); currentBatch = db.batch(); opCount = 0; }
+                        }
                     }
-                    if(janjiSimpan.length > 0) { Promise.all(janjiSimpan).then(() => Swal.fire('Sukses!', `${successCount} Data Pengurus tersimpan.`, 'success')).catch(handleFirebaseError); } else { Swal.fire('Gagal', 'Tidak ada NIK / Nama yg sesuai di Excel.', 'error'); }
+                    if(opCount > 0) batches.push(currentBatch.commit());
+
+                    if(batches.length > 0) { 
+                        Promise.all(batches).then(() => Swal.fire('Sukses!', `${successCount} Data Pengurus berhasil terunggah.`, 'success')).catch(handleFirebaseError); 
+                    } else { Swal.fire('Gagal', 'Tidak ada NIK / Nama yg sesuai di Excel.', 'error'); }
                 });
             },
+            
             prosesUploadMaster70k: (e) => {
                 app.universalFileParser(e, 'Menganalisis Master 70k...', (lines) => {
-                    const headers = lines[0].map(h => String(h).trim()); let janjiSimpan = []; let successCount = 0;
+                    const headers = lines[0].map(h => String(h).trim()); 
+                    let successCount = 0; let opCount = 0;
+                    let batches = []; let currentBatch = db.batch();
+                    
                     const tbody = document.getElementById('tbody-master-sync'); tbody.innerHTML = '';
+                    
                     for(let i=1; i<lines.length; i++) {
                         const row = lines[i].map(v => String(v).trim()); if(row.join('') === '') continue;
                         const kpmObj = app.smartMapRow(row, headers);
                         if(kpmObj.nama && kpmObj.nik) {
                             kpmObj.waktu_sync = firebase.firestore.FieldValue.serverTimestamp();
-                            janjiSimpan.push(db.collection("master_kpm").doc(kpmObj.nik).set(kpmObj)); successCount++;
+                            
+                            let docRef = db.collection("master_kpm").doc(kpmObj.nik);
+                            currentBatch.set(docRef, kpmObj);
+                            successCount++; opCount++;
+
                             if(successCount <= 20) { tbody.innerHTML += `<tr class="bg-white border-b"><td class="p-4 md:p-6 font-black text-slate-800 uppercase text-[10px] md:text-xs">${kpmObj.nama}</td><td class="p-4 md:p-6 font-mono text-[9px] md:text-xs font-bold text-indigo-600">${kpmObj.nik}</td><td class="p-4 md:p-6 font-mono text-[9px] md:text-xs font-bold text-slate-600">${kpmObj.no_kk||'-'}</td><td class="p-4 md:p-6 text-center"><span class="bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-full text-[8px] md:text-[10px] font-black uppercase tracking-widest">Tersinkron</span></td></tr>`; }
+                            if(opCount === 450) { batches.push(currentBatch.commit()); currentBatch = db.batch(); opCount = 0; }
                         }
                     }
-                    if(janjiSimpan.length > 0) { Promise.all(janjiSimpan).then(() => { Swal.fire('Sinkronisasi Sukses!', `Total Tersimpan: ${successCount} Data.`, 'success'); }).catch(handleFirebaseError); } else { Swal.fire('Gagal', 'Tidak ada NIK/Nama valid.', 'error'); }
+                    if(opCount > 0) batches.push(currentBatch.commit());
+
+                    if(batches.length > 0) { 
+                        Promise.all(batches).then(() => { Swal.fire('Sinkronisasi Sukses!', `Total Data (Background Mode): ${successCount} Baris.`, 'success'); }).catch(handleFirebaseError); 
+                    } else { Swal.fire('Gagal', 'Tidak ada NIK/Nama valid.', 'error'); }
                 });
             },
 
@@ -939,6 +981,7 @@
                 let obj = {}; const dict = { nama: ['nama', 'pendamping', 'sdm'], desa: ['desa', 'wilayah', 'kelurahan', 'dampingan', 'tugas'], nip: ['nip', 'nomor induk'], nik: ['nik', 'no ktp', 'ktp'], ttl: ['ttl', 'tempat tanggal lahir'], alamat: ['alamat', 'domisili', 'rt'], kecamatan: ['kecamatan', 'kec'], minat: ['minat'], bakat: ['bakat', 'potensi'], hobi: ['hobi', 'hobbi'], jabatan: ['jabatan', 'posisi', 'jabatan sdm'], pendidikan: ['pendidikan', 'lulusan', 'sekolah'] };
                 for(let key in dict) { let foundIdx = -1; for(let i=0; i<headersArr.length; i++) { let h = String(headersArr[i]).toLowerCase(); if(dict[key].some(alias => h.includes(alias))) { foundIdx = i; break; } } obj[key] = foundIdx !== -1 && rowArr[foundIdx] ? String(rowArr[foundIdx]).trim() : ''; } return obj;
             },
+            
             prosesUploadSDM: (e) => {
                 app.universalFileParser(e, 'Merangkai Akun SDM...', (lines) => {
                     const headers = lines[0].map(h => String(h).trim()); let grps = {};
@@ -947,13 +990,21 @@
                         const sdmObj = app.smartMapSDM(c, headers); 
                         if(sdmObj.nama && sdmObj.desa) { if(!grps[sdmObj.nama]) grps[sdmObj.nama] = { desas: new Set(), data: sdmObj }; grps[sdmObj.nama].desas.add(sdmObj.desa); } 
                     } 
-                    let proms = []; let count = 0; 
+                    
+                    let count = 0; let opCount = 0;
+                    let batches = []; let currentBatch = db.batch();
+                    
                     for(let nm in grps) { 
                         const usr = generateUsernameCerdes(nm); const desaStr = Array.from(grps[nm].desas).join(' / '); const sData = grps[nm].data;
-                        proms.push(db.collection("users_sdm").doc(usr).set({ nama: nm, username: usr, password: "12345", desa: desaStr, role: "SDM", nip: sData.nip||'', nik: sData.nik||'', ttl: sData.ttl||'', alamat: sData.alamat||'', kecamatan: sData.kecamatan||'', minat: sData.minat||'', bakat: sData.bakat||'', hobi: sData.hobi||'', jabatan: sData.jabatan||'', pendidikan: sData.pendidikan||'' })); count++; 
+                        let docRef = db.collection("users_sdm").doc(usr);
+                        currentBatch.set(docRef, { nama: nm, username: usr, password: "12345", desa: desaStr, role: "SDM", nip: sData.nip||'', nik: sData.nik||'', ttl: sData.ttl||'', alamat: sData.alamat||'', kecamatan: sData.kecamatan||'', minat: sData.minat||'', bakat: sData.bakat||'', hobi: sData.hobi||'', jabatan: sData.jabatan||'', pendidikan: sData.pendidikan||'' }); 
+                        count++; opCount++;
+                        if(opCount === 450) { batches.push(currentBatch.commit()); currentBatch = db.batch(); opCount = 0; }
                     } 
+                    if(opCount > 0) batches.push(currentBatch.commit());
+
                     if(count === 0) return Swal.fire('Gagal', 'Gagal menemukan Header Nama dan Desa di Excel.', 'error');
-                    Promise.all(proms).then(() => { Swal.fire('Sukses Mata Cerdas!', `${count} Akun SDM lengkap dibuat otomatis!`, 'success'); app.loadDataSDM(); }).catch(handleFirebaseError); 
+                    Promise.all(batches).then(() => { Swal.fire('Sukses Mata Cerdas!', `${count} Akun SDM berhasil dibuat!`, 'success'); app.loadDataSDM(); }).catch(handleFirebaseError); 
                 });
             },
             
