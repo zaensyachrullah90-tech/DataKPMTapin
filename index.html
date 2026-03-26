@@ -125,8 +125,8 @@
                     </div>
                     <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl md:rounded-[2.5rem] p-6 md:p-10 text-white shadow-xl relative overflow-hidden">
                         <i class="fas fa-shield-alt absolute -right-5 -bottom-5 md:-right-10 md:-bottom-10 text-[10rem] md:text-[15rem] opacity-10"></i>
-                        <h4 class="text-xl md:text-2xl font-black mb-2 md:mb-3 relative z-10">Sistem Unggah Super Stabil Aktif!</h4>
-                        <p class="text-indigo-100 text-xs md:text-sm font-medium relative z-10 leading-relaxed max-w-3xl opacity-90">Bugs layar macet dan gagal unggah telah diperbaiki. Sistem sekarang menggunakan antrean bertahap (Sequential Batching) yang menampilkan indikator loading berjalan, memastikan 100% data masuk ke Database tanpa membebani HP Bapak.</p>
+                        <h4 class="text-xl md:text-2xl font-black mb-2 md:mb-3 relative z-10">Sistem Sesi & Anti-Freeze Telah Diaktifkan!</h4>
+                        <p class="text-indigo-100 text-xs md:text-sm font-medium relative z-10 leading-relaxed max-w-3xl opacity-90">Bapak kini tidak akan ter-logout meskipun me-refresh browser. Sistem Upload telah disempurnakan dengan jeda otomatis untuk mencegah HP Hang, sehingga database dipastikan masuk 100% dengan lancar.</p>
                     </div>
                 </div>
 
@@ -444,6 +444,40 @@
         window.app = {
             mapObj: null, currentUser: null, isAdmin: false, currentKPMNik: null, userDesa: '', currentSDMId: null,
 
+            checkSession: () => {
+                const session = localStorage.getItem('pkh_session');
+                if(session) {
+                    const sessData = JSON.parse(session);
+                    if(sessData.role === 'admin') {
+                        app.currentUser = "Administrator Kabupaten"; app.isAdmin = true; 
+                        document.getElementById('sidebar-role').innerText = "Kontrol Kabupaten";
+                        document.getElementById('header-user-name').innerText = "Admin Kabupaten"; document.getElementById('header-user-role').innerText = "Akses Penuh";
+                        document.getElementById('header-user-avatar').src = "https://ui-avatars.com/api/?name=Admin+Kab&background=ebf4ff&color=4f46e5";
+                        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block'); document.querySelectorAll('.admin-only.hidden').forEach(el => el.classList.remove('hidden')); 
+                        
+                        const allDesas = Object.keys(dataMasterKPM);
+                        const selMap = document.getElementById('sel-desa'); const selP2k2 = document.getElementById('p2k2-desa'); const selFilterPeta = document.getElementById('filter-peta-desa');
+                        [selMap, selP2k2, selFilterPeta].forEach(el => { el.innerHTML = '<option value="">-- Pilih Desa --</option>'; allDesas.forEach(desa => { el.innerHTML += `<option value="${desa}">${desa}</option>`; }); });
+
+                        document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-container').classList.remove('hidden'); app.loadDashboardStats();
+                    } else if(sessData.role === 'sdm') {
+                        const d = sessData.data;
+                        app.currentUser = "SDM: " + d.nama; app.isAdmin = false; 
+                        document.getElementById('sidebar-role').innerText = "Pendamping Lapangan";
+                        document.getElementById('header-user-name').innerText = d.nama; document.getElementById('header-user-role').innerText = "Pendamping Lapangan";
+                        document.getElementById('header-user-avatar').src = `https://ui-avatars.com/api/?name=${d.nama.replace(/\s+/g, '+')}&background=ebf4ff&color=4f46e5`;
+                        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+                        
+                        if(d.desa) {
+                            app.userDesa = d.desa; const desaArray = d.desa.split(/[/,]/).map(x => x.trim());
+                            const selMap = document.getElementById('sel-desa'); const selP2k2 = document.getElementById('p2k2-desa'); const selFilterPeta = document.getElementById('filter-peta-desa');
+                            [selMap, selP2k2, selFilterPeta].forEach(el => { el.innerHTML = '<option value="">-- Pilih Desa Tugas --</option>'; desaArray.forEach(desa => { el.innerHTML += `<option value="${desa}">${desa}</option>`; }); });
+                        }
+                        document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-container').classList.remove('hidden'); app.loadDashboardStats();
+                    }
+                }
+            },
+
             login: () => {
                 const u = document.getElementById('login-user').value.trim(); 
                 const p = document.getElementById('login-pass').value.trim();
@@ -451,41 +485,48 @@
                 
                 Swal.fire({title: 'Autentikasi...', allowOutsideClick: false, didOpen:()=>Swal.showLoading()});
                 
-                if(u.toLowerCase() === 'admin') {
-                    app.currentUser = "Administrator Kabupaten"; app.isAdmin = true; 
-                    document.getElementById('sidebar-role').innerText = "Kontrol Kabupaten";
-                    document.getElementById('header-user-name').innerText = "Admin Kabupaten"; document.getElementById('header-user-role').innerText = "Akses Penuh";
-                    document.getElementById('header-user-avatar').src = "https://ui-avatars.com/api/?name=Admin+Kab&background=ebf4ff&color=4f46e5";
-                    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block'); document.querySelectorAll('.admin-only.hidden').forEach(el => el.classList.remove('hidden')); 
-                    
-                    const allDesas = Object.keys(dataMasterKPM);
-                    const selMap = document.getElementById('sel-desa'); const selP2k2 = document.getElementById('p2k2-desa'); const selFilterPeta = document.getElementById('filter-peta-desa');
-                    [selMap, selP2k2, selFilterPeta].forEach(el => { el.innerHTML = '<option value="">-- Pilih Desa --</option>'; allDesas.forEach(desa => { el.innerHTML += `<option value="${desa}">${desa}</option>`; }); });
-
-                    Swal.fire({icon:'success',title:'Login Admin Sukses',timer:1000,showConfirmButton:false}).then(() => { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-container').classList.remove('hidden'); app.loadDashboardStats(); }); return;
-                }
-
-                if(!db) return Swal.fire('Koneksi Terputus', 'Gagal menyambung ke server.', 'error');
-
-                db.collection("users_sdm").where("username", "==", u).where("password", "==", p).get().then(snap => {
-                    if(snap.empty) return Swal.fire('Gagal', 'Username / Password salah. (Atau Database SDM masih kosong, login sebagai admin dulu)', 'error');
-                    const d = snap.docs[0].data(); 
-                    app.currentUser = "SDM: " + d.nama; app.isAdmin = false; 
-                    
-                    document.getElementById('sidebar-role').innerText = "Pendamping Lapangan";
-                    document.getElementById('header-user-name').innerText = d.nama; document.getElementById('header-user-role').innerText = "Pendamping Lapangan";
-                    document.getElementById('header-user-avatar').src = `https://ui-avatars.com/api/?name=${d.nama.replace(/\s+/g, '+')}&background=ebf4ff&color=4f46e5`;
-                    document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
-                    
-                    if(d.desa) {
-                        app.userDesa = d.desa; const desaArray = d.desa.split(/[/,]/).map(x => x.trim());
+                setTimeout(() => {
+                    if(u.toLowerCase() === 'admin') {
+                        app.currentUser = "Administrator Kabupaten"; app.isAdmin = true; 
+                        document.getElementById('sidebar-role').innerText = "Kontrol Kabupaten";
+                        document.getElementById('header-user-name').innerText = "Admin Kabupaten"; document.getElementById('header-user-role').innerText = "Akses Penuh";
+                        document.getElementById('header-user-avatar').src = "https://ui-avatars.com/api/?name=Admin+Kab&background=ebf4ff&color=4f46e5";
+                        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block'); document.querySelectorAll('.admin-only.hidden').forEach(el => el.classList.remove('hidden')); 
+                        
+                        const allDesas = Object.keys(dataMasterKPM);
                         const selMap = document.getElementById('sel-desa'); const selP2k2 = document.getElementById('p2k2-desa'); const selFilterPeta = document.getElementById('filter-peta-desa');
-                        [selMap, selP2k2, selFilterPeta].forEach(el => { el.innerHTML = '<option value="">-- Pilih Desa Tugas --</option>'; desaArray.forEach(desa => { el.innerHTML += `<option value="${desa}">${desa}</option>`; }); });
+                        [selMap, selP2k2, selFilterPeta].forEach(el => { el.innerHTML = '<option value="">-- Pilih Desa --</option>'; allDesas.forEach(desa => { el.innerHTML += `<option value="${desa}">${desa}</option>`; }); });
+
+                        localStorage.setItem('pkh_session', JSON.stringify({role: 'admin'}));
+
+                        Swal.fire({icon:'success',title:'Login Admin Sukses',timer:1000,showConfirmButton:false}).then(() => { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-container').classList.remove('hidden'); app.loadDashboardStats(); }); return;
                     }
-                    Swal.fire({icon:'success',title:'Login SDM Berhasil',timer:1000,showConfirmButton:false}).then(() => { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-container').classList.remove('hidden'); app.loadDashboardStats(); });
-                }).catch(handleFirebaseError);
+
+                    if(!db) return Swal.fire('Koneksi Terputus', 'Gagal menyambung ke server.', 'error');
+
+                    db.collection("users_sdm").where("username", "==", u).where("password", "==", p).get().then(snap => {
+                        if(snap.empty) return Swal.fire('Gagal', 'Username / Password salah. (Atau Database SDM masih kosong, login sebagai admin dulu)', 'error');
+                        const d = snap.docs[0].data(); 
+                        app.currentUser = "SDM: " + d.nama; app.isAdmin = false; 
+                        
+                        document.getElementById('sidebar-role').innerText = "Pendamping Lapangan";
+                        document.getElementById('header-user-name').innerText = d.nama; document.getElementById('header-user-role').innerText = "Pendamping Lapangan";
+                        document.getElementById('header-user-avatar').src = `https://ui-avatars.com/api/?name=${d.nama.replace(/\s+/g, '+')}&background=ebf4ff&color=4f46e5`;
+                        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+                        
+                        if(d.desa) {
+                            app.userDesa = d.desa; const desaArray = d.desa.split(/[/,]/).map(x => x.trim());
+                            const selMap = document.getElementById('sel-desa'); const selP2k2 = document.getElementById('p2k2-desa'); const selFilterPeta = document.getElementById('filter-peta-desa');
+                            [selMap, selP2k2, selFilterPeta].forEach(el => { el.innerHTML = '<option value="">-- Pilih Desa Tugas --</option>'; desaArray.forEach(desa => { el.innerHTML += `<option value="${desa}">${desa}</option>`; }); });
+                        }
+
+                        localStorage.setItem('pkh_session', JSON.stringify({role: 'sdm', data: d}));
+
+                        Swal.fire({icon:'success',title:'Login SDM Berhasil',timer:1000,showConfirmButton:false}).then(() => { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-container').classList.remove('hidden'); app.loadDashboardStats(); });
+                    }).catch(handleFirebaseError);
+                }, 500); 
             },
-            logout: () => location.reload(),
+            logout: () => { localStorage.removeItem('pkh_session'); location.reload(); },
             navigate: (id, el) => {
                 document.querySelectorAll('.page-section').forEach(p => p.style.display = 'none'); 
                 if(el){ document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('bg-indigo-600','text-white','shadow-lg')); el.classList.add('bg-indigo-600','text-white','shadow-lg'); document.getElementById('page-title').innerText = el.innerText.trim(); }
@@ -557,15 +598,16 @@
                             <div class="col-span-2"><label class="text-[10px] font-black text-slate-500">TEMPAT, TANGGAL LAHIR</label><input id="es-ttl" class="w-full border-2 p-2 rounded-xl text-xs font-bold" value="${d.ttl||''}"></div>
                             <div class="col-span-2"><label class="text-[10px] font-black text-slate-500">ALAMAT</label><input id="es-almt" class="w-full border-2 p-2 rounded-xl text-xs font-bold" value="${d.alamat||''}"></div>
                             <div><label class="text-[10px] font-black text-slate-500">KECAMATAN</label><input id="es-kec" class="w-full border-2 p-2 rounded-xl text-xs font-bold" value="${d.kecamatan||''}"></div>
+                            <div><label class="text-[10px] font-black text-slate-500">DESA DAMPINGAN</label><input id="es-des" class="w-full border-2 p-2 rounded-xl text-xs font-bold" value="${d.desa||''}"></div>
                             <div><label class="text-[10px] font-black text-slate-500">JABATAN</label><input id="es-jab" class="w-full border-2 p-2 rounded-xl text-xs font-bold" value="${d.jabatan||''}"></div>
-                            <div class="col-span-2"><label class="text-[10px] font-black text-slate-500">PENDIDIKAN</label><input id="es-pend" class="w-full border-2 p-2 rounded-xl text-xs font-bold" value="${d.pendidikan||''}"></div>
+                            <div><label class="text-[10px] font-black text-slate-500">PENDIDIKAN</label><input id="es-pend" class="w-full border-2 p-2 rounded-xl text-xs font-bold" value="${d.pendidikan||''}"></div>
                             <div><label class="text-[10px] font-black text-slate-500">MINAT</label><input id="es-min" class="w-full border-2 p-2 rounded-xl text-xs font-bold" value="${d.minat||''}"></div>
                             <div><label class="text-[10px] font-black text-slate-500">BAKAT</label><input id="es-bak" class="w-full border-2 p-2 rounded-xl text-xs font-bold" value="${d.bakat||''}"></div>
                             <div class="col-span-2"><label class="text-[10px] font-black text-slate-500">HOBI</label><input id="es-hob" class="w-full border-2 p-2 rounded-xl text-xs font-bold" value="${d.hobi||''}"></div>
                         </div>
                     `;
                     Swal.fire({title: 'Edit CV SDM', html: htmlForm, width:'90%', max_width: '450px', preConfirm: () => {
-                        return { nama: document.getElementById('es-n').value, nip: document.getElementById('es-nip').value, nik: document.getElementById('es-nik').value, ttl: document.getElementById('es-ttl').value, alamat: document.getElementById('es-almt').value, kecamatan: document.getElementById('es-kec').value, jabatan: document.getElementById('es-jab').value, pendidikan: document.getElementById('es-pend').value, minat: document.getElementById('es-min').value, bakat: document.getElementById('es-bak').value, hobi: document.getElementById('es-hob').value };
+                        return { nama: document.getElementById('es-n').value, nip: document.getElementById('es-nip').value, nik: document.getElementById('es-nik').value, ttl: document.getElementById('es-ttl').value, alamat: document.getElementById('es-almt').value, kecamatan: document.getElementById('es-kec').value, desa: document.getElementById('es-des').value, jabatan: document.getElementById('es-jab').value, pendidikan: document.getElementById('es-pend').value, minat: document.getElementById('es-min').value, bakat: document.getElementById('es-bak').value, hobi: document.getElementById('es-hob').value };
                     }}).then(res => { if(res.isConfirmed) { db.collection("users_sdm").doc(app.currentSDMId).update(res.value).then(() => { Swal.fire('Tersimpan', '', 'success'); app.loadProfilSDM(); }).catch(handleFirebaseError); } });
                 });
             },
@@ -768,7 +810,7 @@
             loadMasterPengurus: (searchQuery = '') => {
                 if(!db) return;
                 const tb = document.getElementById('tbody-master-pengurus'); tb.innerHTML = '<tr><td colspan="7" class="text-center py-10 font-bold text-slate-400 text-xs">Memuat Data Pengurus...</td></tr>';
-                db.collection("data_pengurus").limit(100).get().then(snap => { 
+                db.collection("data_pengurus").limit(250).get().then(snap => { 
                     tb.innerHTML = '';
                     if(snap.empty) { tb.innerHTML = '<tr><td colspan="7" class="text-center py-10 font-bold text-slate-400 text-xs">Kosong</td></tr>'; return; }
                     snap.forEach(doc => {
@@ -813,7 +855,7 @@
 
             loadMasterART: (searchQuery = '') => {
                 if(!db) return; const tb = document.getElementById('tbody-master-art'); tb.innerHTML = '<tr><td colspan="8" class="text-center py-10 font-bold text-slate-400 text-xs">Memuat Master ART...</td></tr>';
-                db.collection("kpm_art").limit(100).get().then(snap => {
+                db.collection("kpm_art").limit(250).get().then(snap => {
                     tb.innerHTML = ''; if(snap.empty) { tb.innerHTML = '<tr><td colspan="8" class="text-center py-10 font-bold text-slate-400 text-xs">Kosong</td></tr>'; return; }
                     snap.forEach(doc => { const d = doc.data(); if(searchQuery && !d.nama.toLowerCase().includes(searchQuery.toLowerCase())) return;
                         tb.innerHTML += `<tr class="bg-white border-b hover:bg-slate-50"><td class="px-4 md:px-6 py-4 font-mono text-[10px] md:text-xs text-slate-500">${d.nik_art||'-'}</td><td class="px-4 md:px-6 py-4 font-black text-[10px] md:text-xs text-slate-800 uppercase">${d.nama||'-'}</td><td class="px-4 md:px-6 py-4 text-[9px] md:text-[10px] font-bold text-slate-600 uppercase">${(d.tmp_lahir||'-') + ', ' + (d.tgl_lahir||'-')}</td><td class="px-4 md:px-6 py-4 font-bold text-[10px] md:text-xs text-center">${d.umur||'-'}</td><td class="px-4 md:px-6 py-4 text-[9px] md:text-[10px] font-bold text-slate-600 uppercase">${d.hubungan||'-'}</td><td class="px-4 md:px-6 py-4 text-[9px] md:text-[10px] font-bold text-slate-500 uppercase">${d.pekerjaan||'-'}</td><td class="px-4 md:px-6 py-4 text-[9px] md:text-[10px] font-black text-indigo-600 uppercase">${d.pengurus_nik||'-'}</td><td class="px-4 md:px-6 py-4 text-center"><button data-id="${doc.id}" onclick="app.crudKeluarga('edit', this)" class="text-blue-500 mr-2"><i class="fas fa-pen"></i></button><button data-id="${doc.id}" onclick="app.crudKeluarga('hapus', this)" class="text-rose-500"><i class="fas fa-trash"></i></button></td></tr>`;
@@ -822,7 +864,7 @@
             },
             loadMasterKomp: (searchQuery = '') => {
                 if(!db) return; const tb = document.getElementById('tbody-master-komp'); tb.innerHTML = '<tr><td colspan="5" class="text-center py-10 font-bold text-slate-400 text-xs">Memuat Master Komponen...</td></tr>';
-                db.collection("kpm_komponen").limit(100).get().then(snap => {
+                db.collection("kpm_komponen").limit(250).get().then(snap => {
                     tb.innerHTML = ''; if(snap.empty) { tb.innerHTML = '<tr><td colspan="5" class="text-center py-10 font-bold text-slate-400 text-xs">Kosong</td></tr>'; return; }
                     snap.forEach(doc => { const d = doc.data(); if(searchQuery && !d.nama.toLowerCase().includes(searchQuery.toLowerCase())) return;
                         tb.innerHTML += `<tr class="bg-white border-b hover:bg-slate-50"><td class="px-4 md:px-6 py-4 font-black text-[10px] md:text-xs text-slate-800 uppercase">${d.nama||'-'}</td><td class="px-4 md:px-6 py-4 text-center"><span class="bg-blue-100 text-blue-800 text-[8px] font-black px-3 py-1 rounded-full uppercase tracking-widest">${d.kategori||'-'}</span></td><td class="px-4 md:px-6 py-4 text-[9px] md:text-[10px] font-bold text-slate-600 uppercase">${d.keterangan||'-'}</td><td class="px-4 md:px-6 py-4 text-[9px] md:text-[10px] font-black text-indigo-600 uppercase">${d.pengurus_nik||'-'}</td><td class="px-4 md:px-6 py-4 text-center"><button data-id="${doc.id}" onclick="app.crudKomponen('edit', this)" class="text-blue-500 mr-2"><i class="fas fa-pen"></i></button><button data-id="${doc.id}" onclick="app.crudKomponen('hapus', this)" class="text-rose-500"><i class="fas fa-trash"></i></button></td></tr>`;
@@ -963,9 +1005,10 @@
                             currentBatch.set(docRef, objData);
                             successCount++; opCount++;
 
-                            if(opCount === 400) { 
+                            if(opCount >= 250) { 
                                 try { 
                                     await currentBatch.commit(); 
+                                    await new Promise(r => setTimeout(r, 50)); // Jeda Napas untuk HP
                                     const b = Swal.getHtmlContainer().querySelector('b');
                                     if(b) b.textContent = successCount;
                                 } catch(err) { return handleFirebaseError(err); }
@@ -1007,9 +1050,10 @@
 
                             if(successCount <= 20) { tbody.innerHTML += `<tr class="bg-white border-b"><td class="p-4 md:p-6 font-black text-slate-800 uppercase text-[10px] md:text-xs">${kpmObj.nama}</td><td class="p-4 md:p-6 font-mono text-[9px] md:text-xs font-bold text-indigo-600">${kpmObj.nik}</td><td class="p-4 md:p-6 font-mono text-[9px] md:text-xs font-bold text-slate-600">${kpmObj.no_kk||'-'}</td><td class="p-4 md:p-6 text-center"><span class="bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-full text-[8px] md:text-[10px] font-black uppercase tracking-widest">Tersinkron</span></td></tr>`; }
                             
-                            if(opCount === 400) { 
+                            if(opCount >= 250) { 
                                 try { 
                                     await currentBatch.commit(); 
+                                    await new Promise(r => setTimeout(r, 50)); // Jeda Napas untuk HP
                                     const b = Swal.getHtmlContainer().querySelector('b');
                                     if(b) b.textContent = successCount;
                                 } catch(err) { return handleFirebaseError(err); }
@@ -1053,9 +1097,10 @@
                         let docRef = db.collection("users_sdm").doc(usr);
                         currentBatch.set(docRef, { nama: nm, username: usr, password: "12345", desa: desaStr, role: "SDM", nip: sData.nip||'', nik: sData.nik||'', ttl: sData.ttl||'', alamat: sData.alamat||'', kecamatan: sData.kecamatan||'', minat: sData.minat||'', bakat: sData.bakat||'', hobi: sData.hobi||'', jabatan: sData.jabatan||'', pendidikan: sData.pendidikan||'' }); 
                         count++; opCount++;
-                        if(opCount === 400) { 
+                        if(opCount >= 250) { 
                             try { 
                                 await currentBatch.commit(); 
+                                await new Promise(r => setTimeout(r, 50)); // Jeda Napas untuk HP
                                 const b = Swal.getHtmlContainer().querySelector('b');
                                 if(b) b.textContent = count;
                             } catch(err) { return handleFirebaseError(err); }
@@ -1131,6 +1176,13 @@
                 }).catch(handleFirebaseError); 
             },
             hapusDataKPM: (btnEl) => { const id = btnEl.getAttribute('data-id'); db.collection("data_kpm").doc(id).delete().then(() => app.loadDataKPMFirebase()).catch(handleFirebaseError); }
+        };
+
+        // Otomatis cek apakah user sudah login sebelumnya setiap kali web direfresh
+        window.onload = () => {
+            if(app && app.checkSession) {
+                app.checkSession();
+            }
         };
     </script>
 </body>
