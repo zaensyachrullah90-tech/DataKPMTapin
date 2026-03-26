@@ -810,7 +810,7 @@
             loadMasterPengurus: (searchQuery = '') => {
                 if(!db) return;
                 const tb = document.getElementById('tbody-master-pengurus'); tb.innerHTML = '<tr><td colspan="7" class="text-center py-10 font-bold text-slate-400 text-xs">Memuat Data Pengurus...</td></tr>';
-                db.collection("data_pengurus").limit(250).get().then(snap => { 
+                db.collection("data_pengurus").limit(300).get().then(snap => { 
                     tb.innerHTML = '';
                     if(snap.empty) { tb.innerHTML = '<tr><td colspan="7" class="text-center py-10 font-bold text-slate-400 text-xs">Kosong</td></tr>'; return; }
                     snap.forEach(doc => {
@@ -855,7 +855,7 @@
 
             loadMasterART: (searchQuery = '') => {
                 if(!db) return; const tb = document.getElementById('tbody-master-art'); tb.innerHTML = '<tr><td colspan="8" class="text-center py-10 font-bold text-slate-400 text-xs">Memuat Master ART...</td></tr>';
-                db.collection("kpm_art").limit(250).get().then(snap => {
+                db.collection("kpm_art").limit(300).get().then(snap => {
                     tb.innerHTML = ''; if(snap.empty) { tb.innerHTML = '<tr><td colspan="8" class="text-center py-10 font-bold text-slate-400 text-xs">Kosong</td></tr>'; return; }
                     snap.forEach(doc => { const d = doc.data(); if(searchQuery && !d.nama.toLowerCase().includes(searchQuery.toLowerCase())) return;
                         tb.innerHTML += `<tr class="bg-white border-b hover:bg-slate-50"><td class="px-4 md:px-6 py-4 font-mono text-[10px] md:text-xs text-slate-500">${d.nik_art||'-'}</td><td class="px-4 md:px-6 py-4 font-black text-[10px] md:text-xs text-slate-800 uppercase">${d.nama||'-'}</td><td class="px-4 md:px-6 py-4 text-[9px] md:text-[10px] font-bold text-slate-600 uppercase">${(d.tmp_lahir||'-') + ', ' + (d.tgl_lahir||'-')}</td><td class="px-4 md:px-6 py-4 font-bold text-[10px] md:text-xs text-center">${d.umur||'-'}</td><td class="px-4 md:px-6 py-4 text-[9px] md:text-[10px] font-bold text-slate-600 uppercase">${d.hubungan||'-'}</td><td class="px-4 md:px-6 py-4 text-[9px] md:text-[10px] font-bold text-slate-500 uppercase">${d.pekerjaan||'-'}</td><td class="px-4 md:px-6 py-4 text-[9px] md:text-[10px] font-black text-indigo-600 uppercase">${d.pengurus_nik||'-'}</td><td class="px-4 md:px-6 py-4 text-center"><button data-id="${doc.id}" onclick="app.crudKeluarga('edit', this)" class="text-blue-500 mr-2"><i class="fas fa-pen"></i></button><button data-id="${doc.id}" onclick="app.crudKeluarga('hapus', this)" class="text-rose-500"><i class="fas fa-trash"></i></button></td></tr>`;
@@ -864,7 +864,7 @@
             },
             loadMasterKomp: (searchQuery = '') => {
                 if(!db) return; const tb = document.getElementById('tbody-master-komp'); tb.innerHTML = '<tr><td colspan="5" class="text-center py-10 font-bold text-slate-400 text-xs">Memuat Master Komponen...</td></tr>';
-                db.collection("kpm_komponen").limit(250).get().then(snap => {
+                db.collection("kpm_komponen").limit(300).get().then(snap => {
                     tb.innerHTML = ''; if(snap.empty) { tb.innerHTML = '<tr><td colspan="5" class="text-center py-10 font-bold text-slate-400 text-xs">Kosong</td></tr>'; return; }
                     snap.forEach(doc => { const d = doc.data(); if(searchQuery && !d.nama.toLowerCase().includes(searchQuery.toLowerCase())) return;
                         tb.innerHTML += `<tr class="bg-white border-b hover:bg-slate-50"><td class="px-4 md:px-6 py-4 font-black text-[10px] md:text-xs text-slate-800 uppercase">${d.nama||'-'}</td><td class="px-4 md:px-6 py-4 text-center"><span class="bg-blue-100 text-blue-800 text-[8px] font-black px-3 py-1 rounded-full uppercase tracking-widest">${d.kategori||'-'}</span></td><td class="px-4 md:px-6 py-4 text-[9px] md:text-[10px] font-bold text-slate-600 uppercase">${d.keterangan||'-'}</td><td class="px-4 md:px-6 py-4 text-[9px] md:text-[10px] font-black text-indigo-600 uppercase">${d.pengurus_nik||'-'}</td><td class="px-4 md:px-6 py-4 text-center"><button data-id="${doc.id}" onclick="app.crudKomponen('edit', this)" class="text-blue-500 mr-2"><i class="fas fa-pen"></i></button><button data-id="${doc.id}" onclick="app.crudKomponen('hapus', this)" class="text-rose-500"><i class="fas fa-trash"></i></button></td></tr>`;
@@ -951,10 +951,10 @@
             },
             hapusP2K2: (btnEl) => { const id = btnEl.getAttribute('data-id'); Swal.fire({title: 'Hapus Kegiatan?', icon: 'warning', showCancelButton: true}).then(r => { if(r.isConfirmed) db.collection("kegiatan_p2k2").doc(id).delete().then(() => { app.loadP2K2(); app.loadDashboardStats(); }).catch(handleFirebaseError); }); },
 
-            // ================= MESIN UPLOAD ANTI BLANK (ASYNC BATCHING) & PENCARI HEADER =================
+            // ================= MESIN UPLOAD ANTI BLANK (ASYNC CHUNKING BATCH) =================
             universalFileParser: (e, title, callback) => {
                 const f = e.target.files[0]; if(!f) return;
-                Swal.fire({title: title, html: 'Membaca format file...', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+                Swal.fire({title: title, html: 'Membaca file Excel...', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
                 const reader = new FileReader();
                 reader.onload = async (ev) => {
                     try {
@@ -964,7 +964,7 @@
                         const jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1, defval: "", raw: false}); 
                         if(jsonData.length < 2) return Swal.fire('Error', 'Data Excel kosong atau salah format.', 'error');
                         await callback(jsonData);
-                        e.target.value = ''; // Reset input
+                        e.target.value = ''; // Reset input agar bisa upload file yg sama lagi
                     } catch(err) { 
                         console.error(err);
                         Swal.fire('Error Parsing', 'Gagal membaca isi Excel. Pastikan file tidak rusak.', 'error'); 
@@ -975,106 +975,137 @@
             },
             
             smartMapRow: (rowArr, headersArr) => {
-                let obj = {}; const dict = { no_kk: ['kk', 'kartu keluarga'], nik: ['nik'], nama: ['nama'], ttl: ['ttl', 'tempat lahir', 'tanggal lahir'], alamat: ['alamat', 'domisili', 'rt'], kategori: ['kategori', 'bantuan', 'pkh', 'sembako'], bank: ['bank', 'penyalur'], nominal: ['nominal', 'uang', 'rp', 'jumlah'], status: ['status', 'aktif', 'graduasi'], kohor: ['kohor', 'tahun kepesertaan'], masa: ['masa', 'kepesertaan', 'lama'], pekerjaan: ['kerja', 'pekerjaan'], kebisaan: ['bisa', 'kebisaan', 'skill', 'keterampilan'], hobi: ['hobi', 'hobbi'], omset: ['omset', 'pendapatan', 'penghasilan'], aset: ['aset', 'harta', 'kekayaan'], minat: ['minat', 'ketertarikan'], bakat: ['bakat', 'potensi'] };
+                let obj = {}; 
+                const dict = { 
+                    no_kk: ['kk', 'kartu keluarga'], nik: ['nik', 'no ktp'], nama: ['nama', 'pengurus'], 
+                    kategori: ['kategori', 'bantuan', 'pkh', 'sembako'], bank: ['bank', 'penyalur'], 
+                    alamat: ['alamat', 'domisili', 'jalan', 'rt'], kecamatan: ['kecamatan', 'kec'], 
+                    desa: ['desa', 'kelurahan', 'wilayah'], pendapatan: ['pendapatan', 'omset', 'penghasilan'], 
+                    usaha: ['usaha', 'bisnis'], hobi: ['hobi', 'hobbi'], kebisaan: ['bisa', 'kebisaan', 'skill', 'keterampilan'], 
+                    pekerjaan: ['kerja', 'pekerjaan'], no_hp: ['hp', 'telepon', 'whatsapp', 'wa', 'telp'], 
+                    ket_pengurus: ['ket pengurus', 'keterangan pengurus', 'keterangan'], kohor: ['kohor', 'tahun kepesertaan'],
+                    ttl: ['ttl', 'tempat lahir', 'tanggal lahir'], nominal: ['nominal', 'uang', 'rp', 'jumlah'], 
+                    status: ['status', 'aktif', 'graduasi'], masa: ['masa', 'kepesertaan', 'lama'], 
+                    aset: ['aset', 'harta', 'kekayaan'], minat: ['minat', 'ketertarikan'], bakat: ['bakat', 'potensi'] 
+                };
                 for(let key in dict) { let foundIdx = -1; for(let i=0; i<headersArr.length; i++){ let h = String(headersArr[i]).toLowerCase(); if(dict[key].some(alias => h.includes(alias))) { foundIdx = i; break; } } obj[key] = foundIdx !== -1 && rowArr[foundIdx] ? String(rowArr[foundIdx]).trim() : ''; }
                 return obj;
             },
             
             prosesUploadPengurus: (e) => {
-                app.universalFileParser(e, 'Memproses Data Pengurus...', async (lines) => {
+                app.universalFileParser(e, 'Menganalisis Data Pengurus...', async (lines) => {
                     let hIdx = 0;
-                    for(let i=0; i<Math.min(20, lines.length); i++) { if(!lines[i]) continue; let str = lines[i].join('').toLowerCase(); if(str.includes('nama') && (str.includes('nik') || str.includes('kk'))) { hIdx = i; break; } }
+                    for(let i=0; i<Math.min(20, lines.length); i++) { if(!lines[i]) continue; let str = lines[i].join('').toLowerCase(); if((str.includes('nama') || str.includes('pengurus')) && (str.includes('nik') || str.includes('kk'))) { hIdx = i; break; } }
                     const headers = lines[hIdx].map(h => String(h).trim()); 
-                    let successCount = 0; let opCount = 0; let currentBatch = db.batch();
-
+                    let successCount = 0; 
+                    
                     Swal.fire({title: 'Mengunggah ke Database...', html: 'Tersimpan: <b class="text-indigo-600 text-2xl">0</b> baris', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
 
-                    for(let i = hIdx + 1; i < lines.length; i++) {
-                        if (!lines[i] || !Array.isArray(lines[i])) continue;
-                        const row = lines[i].map(v => v !== undefined && v !== null ? String(v).trim() : ''); 
-                        if(row.join('') === '') continue;
-                        
-                        const objData = app.smartMapRow(row, headers);
-                        objData.nik = String(objData.nik || '').replace(/[^a-zA-Z0-9]/g, ''); // Anti-Bug Karakter
-                        
-                        if(objData.nama && objData.nik) { 
-                            objData.waktu_upload = firebase.firestore.FieldValue.serverTimestamp(); 
-                            objData.is_synced_with_master = false; 
-                            
-                            let docRef = db.collection("data_pengurus").doc(objData.nik);
-                            currentBatch.set(docRef, objData);
-                            successCount++; opCount++;
+                    let i = hIdx + 1;
+                    const processChunk = async () => {
+                        let currentBatch = db.batch();
+                        let opCount = 0;
 
-                            if(opCount >= 250) { 
-                                try { 
-                                    await currentBatch.commit(); 
-                                    await new Promise(r => setTimeout(r, 50)); // Jeda Napas untuk HP
-                                    const b = Swal.getHtmlContainer().querySelector('b');
-                                    if(b) b.textContent = successCount;
-                                } catch(err) { return handleFirebaseError(err); }
-                                currentBatch = db.batch(); opCount = 0; 
+                        while(i < lines.length && opCount < 250) {
+                            let line = lines[i];
+                            i++;
+                            if (!line || !Array.isArray(line)) continue;
+                            const row = line.map(v => v !== undefined && v !== null ? String(v).trim() : ''); 
+                            if(row.join('') === '') continue;
+                            
+                            const objData = app.smartMapRow(row, headers);
+                            objData.nik = String(objData.nik || '').replace(/[^a-zA-Z0-9]/g, ''); // Anti-Bug Karakter
+                            
+                            if(objData.nama && objData.nik && objData.nik.length > 5) { 
+                                objData.waktu_upload = firebase.firestore.FieldValue.serverTimestamp(); 
+                                objData.is_synced_with_master = false; 
+                                
+                                let docRef = db.collection("data_pengurus").doc(objData.nik);
+                                currentBatch.set(docRef, objData);
+                                successCount++; opCount++;
                             }
                         }
-                    }
-                    if(opCount > 0) { try { await currentBatch.commit(); } catch(err) { return handleFirebaseError(err); } }
 
-                    if(successCount > 0) { Swal.fire('Sukses!', `${successCount} Data Pengurus berhasil terunggah ke Firebase.`, 'success'); app.loadMasterPengurus(); } 
-                    else { Swal.fire('Gagal', 'Sistem tidak mendeteksi kolom "NIK" dan "Nama" di file Excel Anda.', 'error'); }
+                        if(opCount > 0) { 
+                            try { 
+                                await currentBatch.commit(); 
+                                const b = Swal.getHtmlContainer()?.querySelector('b');
+                                if(b) b.textContent = successCount;
+                            } catch(err) { return handleFirebaseError(err); }
+                        }
+
+                        if(i < lines.length) {
+                            setTimeout(processChunk, 50); // Jeda bernafas browser 50ms agar HP tidak nge-Hang
+                        } else {
+                            if(successCount > 0) { Swal.fire('Sukses!', `${successCount} Data Pengurus berhasil terunggah ke Firebase.`, 'success'); app.loadMasterPengurus(); } 
+                            else { Swal.fire('Gagal', 'Sistem tidak mendeteksi kolom "NIK" dan "Nama" di file Excel Anda.', 'error'); }
+                        }
+                    };
+                    
+                    processChunk();
                 });
             },
             
             prosesUploadMaster70k: (e) => {
                 app.universalFileParser(e, 'Menganalisis Master 70k...', async (lines) => {
                     let hIdx = 0;
-                    for(let i=0; i<Math.min(20, lines.length); i++) { if(!lines[i]) continue; let str = lines[i].join('').toLowerCase(); if(str.includes('nama') && (str.includes('nik') || str.includes('kk'))) { hIdx = i; break; } }
+                    for(let i=0; i<Math.min(20, lines.length); i++) { if(!lines[i]) continue; let str = lines[i].join('').toLowerCase(); if((str.includes('nama') || str.includes('pengurus')) && (str.includes('nik') || str.includes('kk'))) { hIdx = i; break; } }
                     const headers = lines[hIdx].map(h => String(h).trim()); 
-                    let successCount = 0; let opCount = 0; let currentBatch = db.batch();
+                    let successCount = 0; 
                     const tbody = document.getElementById('tbody-master-sync'); tbody.innerHTML = '';
                     
                     Swal.fire({title: 'Sinkronisasi Master 70k...', html: 'Terunggah: <b class="text-indigo-600 text-2xl">0</b> baris', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
 
-                    for(let i = hIdx + 1; i < lines.length; i++) {
-                        if (!lines[i] || !Array.isArray(lines[i])) continue;
-                        const row = lines[i].map(v => v !== undefined && v !== null ? String(v).trim() : ''); 
-                        if(row.join('') === '') continue;
-                        
-                        const kpmObj = app.smartMapRow(row, headers);
-                        kpmObj.nik = String(kpmObj.nik || '').replace(/[^a-zA-Z0-9]/g, ''); // Anti-Bug Karakter
-                        
-                        if(kpmObj.nama && kpmObj.nik) {
-                            kpmObj.waktu_sync = firebase.firestore.FieldValue.serverTimestamp();
-                            
-                            let docRef = db.collection("master_kpm").doc(kpmObj.nik);
-                            currentBatch.set(docRef, kpmObj);
-                            successCount++; opCount++;
+                    let i = hIdx + 1;
+                    const processChunk = async () => {
+                        let currentBatch = db.batch();
+                        let opCount = 0;
 
-                            if(successCount <= 20) { tbody.innerHTML += `<tr class="bg-white border-b"><td class="p-4 md:p-6 font-black text-slate-800 uppercase text-[10px] md:text-xs">${kpmObj.nama}</td><td class="p-4 md:p-6 font-mono text-[9px] md:text-xs font-bold text-indigo-600">${kpmObj.nik}</td><td class="p-4 md:p-6 font-mono text-[9px] md:text-xs font-bold text-slate-600">${kpmObj.no_kk||'-'}</td><td class="p-4 md:p-6 text-center"><span class="bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-full text-[8px] md:text-[10px] font-black uppercase tracking-widest">Tersinkron</span></td></tr>`; }
+                        while(i < lines.length && opCount < 250) {
+                            let line = lines[i];
+                            i++;
+                            if (!line || !Array.isArray(line)) continue;
+                            const row = line.map(v => v !== undefined && v !== null ? String(v).trim() : ''); 
+                            if(row.join('') === '') continue;
                             
-                            if(opCount >= 250) { 
-                                try { 
-                                    await currentBatch.commit(); 
-                                    await new Promise(r => setTimeout(r, 50)); // Jeda Napas untuk HP
-                                    const b = Swal.getHtmlContainer().querySelector('b');
-                                    if(b) b.textContent = successCount;
-                                } catch(err) { return handleFirebaseError(err); }
-                                currentBatch = db.batch(); opCount = 0; 
+                            const kpmObj = app.smartMapRow(row, headers);
+                            kpmObj.nik = String(kpmObj.nik || '').replace(/[^a-zA-Z0-9]/g, ''); // Anti-Bug Karakter
+                            
+                            if(kpmObj.nama && kpmObj.nik && kpmObj.nik.length > 5) {
+                                kpmObj.waktu_sync = firebase.firestore.FieldValue.serverTimestamp();
+                                
+                                let docRef = db.collection("master_kpm").doc(kpmObj.nik);
+                                currentBatch.set(docRef, kpmObj);
+                                successCount++; opCount++;
+
+                                if(successCount <= 20) { 
+                                    tbody.innerHTML += `<tr class="bg-white border-b"><td class="p-4 md:p-6 font-black text-slate-800 uppercase text-[10px] md:text-xs">${kpmObj.nama}</td><td class="p-4 md:p-6 font-mono text-[9px] md:text-xs font-bold text-indigo-600">${kpmObj.nik}</td><td class="p-4 md:p-6 font-mono text-[9px] md:text-xs font-bold text-slate-600">${kpmObj.no_kk||'-'}</td><td class="p-4 md:p-6 text-center"><span class="bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-full text-[8px] md:text-[10px] font-black uppercase tracking-widest">Tersinkron</span></td></tr>`; 
+                                }
                             }
                         }
-                    }
-                    if(opCount > 0) { try { await currentBatch.commit(); } catch(err) { return handleFirebaseError(err); } }
 
-                    if(successCount > 0) { Swal.fire('Sinkronisasi Sukses!', `Total Data Terunggah: ${successCount} Baris.`, 'success'); } 
-                    else { Swal.fire('Gagal', 'Sistem tidak mendeteksi kolom "NIK" dan "Nama" di file Excel Anda.', 'error'); }
+                        if(opCount > 0) { 
+                            try { 
+                                await currentBatch.commit(); 
+                                const b = Swal.getHtmlContainer()?.querySelector('b');
+                                if(b) b.textContent = successCount;
+                            } catch(err) { return handleFirebaseError(err); }
+                        }
+
+                        if(i < lines.length) {
+                            setTimeout(processChunk, 50); // Jeda bernafas browser 50ms agar HP tidak nge-Hang
+                        } else {
+                            if(successCount > 0) { Swal.fire('Sinkronisasi Sukses!', `Total Data Terunggah: ${successCount} Baris.`, 'success'); } 
+                            else { Swal.fire('Gagal', 'Sistem tidak mendeteksi kolom "NIK" dan "Nama" di file Excel Anda.', 'error'); }
+                        }
+                    };
+                    
+                    processChunk();
                 });
             },
 
-            smartMapSDM: (rowArr, headersArr) => {
-                let obj = {}; const dict = { nama: ['nama', 'pendamping', 'sdm'], desa: ['desa', 'wilayah', 'kelurahan', 'dampingan', 'tugas'], nip: ['nip', 'nomor induk'], nik: ['nik', 'no ktp', 'ktp'], ttl: ['ttl', 'tempat tanggal lahir'], alamat: ['alamat', 'domisili', 'rt'], kecamatan: ['kecamatan', 'kec'], minat: ['minat'], bakat: ['bakat', 'potensi'], hobi: ['hobi', 'hobbi'], jabatan: ['jabatan', 'posisi', 'jabatan sdm'], pendidikan: ['pendidikan', 'lulusan', 'sekolah'] };
-                for(let key in dict) { let foundIdx = -1; for(let i=0; i<headersArr.length; i++) { let h = String(headersArr[i]).toLowerCase(); if(dict[key].some(alias => h.includes(alias))) { foundIdx = i; break; } } obj[key] = foundIdx !== -1 && rowArr[foundIdx] ? String(rowArr[foundIdx]).trim() : ''; } return obj;
-            },
-            
             prosesUploadSDM: (e) => {
-                app.universalFileParser(e, 'Merangkai Akun SDM...', async (lines) => {
+                app.universalFileParser(e, 'Menganalisis Akun SDM...', async (lines) => {
                     let hIdx = 0;
                     for(let i=0; i<Math.min(20, lines.length); i++) { if(!lines[i]) continue; let str = lines[i].join('').toLowerCase(); if((str.includes('nama') || str.includes('sdm')) && (str.includes('desa') || str.includes('wilayah') || str.includes('kecamatan'))) { hIdx = i; break; } }
                     const headers = lines[hIdx].map(h => String(h).trim()); 
@@ -1088,29 +1119,43 @@
                         if(sdmObj.nama && sdmObj.desa) { if(!grps[sdmObj.nama]) grps[sdmObj.nama] = { desas: new Set(), data: sdmObj }; grps[sdmObj.nama].desas.add(sdmObj.desa); } 
                     } 
                     
-                    let count = 0; let opCount = 0; let currentBatch = db.batch();
+                    let count = 0; 
+                    const usernames = Object.keys(grps);
+                    let uIdx = 0;
                     
                     Swal.fire({title: 'Membuat Akun SDM...', html: 'Terbuat: <b class="text-indigo-600 text-2xl">0</b> akun', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
 
-                    for(let nm in grps) { 
-                        const usr = generateUsernameCerdes(nm); const desaStr = Array.from(grps[nm].desas).join(' / '); const sData = grps[nm].data;
-                        let docRef = db.collection("users_sdm").doc(usr);
-                        currentBatch.set(docRef, { nama: nm, username: usr, password: "12345", desa: desaStr, role: "SDM", nip: sData.nip||'', nik: sData.nik||'', ttl: sData.ttl||'', alamat: sData.alamat||'', kecamatan: sData.kecamatan||'', minat: sData.minat||'', bakat: sData.bakat||'', hobi: sData.hobi||'', jabatan: sData.jabatan||'', pendidikan: sData.pendidikan||'' }); 
-                        count++; opCount++;
-                        if(opCount >= 250) { 
+                    const processChunk = async () => {
+                        let currentBatch = db.batch();
+                        let opCount = 0;
+
+                        while(uIdx < usernames.length && opCount < 250) {
+                            let nm = usernames[uIdx];
+                            uIdx++;
+                            const usr = generateUsernameCerdes(nm); const desaStr = Array.from(grps[nm].desas).join(' / '); const sData = grps[nm].data;
+                            let docRef = db.collection("users_sdm").doc(usr);
+                            currentBatch.set(docRef, { nama: nm, username: usr, password: "12345", desa: desaStr, role: "SDM", nip: sData.nip||'', nik: sData.nik||'', ttl: sData.ttl||'', alamat: sData.alamat||'', kecamatan: sData.kecamatan||'', minat: sData.minat||'', bakat: sData.bakat||'', hobi: sData.hobi||'', jabatan: sData.jabatan||'', pendidikan: sData.pendidikan||'' }); 
+                            count++; opCount++;
+                        }
+
+                        if(opCount > 0) { 
                             try { 
                                 await currentBatch.commit(); 
-                                await new Promise(r => setTimeout(r, 50)); // Jeda Napas untuk HP
-                                const b = Swal.getHtmlContainer().querySelector('b');
+                                const b = Swal.getHtmlContainer()?.querySelector('b');
                                 if(b) b.textContent = count;
                             } catch(err) { return handleFirebaseError(err); }
-                            currentBatch = db.batch(); opCount = 0; 
                         }
-                    } 
-                    if(opCount > 0) { try { await currentBatch.commit(); } catch(err) { return handleFirebaseError(err); } }
 
-                    if(count === 0) return Swal.fire('Gagal', 'Tidak menemukan kolom "Nama" dan "Desa" di Excel Bapak.', 'error');
-                    Swal.fire('Sukses Mata Cerdas!', `${count} Akun SDM berhasil dibuat ke Database!`, 'success'); app.loadDataSDM(); 
+                        if(uIdx < usernames.length) {
+                            setTimeout(processChunk, 50); // Jeda bernafas browser 50ms agar HP tidak nge-Hang
+                        } else {
+                            if(count === 0) return Swal.fire('Gagal', 'Tidak menemukan kolom "Nama" dan "Desa" di Excel Bapak.', 'error');
+                            Swal.fire('Sukses Mata Cerdas!', `${count} Akun SDM berhasil dibuat ke Database!`, 'success'); 
+                            app.loadDataSDM(); 
+                        }
+                    };
+                    
+                    processChunk();
                 });
             },
             
