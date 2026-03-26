@@ -5,13 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SI-PKH TAPIN TERPADU</title>
     
-    <!-- CSS & JS Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <!-- Library SheetJS untuk Baca/Export Semua Jenis Excel & CSV -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
     <script>
@@ -29,14 +27,12 @@
         .cv-grid { display: grid; grid-template-columns: 100px 1fr; gap: 8px; font-size: 0.8rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 8px; margin-bottom: 8px; }
         .cv-label { color: #64748b; font-weight: 700; text-transform: uppercase; font-size: 9px; }
         .cv-value { color: #1e293b; font-weight: 700; text-transform: uppercase; font-size: 11px; }
-        /* Tabel Anti Terpotong di HP */
         .table-mobile-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; width: 100%; border-radius: 1rem; border: 1px solid #f1f5f9; background: white; }
         .table-mobile { width: 100%; text-align: left; white-space: nowrap; font-size: 0.8rem; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased overflow-hidden">
 
-    <!-- ================= HALAMAN LOGIN ================= -->
     <div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-indigo-700 to-blue-600 p-4 overflow-y-auto">
         <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-sm md:max-w-md p-6 md:p-8 text-center border border-white/20">
             <div class="inline-flex items-center justify-center w-20 h-20 md:w-24 md:h-24 bg-indigo-50 rounded-3xl mb-4 shadow-inner"><i class="fas fa-hands-holding-child text-4xl md:text-5xl text-indigo-600"></i></div>
@@ -51,12 +47,9 @@
         </div>
     </div>
 
-    <!-- ================= APLIKASI UTAMA ================= -->
     <div id="app-container" class="hidden h-screen flex w-full">
-        <!-- Sidebar Overlay (Mobile) -->
         <div id="sidebar-overlay" onclick="app.toggleSidebar()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 hidden lg:hidden"></div>
         
-        <!-- SIDEBAR -->
         <aside id="sidebar" class="bg-slate-900 text-white w-64 md:w-72 flex-shrink-0 fixed lg:static inset-y-0 left-0 transform -translate-x-full lg:translate-x-0 z-50 transition-transform duration-300 shadow-2xl flex flex-col h-full border-r border-slate-800">
             <div class="p-5 border-b border-slate-800/50 flex justify-between items-center">
                 <div><h5 class="text-xl md:text-2xl font-black tracking-tighter text-indigo-400">SI-PKH <span class="text-white">TAPIN</span></h5><p class="text-[9px] md:text-[10px] font-bold text-emerald-400 uppercase tracking-widest mt-1" id="sidebar-role">Hak Akses</p></div>
@@ -94,26 +87,31 @@
             <div class="p-3 border-t border-slate-800/50 mt-auto"><button onclick="app.logout()" class="w-full flex items-center justify-center px-4 py-3 text-[10px] font-black rounded-2xl bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white transition-all uppercase tracking-widest"><i class="fas fa-power-off me-2"></i> Keluar</button></div>
         </aside>
 
-        <!-- KONTEN DINAMIS -->
         <main class="flex-1 flex flex-col h-full overflow-hidden bg-slate-100 w-full">
             <header class="bg-white px-4 md:px-6 py-4 flex items-center justify-between z-10 shadow-sm border-b border-slate-200">
                 <div class="flex items-center">
                     <button onclick="app.toggleSidebar()" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 text-slate-500 me-3"><i class="fas fa-bars"></i></button>
                     <h2 id="page-title" class="text-lg md:text-xl font-black text-slate-800 tracking-tight">Dashboard</h2>
                 </div>
-                <span class="inline-flex items-center px-3 py-1.5 rounded-full text-[9px] md:text-[10px] font-black bg-emerald-100 text-emerald-700 uppercase tracking-widest"><span class="w-2 h-2 bg-emerald-500 rounded-full mr-1.5 animate-pulse"></span> Online</span>
+                <div class="flex items-center gap-3">
+                    <span class="hidden md:inline-flex items-center px-3 py-1.5 rounded-full text-[9px] font-black bg-emerald-100 text-emerald-700 uppercase tracking-widest mr-2"><span class="w-2 h-2 bg-emerald-500 rounded-full mr-1.5 animate-pulse"></span> Online</span>
+                    <div class="text-right hidden sm:block">
+                        <p class="text-[10px] md:text-xs font-black text-slate-800 uppercase" id="header-user-name">Guest</p>
+                        <p class="text-[8px] md:text-[9px] font-bold text-slate-500 uppercase tracking-widest" id="header-user-role">Belum Login</p>
+                    </div>
+                    <div class="w-9 h-9 md:w-10 md:h-10 rounded-full bg-indigo-100 border-2 border-indigo-200 flex items-center justify-center overflow-hidden shadow-sm">
+                        <img src="https://ui-avatars.com/api/?name=U&background=ebf4ff&color=4f46e5" id="header-user-avatar" class="w-full h-full object-cover">
+                    </div>
+                </div>
             </header>
 
             <div class="flex-1 overflow-y-auto p-4 md:p-8 pb-24 w-full">
                 
-                <!-- 1. DASHBOARD -->
                 <div id="page-dashboard" class="page-section" style="display: block;">
                     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
                         <div class="bg-white rounded-2xl md:rounded-[2rem] p-4 md:p-6 shadow-sm border border-slate-100"><p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest">Total KPM</p><h3 class="text-2xl md:text-3xl font-black text-indigo-600 mt-1 md:mt-2">12,450</h3></div>
                         <div class="bg-white rounded-2xl md:rounded-[2rem] p-4 md:p-6 shadow-sm border border-slate-100"><p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest">Sembako</p><h3 class="text-2xl md:text-3xl font-black text-emerald-600 mt-1 md:mt-2">35,100</h3></div>
                         <div class="bg-white rounded-2xl md:rounded-[2rem] p-4 md:p-6 shadow-sm border border-slate-100"><p class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest">SDM Aktif</p><h3 class="text-2xl md:text-3xl font-black text-purple-600 mt-1 md:mt-2" id="dash-sdm-tot">0</h3></div>
-                        
-                        <!-- KOTAK BARU: ABSEN P2K2 KLIKABLE -->
                         <div class="bg-rose-50 rounded-2xl md:rounded-[2rem] p-4 md:p-6 shadow-sm border border-rose-100 cursor-pointer hover:bg-rose-100 transition-all group" onclick="app.showAbsenKPM()">
                             <p class="text-[9px] md:text-[10px] font-black text-rose-600 uppercase tracking-widest flex justify-between items-center">Absen P2K2 <i class="fas fa-hand-pointer text-rose-400 group-hover:animate-bounce"></i></p>
                             <h3 class="text-2xl md:text-3xl font-black text-rose-700 mt-1 md:mt-2" id="dash-absen-p2k2">0</h3>
@@ -121,12 +119,11 @@
                     </div>
                     <div class="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl md:rounded-[2.5rem] p-6 md:p-10 text-white shadow-xl relative overflow-hidden">
                         <i class="fas fa-shield-alt absolute -right-5 -bottom-5 md:-right-10 md:-bottom-10 text-[10rem] md:text-[15rem] opacity-10"></i>
-                        <h4 class="text-xl md:text-2xl font-black mb-2 md:mb-3 relative z-10">Fitur Universal & Pemetaan Aktif!</h4>
-                        <p class="text-indigo-100 text-xs md:text-sm font-medium relative z-10 leading-relaxed max-w-2xl opacity-90">Sistem sekarang mendukung upload file .xls, .xlsx, .csv, dan .txt secara langsung. Peta GPS telah dilengkapi fitur Filter Desa dan Export Data Excel!</p>
+                        <h4 class="text-xl md:text-2xl font-black mb-2 md:mb-3 relative z-10">Fitur Universal & Pelindung Firebase Aktif!</h4>
+                        <p class="text-indigo-100 text-xs md:text-sm font-medium relative z-10 leading-relaxed max-w-2xl opacity-90">Sistem dilengkapi pelindung error Firebase (Akan memunculkan peringatan jika Aturan Firestore Anda terkunci). Mendukung upload semua file Excel/CSV, Peta GPS Desa, dan Data KPM Dummy siap dilihat!</p>
                     </div>
                 </div>
 
-                <!-- 2. PROFIL KPM (AUTO-SYNC NIK/KK) -->
                 <div id="page-profil-kpm" class="page-section w-full">
                     <div class="bg-white rounded-2xl md:rounded-[2rem] shadow-sm p-4 md:p-6 mb-6 border border-slate-100 flex flex-col md:flex-row gap-3 items-center w-full">
                         <div class="relative w-full">
@@ -135,6 +132,7 @@
                         </div>
                         <div class="flex flex-col md:flex-row gap-2 w-full md:w-auto">
                             <button onclick="app.cariKPM()" class="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-6 md:px-10 py-3 md:py-4 rounded-xl md:rounded-2xl font-black shadow-lg transition-all tracking-widest text-[10px] md:text-xs uppercase">Cari Data</button>
+                            <button onclick="app.loadDummyKPM()" class="w-full md:w-auto bg-slate-200 hover:bg-slate-300 text-slate-600 px-6 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl font-black shadow-sm transition-all tracking-widest text-[10px] md:text-xs uppercase"><i class="fas fa-eye md:mr-2"></i> Lihat Dummy</button>
                             <button onclick="app.navigate('upload-pengurus', document.getElementById('nav-upload-pengurus'))" class="admin-only hidden w-full md:w-auto bg-amber-500 hover:bg-amber-600 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-black shadow-lg transition-all tracking-widest text-[10px] md:text-xs uppercase"><i class="fas fa-file-import md:mr-2"></i> Import Pengurus</button>
                         </div>
                     </div>
@@ -191,7 +189,6 @@
                     </div>
                 </div>
 
-                <!-- 3 & 4. Master ART & KOMPONEN (Tabel Universal) -->
                 <div id="page-keluarga" class="page-section w-full">
                     <div class="bg-white rounded-2xl md:rounded-[2rem] shadow-sm p-5 md:p-8 border border-slate-100 mb-6">
                         <div class="flex flex-col md:flex-row justify-between mb-6 gap-4 border-b pb-4 border-slate-50">
@@ -212,7 +209,6 @@
                     </div>
                 </div>
 
-                <!-- 5. MAPS (GPS & EXPORT) -->
                 <div id="page-maps" class="page-section w-full">
                     <div class="bg-white rounded-2xl md:rounded-[2.5rem] p-5 md:p-8 border border-slate-100 shadow-sm mb-6">
                         <h3 class="text-lg md:text-xl font-black text-slate-800 mb-6 tracking-tight"><i class="fas fa-map-location-dot text-rose-500 mr-2 md:mr-3"></i> Rekam Koordinat Lokasi</h3>
@@ -230,7 +226,6 @@
                     <div class="bg-white rounded-2xl md:rounded-[2rem] p-5 md:p-6 border border-slate-100 shadow-sm overflow-hidden">
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
                             <h3 class="text-md md:text-lg font-black text-slate-800"><i class="fas fa-map-marked-alt text-amber-500 mr-2"></i> Peta Sebaran KPM</h3>
-                            <!-- TOMBOL FILTER DAN EXPORT -->
                             <div class="flex flex-col sm:flex-row w-full md:w-auto gap-2">
                                 <select id="filter-peta-desa" class="bg-slate-50 border border-slate-200 rounded-xl p-2 outline-none font-bold text-[10px] md:text-xs focus:border-indigo-500">
                                     <option value="">-- Semua Desa --</option>
@@ -248,7 +243,6 @@
                     </div>
                 </div>
 
-                <!-- 6. P2K2 (ABSENSI) -->
                 <div id="page-p2k2" class="page-section w-full">
                     <div id="p2k2-list-view">
                         <div class="flex flex-col md:flex-row justify-between mb-6 md:mb-10 items-start md:items-center gap-4">
@@ -278,19 +272,16 @@
                     </div>
                 </div>
 
-                <!-- 7. PENYALURAN -->
                 <div id="page-penyaluran" class="page-section w-full">
                     <div class="bg-white rounded-2xl md:rounded-[2.5rem] p-6 md:p-10 border shadow-sm w-full"><h3 class="text-lg md:text-xl font-black text-slate-800 mb-6 md:mb-8 tracking-tight"><i class="fas fa-hand-holding-dollar text-emerald-500 mr-2 md:mr-3"></i> Penyaluran Bantuan KPM</h3><div class="bg-emerald-600 rounded-2xl md:rounded-[2rem] p-6 md:p-10 text-white text-center shadow-xl shadow-emerald-200 relative overflow-hidden"><i class="fas fa-money-bill-wave absolute -right-5 -top-5 md:-right-10 md:-top-10 text-[6rem] md:text-[10rem] opacity-20 transform rotate-12"></i><h4 class="text-[10px] md:text-xs font-black uppercase tracking-widest md:tracking-[0.3em] mb-2 md:mb-4 opacity-80 relative z-10">Progress Penyaluran Tahap 1</h4><div class="text-5xl md:text-7xl font-black mb-4 md:mb-6 relative z-10">85%</div><div class="w-full max-w-lg mx-auto bg-emerald-800/50 rounded-full h-3 md:h-4 mb-4 md:mb-6 p-1 relative z-10"><div class="bg-white h-full rounded-full shadow-lg" style="width: 85%"></div></div><div class="flex flex-col sm:flex-row gap-3 md:gap-4 max-w-lg mx-auto relative z-10"><input type="text" class="flex-1 bg-white text-slate-800 px-4 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl font-black outline-none text-center sm:text-left text-xs md:text-sm" placeholder="SCAN KKS / NIK..."><button class="w-full sm:w-auto bg-emerald-800 hover:bg-emerald-900 text-white px-6 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl font-black text-[10px] md:text-xs uppercase tracking-widest transition-all" onclick="app.simpanAlert('Penyaluran KPM ini sukses ditandai!')">TANDAI</button></div></div></div>
                 </div>
 
-                <!-- 8, 9, 10. UPLOAD UNIVERSAL (XLS, XLSX, CSV, TXT) -->
                 <div id="page-upload-pengurus" class="page-section w-full">
                     <div class="bg-white rounded-2xl md:rounded-[2.5rem] shadow-sm p-5 md:p-10 w-full border border-slate-100">
                         <div class="flex items-center gap-4 md:gap-6 mb-6 md:mb-10 border-b border-slate-50 pb-6 md:pb-8"><div class="w-12 h-12 md:w-16 md:h-16 bg-amber-100 rounded-2xl md:rounded-3xl flex items-center justify-center text-amber-600 text-xl md:text-3xl"><i class="fas fa-file-invoice"></i></div><div><h2 class="text-lg md:text-2xl font-black text-slate-800 tracking-tight">Upload Data Pengurus</h2><p class="text-amber-500 text-[10px] md:text-sm font-bold uppercase tracking-widest mt-1">Smart Parse (Semua Format)</p></div></div>
                         <div class="bg-amber-500 rounded-2xl md:rounded-[2.5rem] p-6 md:p-10 mb-6 text-white relative overflow-hidden text-center cursor-pointer shadow-xl shadow-amber-200" onclick="document.getElementById('file-pengurus-csv').click()">
                             <i class="fas fa-file-excel absolute -right-5 -bottom-5 text-[8rem] md:text-[15rem] opacity-10"></i>
                             <div class="relative z-10 border-2 md:border-4 border-dashed border-white/50 bg-amber-600/50 hover:bg-amber-600 rounded-xl md:rounded-3xl p-6 md:p-10 transition-all"><i class="fas fa-file-import text-4xl md:text-6xl text-amber-200 mb-3 md:mb-4 block"></i><h4 class="font-black uppercase text-[10px] md:text-sm tracking-widest text-white">KLIK PILIH FILE (.XLS, .CSV, .TXT)</h4></div>
-                            <!-- ACCEPT DIPERLUAS UNTUK SEMUA FORMAT -->
                             <input type="file" id="file-pengurus-csv" class="hidden" accept=".csv, .txt, .xls, .xlsx" onchange="app.prosesUploadPengurus(event)">
                         </div>
                     </div>
@@ -334,12 +325,11 @@
         </main>
     </div>
 
-    <!-- Firebase SDK v8 -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
     <script>
-        // INIT FIREBASE TERKUNCI (DILARANG UBAH)
+        // INIT FIREBASE TERKUNCI 
         let db;
         try {
             const firebaseConfig = { apiKey: "AIzaSyDfwKDVRlD6cNEHiUKPRTtdpdtViW1oSgA", authDomain: "pkh-tapin.firebaseapp.com", projectId: "pkh-tapin", storageBucket: "pkh-tapin.firebasestorage.app", messagingSenderId: "647888686405", appId: "1:647888686405:web:747a554d874a157411022c" };
@@ -349,6 +339,16 @@
 
         const dataMasterKPM = { "Tambarangan": ["Siti Aminah", "Norhayati", "Rusmini", "Karmila"], "Binuang": ["Hj. Maimunah", "Juleha", "Fatmawati"], "Bakarangan": ["Ibu Tati", "Rina S", "Yulianti"] };
         let absenDataGlobal = []; // Wadah Data Absensi untuk Pop-up Dashboard
+
+        // Pelindung Firebase Error
+        function handleFirebaseError(err) {
+            console.error(err);
+            if (err.message.includes("Missing or insufficient permissions")) {
+                Swal.fire('Akses Ditolak!', 'Firebase tidak mau menyimpan. Pastikan tab "Rules" (Aturan) Firestore Bapak di-set ke: \n\nallow read, write: if true;', 'error');
+            } else {
+                Swal.fire('Gagal Menyimpan', err.message, 'error');
+            }
+        }
 
         function generateUsernameCerdes(namaLengkap) {
             let n = namaLengkap.split(',')[0].replace(/\./g, '').toLowerCase().trim(); let k = n.split(/\s+/);
@@ -364,6 +364,8 @@
                 Swal.fire({title: 'Autentikasi...', didOpen:()=>Swal.showLoading()});
                 if(u.toLowerCase() === 'admin') {
                     app.currentUser = "Administrator Kabupaten"; app.isAdmin = true; document.getElementById('sidebar-role').innerText = "Kontrol Kabupaten";
+                    document.getElementById('header-user-name').innerText = "Admin Kabupaten"; document.getElementById('header-user-role').innerText = "Akses Penuh";
+                    document.getElementById('header-user-avatar').src = "https://ui-avatars.com/api/?name=Admin+Kab&background=ebf4ff&color=4f46e5";
                     document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block'); 
                     document.querySelectorAll('.admin-only.hidden').forEach(el => el.classList.remove('hidden')); 
                     Swal.fire({icon:'success',title:'Login Admin Sukses',timer:800,showConfirmButton:false}).then(() => { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-container').classList.remove('hidden'); app.loadDashboardStats(); }); return;
@@ -371,6 +373,8 @@
                 db.collection("users_sdm").where("username", "==", u).where("password", "==", p).get().then(snap => {
                     if(!snap.empty) {
                         const d = snap.docs[0].data(); app.currentUser = "SDM: " + d.nama; app.isAdmin = false; document.getElementById('sidebar-role').innerText = "Pendamping Lapangan";
+                        document.getElementById('header-user-name').innerText = d.nama; document.getElementById('header-user-role').innerText = "Pendamping Lapangan";
+                        document.getElementById('header-user-avatar').src = `https://ui-avatars.com/api/?name=${d.nama.replace(/\s+/g, '+')}&background=ebf4ff&color=4f46e5`;
                         document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
                         if(d.desa) {
                             let d1 = d.desa.split(/[/,]/)[0].trim();
@@ -382,7 +386,7 @@
                         }
                         Swal.fire({icon:'success',title:'Login SDM Berhasil',timer:800,showConfirmButton:false}).then(() => { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-container').classList.remove('hidden'); app.loadDashboardStats(); });
                     } else { Swal.fire('Gagal', 'Username atau Password salah.', 'error'); }
-                });
+                }).catch(handleFirebaseError);
             },
             logout: () => location.reload(),
             navigate: (id, el) => {
@@ -401,14 +405,10 @@
                     let totalAbsen = 0; absenDataGlobal = [];
                     snap.forEach(doc => {
                         const d = doc.data();
-                        if(d.absensi) {
-                            d.absensi.forEach(abs => {
-                                if(!abs.hadir) { totalAbsen++; absenDataGlobal.push({nama: abs.nama, desa: d.desa, modul: d.modul, ket: abs.ket}); }
-                            });
-                        }
+                        if(d.absensi) { d.absensi.forEach(abs => { if(!abs.hadir) { totalAbsen++; absenDataGlobal.push({nama: abs.nama, desa: d.desa, modul: d.modul, ket: abs.ket}); } }); }
                     });
                     document.getElementById('dash-absen-p2k2').innerText = totalAbsen;
-                });
+                }).catch(handleFirebaseError);
             },
             showAbsenKPM: () => {
                 if(absenDataGlobal.length === 0) return Swal.fire('Info', 'Semua KPM Hadir pada kegiatan bulan ini! 🎉', 'info');
@@ -428,18 +428,37 @@
                         const data = new Uint8Array(ev.target.result);
                         const workbook = XLSX.read(data, {type: 'array'});
                         const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                        // Mengonversi excel menjadi array of arrays [ [baris1], [baris2] ]
                         const jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1, defval: "", raw: false}); 
                         if(jsonData.length < 2) throw new Error("Data Kosong");
                         callback(jsonData);
-                    } catch(err) {
-                        Swal.fire('Error', 'Gagal membaca format. Pastikan file Excel/CSV/TXT yang diupload benar.', 'error');
-                    }
+                    } catch(err) { Swal.fire('Error', 'Gagal membaca format. Pastikan file Excel/CSV/TXT yang diupload benar.', 'error'); }
                 };
-                reader.readAsArrayBuffer(f); // Menggunakan ArrayBuffer karena mendukung XLS/XLSX/CSV secara universal
+                reader.readAsArrayBuffer(f);
             },
 
-            // ================= PROFIL KPM & AUTO-SYNC MASTER 70K =================
+            // ================= PROFIL KPM & DATA DUMMY =================
+            loadDummyKPM: () => {
+                const dummyData = { nik: "6305012345678901", no_kk: "6305019876543210", nama: "IBU AMINAH (CONTOH)", ttl: "Tapin, 15 Agustus 1985", alamat: "Desa Tambarangan RT 03 RW 01", kategori: "PKH & Sembako", bank: "Bank Mandiri", nominal: "600000", status: "Aktif", pekerjaan: "Ibu Rumah Tangga", omset: "0", is_synced_with_master: true };
+                app.currentKPMNik = dummyData.nik;
+                document.getElementById('cv-nama').innerText = dummyData.nama; document.getElementById('cv-almt').innerText = dummyData.alamat;
+                document.getElementById('cv-val-kk').innerText = dummyData.no_kk; document.getElementById('cv-val-nik').innerText = dummyData.nik;
+                document.getElementById('cv-val-ttl').innerText = dummyData.ttl; document.getElementById('cv-val-alamat').innerText = dummyData.alamat;
+                document.getElementById('cv-val-kategori').innerText = dummyData.kategori; document.getElementById('cv-val-umur').innerText = "39 Tahun";
+                document.getElementById('cv-val-bank').innerText = dummyData.bank; document.getElementById('cv-val-nominal').innerText = 'Rp ' + dummyData.nominal; 
+                document.getElementById('cv-val-status').innerText = dummyData.status; document.getElementById('cv-val-pekerjaan').innerText = dummyData.pekerjaan; 
+                document.getElementById('cv-val-omset').innerText = 'Rp ' + dummyData.omset;
+                
+                document.getElementById('tbody-art').innerHTML = `
+                    <tr class="bg-white border-b hover:bg-slate-50 transition-all"><td class="p-2 md:p-3 font-black text-slate-800 uppercase text-[9px] md:text-[11px]">Budi Santoso</td><td class="p-2 md:p-3 text-center font-bold text-[9px] md:text-[11px]">16</td><td class="p-2 md:p-3 text-[8px] md:text-[9px] font-black uppercase text-slate-500">Anak</td><td class="p-2 md:p-3 text-center"><button class="text-blue-500 mr-2 md:mr-3"><i class="fas fa-pen"></i></button><button class="text-rose-500"><i class="fas fa-trash"></i></button></td></tr>
+                    <tr class="bg-white border-b hover:bg-slate-50 transition-all"><td class="p-2 md:p-3 font-black text-slate-800 uppercase text-[9px] md:text-[11px]">Siti Nurhaliza</td><td class="p-2 md:p-3 text-center font-bold text-[9px] md:text-[11px]">4</td><td class="p-2 md:p-3 text-[8px] md:text-[9px] font-black uppercase text-slate-500">Anak</td><td class="p-2 md:p-3 text-center"><button class="text-blue-500 mr-2 md:mr-3"><i class="fas fa-pen"></i></button><button class="text-rose-500"><i class="fas fa-trash"></i></button></td></tr>
+                `;
+                document.getElementById('tbody-komp').innerHTML = `
+                    <tr class="bg-white border-b hover:bg-slate-50 transition-all"><td class="p-2 md:p-3 font-black text-slate-800 uppercase text-[9px] md:text-[11px]">Budi Santoso</td><td class="p-2 md:p-3 text-center"><span class="bg-blue-100 text-blue-800 text-[7px] md:text-[8px] font-black px-2 py-1 rounded-full uppercase tracking-widest">Anak SMA</span></td><td class="p-2 md:p-3 text-[9px] font-bold text-slate-500 uppercase">SMAN 1 Tapin</td><td class="p-2 md:p-3 text-center"><button class="text-blue-500 mr-2 md:mr-3"><i class="fas fa-pen"></i></button><button class="text-rose-500"><i class="fas fa-trash"></i></button></td></tr>
+                    <tr class="bg-white border-b hover:bg-slate-50 transition-all"><td class="p-2 md:p-3 font-black text-slate-800 uppercase text-[9px] md:text-[11px]">Siti Nurhaliza</td><td class="p-2 md:p-3 text-center"><span class="bg-pink-100 text-pink-800 text-[7px] md:text-[8px] font-black px-2 py-1 rounded-full uppercase tracking-widest">Balita</span></td><td class="p-2 md:p-3 text-[9px] font-bold text-slate-500 uppercase">-</td><td class="p-2 md:p-3 text-center"><button class="text-blue-500 mr-2 md:mr-3"><i class="fas fa-pen"></i></button><button class="text-rose-500"><i class="fas fa-trash"></i></button></td></tr>
+                `;
+                document.getElementById('cv-kpm').classList.remove('hidden');
+            },
+
             cariKPM: () => { 
                 const val = document.getElementById('search-nik').value.trim();
                 if(!val) return Swal.fire('Peringatan', 'Masukkan NIK Pengurus!', 'warning');
@@ -448,11 +467,11 @@
                 db.collection("data_pengurus").doc(val).get().then(doc => {
                     if(doc.exists) { app.checkAndSyncKPM(doc.data()); } else {
                         db.collection("master_kpm").doc(val).get().then(mDoc => {
-                            if(mDoc.exists) { let pengurusData = mDoc.data(); db.collection("data_pengurus").doc(val).set(pengurusData).then(() => { app.checkAndSyncKPM(pengurusData); }); } 
+                            if(mDoc.exists) { let pengurusData = mDoc.data(); db.collection("data_pengurus").doc(val).set(pengurusData).then(() => { app.checkAndSyncKPM(pengurusData); }).catch(handleFirebaseError); } 
                             else { Swal.fire('Tidak Ditemukan', 'NIK tidak terdaftar sebagai Pengurus PKH.', 'info'); }
-                        });
+                        }).catch(handleFirebaseError);
                     }
-                }).catch(e => Swal.fire('Error', e.message, 'error'));
+                }).catch(handleFirebaseError);
             },
 
             checkAndSyncKPM: (data) => {
@@ -460,7 +479,7 @@
                 if(data.is_synced_with_master) { app.renderProfilAndLoadSub(data); } else {
                     Swal.fire({title:'Mencari Keluarga 70k...', didOpen:()=>Swal.showLoading()});
                     let targetKK = data.no_kk;
-                    if(!targetKK) { db.collection("master_kpm").doc(data.nik).get().then(md => { if(md.exists && md.data().no_kk) { targetKK = md.data().no_kk; data.no_kk = targetKK; app.runSyncKeluarga(data, targetKK); } else { db.collection("data_pengurus").doc(data.nik).update({is_synced_with_master: true}); app.renderProfilAndLoadSub(data); } }); } else { app.runSyncKeluarga(data, targetKK); }
+                    if(!targetKK) { db.collection("master_kpm").doc(data.nik).get().then(md => { if(md.exists && md.data().no_kk) { targetKK = md.data().no_kk; data.no_kk = targetKK; app.runSyncKeluarga(data, targetKK); } else { db.collection("data_pengurus").doc(data.nik).update({is_synced_with_master: true}); app.renderProfilAndLoadSub(data); } }).catch(handleFirebaseError); } else { app.runSyncKeluarga(data, targetKK); }
                 }
             },
 
@@ -474,8 +493,8 @@
                         batchPromises.push(db.collection("kpm_art").add({ pengurus_nik: data.nik, nama: d.nama, umur: u, hubungan: hub }));
                         if(isK || u < 20 || u > 60) { let kl = kat ? kat : (u < 6 ? 'Balita' : u < 13 ? 'Anak SD' : u < 16 ? 'Anak SMP' : u < 19 ? 'Anak SMA' : 'Lansia'); batchPromises.push(db.collection("kpm_komponen").add({ pengurus_nik: data.nik, nama: d.nama, kategori: kl, keterangan: '-' })); }
                     });
-                    Promise.all(batchPromises).then(() => { db.collection("data_pengurus").doc(data.nik).update({no_kk: targetKK, is_synced_with_master: true}).then(() => { Swal.fire('Sukses', 'Keluarga Tersinkronisasi!', 'success'); app.renderProfilAndLoadSub(data); }); });
-                });
+                    Promise.all(batchPromises).then(() => { db.collection("data_pengurus").doc(data.nik).update({no_kk: targetKK, is_synced_with_master: true}).then(() => { Swal.fire('Sukses', 'Keluarga Tersinkronisasi!', 'success'); app.renderProfilAndLoadSub(data); }); }).catch(handleFirebaseError);
+                }).catch(handleFirebaseError);
             },
 
             renderProfilAndLoadSub: (data) => {
@@ -488,11 +507,11 @@
                 app.loadART(); app.loadKomp(); document.getElementById('cv-kpm').classList.remove('hidden'); Swal.close();
             },
 
-            loadART: () => { db.collection("kpm_art").where("pengurus_nik", "==", app.currentKPMNik).get().then(snap => { let tb = document.getElementById('tbody-art'); tb.innerHTML = ''; if(snap.empty) tb.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-slate-400 font-bold text-[9px] uppercase tracking-widest">Tidak ada data</td></tr>'; snap.forEach(doc => { let d = doc.data(); tb.innerHTML += `<tr class="bg-white border-b hover:bg-slate-50 transition-all"><td class="p-2 md:p-3 font-black text-slate-800 uppercase text-[9px] md:text-[11px]">${d.nama}</td><td class="p-2 md:p-3 text-center font-bold text-[9px] md:text-[11px]">${d.umur}</td><td class="p-2 md:p-3 text-[8px] md:text-[9px] font-black uppercase text-slate-500">${d.hubungan}</td><td class="p-2 md:p-3 text-center"><button onclick="app.crudKeluarga('edit', '${doc.id}', '${d.nama}', '${d.umur}', '${d.hubungan}')" class="text-blue-500 mr-2 md:mr-3"><i class="fas fa-pen"></i></button><button onclick="app.crudKeluarga('hapus', '${doc.id}')" class="text-rose-500"><i class="fas fa-trash"></i></button></td></tr>`; }); }); },
-            loadKomp: () => { db.collection("kpm_komponen").where("pengurus_nik", "==", app.currentKPMNik).get().then(snap => { let tb = document.getElementById('tbody-komp'); tb.innerHTML = ''; if(snap.empty) tb.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-slate-400 font-bold text-[9px] uppercase tracking-widest">Tidak ada data</td></tr>'; snap.forEach(doc => { let d = doc.data(); tb.innerHTML += `<tr class="bg-white border-b hover:bg-slate-50 transition-all"><td class="p-2 md:p-3 font-black text-slate-800 uppercase text-[9px] md:text-[11px]">${d.nama}</td><td class="p-2 md:p-3 text-center"><span class="bg-blue-100 text-blue-800 text-[7px] md:text-[8px] font-black px-2 py-1 rounded-full uppercase tracking-widest">${d.kategori}</span></td><td class="p-2 md:p-3 text-[9px] font-bold text-slate-500 uppercase">${d.keterangan||'-'}</td><td class="p-2 md:p-3 text-center"><button onclick="app.crudKomponen('edit', '${doc.id}', '${d.nama}', '${d.kategori}', '${d.keterangan}')" class="text-blue-500 mr-2 md:mr-3"><i class="fas fa-pen"></i></button><button onclick="app.crudKomponen('hapus', '${doc.id}')" class="text-rose-500"><i class="fas fa-trash"></i></button></td></tr>`; }); }); },
+            loadART: () => { db.collection("kpm_art").where("pengurus_nik", "==", app.currentKPMNik).get().then(snap => { let tb = document.getElementById('tbody-art'); tb.innerHTML = ''; if(snap.empty) tb.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-slate-400 font-bold text-[9px] uppercase tracking-widest">Tidak ada data</td></tr>'; snap.forEach(doc => { let d = doc.data(); tb.innerHTML += `<tr class="bg-white border-b hover:bg-slate-50 transition-all"><td class="p-2 md:p-3 font-black text-slate-800 uppercase text-[9px] md:text-[11px]">${d.nama}</td><td class="p-2 md:p-3 text-center font-bold text-[9px] md:text-[11px]">${d.umur}</td><td class="p-2 md:p-3 text-[8px] md:text-[9px] font-black uppercase text-slate-500">${d.hubungan}</td><td class="p-2 md:p-3 text-center"><button onclick="app.crudKeluarga('edit', '${doc.id}', '${d.nama}', '${d.umur}', '${d.hubungan}')" class="text-blue-500 mr-2 md:mr-3"><i class="fas fa-pen"></i></button><button onclick="app.crudKeluarga('hapus', '${doc.id}')" class="text-rose-500"><i class="fas fa-trash"></i></button></td></tr>`; }); }).catch(handleFirebaseError); },
+            loadKomp: () => { db.collection("kpm_komponen").where("pengurus_nik", "==", app.currentKPMNik).get().then(snap => { let tb = document.getElementById('tbody-komp'); tb.innerHTML = ''; if(snap.empty) tb.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-slate-400 font-bold text-[9px] uppercase tracking-widest">Tidak ada data</td></tr>'; snap.forEach(doc => { let d = doc.data(); tb.innerHTML += `<tr class="bg-white border-b hover:bg-slate-50 transition-all"><td class="p-2 md:p-3 font-black text-slate-800 uppercase text-[9px] md:text-[11px]">${d.nama}</td><td class="p-2 md:p-3 text-center"><span class="bg-blue-100 text-blue-800 text-[7px] md:text-[8px] font-black px-2 py-1 rounded-full uppercase tracking-widest">${d.kategori}</span></td><td class="p-2 md:p-3 text-[9px] font-bold text-slate-500 uppercase">${d.keterangan||'-'}</td><td class="p-2 md:p-3 text-center"><button onclick="app.crudKomponen('edit', '${doc.id}', '${d.nama}', '${d.kategori}', '${d.keterangan}')" class="text-blue-500 mr-2 md:mr-3"><i class="fas fa-pen"></i></button><button onclick="app.crudKomponen('hapus', '${doc.id}')" class="text-rose-500"><i class="fas fa-trash"></i></button></td></tr>`; }); }).catch(handleFirebaseError); },
 
-            crudKeluarga: (aksi, id='', n='', u='', h='') => { if(!app.currentKPMNik) return Swal.fire('Error', 'Cari NIK dahulu.', 'warning'); if(aksi === 'hapus') { Swal.fire({title: 'Hapus ART?', icon: 'warning', showCancelButton: true}).then(r => { if(r.isConfirmed) { db.collection("kpm_art").doc(id).delete().then(()=> { Swal.fire('Terhapus','','success'); app.loadART(); }); } }); } else { Swal.fire({title: aksi==='tambah'?'Tambah ART':'Edit ART', html: `<input id="sw-n" class="swal2-input text-sm" placeholder="Nama Lengkap" value="${n}"><input id="sw-u" type="number" class="swal2-input text-sm" placeholder="Umur" value="${u}"><input id="sw-h" class="swal2-input text-sm" placeholder="Hubungan" value="${h}">`, preConfirm: () => [document.getElementById('sw-n').value, document.getElementById('sw-u').value, document.getElementById('sw-h').value] }).then(res => { if(res.isConfirmed && res.value[0]) { const [nm,um,hb] = res.value; if(aksi === 'tambah') { db.collection("kpm_art").add({ pengurus_nik: app.currentKPMNik, nama: nm, umur: um, hubungan: hb }).then(() => { Swal.fire('Berhasil','','success'); app.loadART(); }); } else { db.collection("kpm_art").doc(id).update({ nama: nm, umur: um, hubungan: hb }).then(() => { Swal.fire('Diperbarui','','success'); app.loadART(); }); } } }); } },
-            crudKomponen: (aksi, id='', n='', k='', s='') => { if(!app.currentKPMNik) return Swal.fire('Error', 'Cari NIK dahulu.', 'warning'); if(aksi === 'hapus') { Swal.fire({title: 'Hapus Komponen?', icon: 'warning', showCancelButton: true}).then(r => { if(r.isConfirmed) { db.collection("kpm_komponen").doc(id).delete().then(()=> { Swal.fire('Terhapus','','success'); app.loadKomp(); }); } }); } else { Swal.fire({title: aksi==='tambah'?'Tambah Komponen':'Edit Komponen', html: `<input id="sk-n" class="swal2-input text-sm" placeholder="Nama Lengkap" value="${n}"><select id="sk-k" class="swal2-input text-sm"><option value="Balita" ${k==='Balita'?'selected':''}>Balita</option><option value="Anak SD" ${k==='Anak SD'?'selected':''}>Anak SD</option><option value="Anak SMP" ${k==='Anak SMP'?'selected':''}>Anak SMP</option><option value="Anak SMA" ${k==='Anak SMA'?'selected':''}>Anak SMA</option><option value="Lansia" ${k==='Lansia'?'selected':''}>Lansia</option><option value="Ibu Hamil" ${k==='Ibu Hamil'?'selected':''}>Ibu Hamil</option></select><input id="sk-s" class="swal2-input text-sm" placeholder="Sekolah / Ket" value="${s}">`, preConfirm: () => [document.getElementById('sk-n').value, document.getElementById('sk-k').value, document.getElementById('sk-s').value] }).then(res => { if(res.isConfirmed && res.value[0]) { const [nm,kt,sk] = res.value; if(aksi === 'tambah') { db.collection("kpm_komponen").add({ pengurus_nik: app.currentKPMNik, nama: nm, kategori: kt, keterangan: sk }).then(() => { Swal.fire('Berhasil','','success'); app.loadKomp(); }); } else { db.collection("kpm_komponen").doc(id).update({ nama: nm, kategori: kt, keterangan: sk }).then(() => { Swal.fire('Diperbarui','','success'); app.loadKomp(); }); } } }); } },
+            crudKeluarga: (aksi, id='', n='', u='', h='') => { if(!app.currentKPMNik) return Swal.fire('Error', 'Cari NIK dahulu.', 'warning'); if(aksi === 'hapus') { Swal.fire({title: 'Hapus ART?', icon: 'warning', showCancelButton: true}).then(r => { if(r.isConfirmed) { db.collection("kpm_art").doc(id).delete().then(()=> { Swal.fire('Terhapus','','success'); app.loadART(); }).catch(handleFirebaseError); } }); } else { Swal.fire({title: aksi==='tambah'?'Tambah ART':'Edit ART', html: `<input id="sw-n" class="swal2-input text-sm" placeholder="Nama Lengkap" value="${n}"><input id="sw-u" type="number" class="swal2-input text-sm" placeholder="Umur" value="${u}"><input id="sw-h" class="swal2-input text-sm" placeholder="Hubungan" value="${h}">`, preConfirm: () => [document.getElementById('sw-n').value, document.getElementById('sw-u').value, document.getElementById('sw-h').value] }).then(res => { if(res.isConfirmed && res.value[0]) { const [nm,um,hb] = res.value; if(aksi === 'tambah') { db.collection("kpm_art").add({ pengurus_nik: app.currentKPMNik, nama: nm, umur: um, hubungan: hb }).then(() => { Swal.fire('Berhasil','','success'); app.loadART(); }).catch(handleFirebaseError); } else { db.collection("kpm_art").doc(id).update({ nama: nm, umur: um, hubungan: hb }).then(() => { Swal.fire('Diperbarui','','success'); app.loadART(); }).catch(handleFirebaseError); } } }); } },
+            crudKomponen: (aksi, id='', n='', k='', s='') => { if(!app.currentKPMNik) return Swal.fire('Error', 'Cari NIK dahulu.', 'warning'); if(aksi === 'hapus') { Swal.fire({title: 'Hapus Komponen?', icon: 'warning', showCancelButton: true}).then(r => { if(r.isConfirmed) { db.collection("kpm_komponen").doc(id).delete().then(()=> { Swal.fire('Terhapus','','success'); app.loadKomp(); }).catch(handleFirebaseError); } }); } else { Swal.fire({title: aksi==='tambah'?'Tambah Komponen':'Edit Komponen', html: `<input id="sk-n" class="swal2-input text-sm" placeholder="Nama Lengkap" value="${n}"><select id="sk-k" class="swal2-input text-sm"><option value="Balita" ${k==='Balita'?'selected':''}>Balita</option><option value="Anak SD" ${k==='Anak SD'?'selected':''}>Anak SD</option><option value="Anak SMP" ${k==='Anak SMP'?'selected':''}>Anak SMP</option><option value="Anak SMA" ${k==='Anak SMA'?'selected':''}>Anak SMA</option><option value="Lansia" ${k==='Lansia'?'selected':''}>Lansia</option><option value="Ibu Hamil" ${k==='Ibu Hamil'?'selected':''}>Ibu Hamil</option></select><input id="sk-s" class="swal2-input text-sm" placeholder="Sekolah / Ket" value="${s}">`, preConfirm: () => [document.getElementById('sk-n').value, document.getElementById('sk-k').value, document.getElementById('sk-s').value] }).then(res => { if(res.isConfirmed && res.value[0]) { const [nm,kt,sk] = res.value; if(aksi === 'tambah') { db.collection("kpm_komponen").add({ pengurus_nik: app.currentKPMNik, nama: nm, kategori: kt, keterangan: sk }).then(() => { Swal.fire('Berhasil','','success'); app.loadKomp(); }).catch(handleFirebaseError); } else { db.collection("kpm_komponen").doc(id).update({ nama: nm, kategori: kt, keterangan: sk }).then(() => { Swal.fire('Diperbarui','','success'); app.loadKomp(); }).catch(handleFirebaseError); } } }); } },
             gantiFotoProfil: (e) => { const f = e.target.files[0]; if(f) { const r = new FileReader(); r.onload = (ev) => { document.getElementById('kpm-photo-preview').src = ev.target.result; Swal.fire({icon:'success',title:'Foto Terganti',toast:true,position:'top-end',showConfirmButton:false,timer:1500}); }; r.readAsDataURL(f); } },
 
             // ================= PETA GPS (FILTER & EXPORT) =================
@@ -501,12 +520,12 @@
             rekamTitik: () => { if(!document.getElementById('gps-nama').value) return Swal.fire('Peringatan', 'Pilih Nama Dulu', 'warning'); Swal.fire({title:'GPS Aktif...', didOpen:()=>Swal.showLoading()}); navigator.geolocation.getCurrentPosition(p=>{ Swal.close(); document.getElementById('gps-lat').value=p.coords.latitude; document.getElementById('gps-lng').value=p.coords.longitude; Swal.fire('Sukses','','success'); }, e=>Swal.fire('GPS Gagal','Aktifkan Izin Lokasi Browser','error'), {enableHighAccuracy:true}); },
             simpanTitikFirebase: () => { 
                 const nm = document.getElementById('gps-nama').value, lt = document.getElementById('gps-lat').value, lg = document.getElementById('gps-lng').value; 
-                const ds = document.getElementById('sel-desa').value; // Ambil data desa
+                const ds = document.getElementById('sel-desa').value; 
                 if(!nm||!lt||!ds) return Swal.fire('Peringatan', 'Pilih Desa, Nama & Ambil lokasi GPS dulu', 'warning'); 
                 Swal.fire({title:'Menyimpan...', didOpen:()=>Swal.showLoading()}); 
                 db.collection("data_kpm").add({nama:nm, latitude:lt, longitude:lg, desa:ds, sdm:app.currentUser, waktu:firebase.firestore.FieldValue.serverTimestamp()}).then(()=> { 
                     Swal.fire('Berhasil!', 'Titik Rumah KPM tersimpan.', 'success'); document.getElementById('gps-lat').value=''; document.getElementById('gps-lng').value=''; 
-                }); 
+                }).catch(handleFirebaseError); 
             },
             tampilkanPeta: () => { 
                 const filterDesa = document.getElementById('filter-peta-desa').value;
@@ -517,7 +536,7 @@
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(app.mapObj); 
                 
                 let query = db.collection("data_kpm");
-                if(filterDesa) query = query.where("desa", "==", filterDesa); // Filter Berdasarkan Desa
+                if(filterDesa) query = query.where("desa", "==", filterDesa);
                 
                 query.get().then(snap => { 
                     let bnds = []; 
@@ -530,7 +549,7 @@
                     }); 
                     if(bnds.length > 0) app.mapObj.fitBounds(bnds); 
                     Swal.close(); 
-                }); 
+                }).catch(handleFirebaseError); 
             },
             exportPeta: () => {
                 const filterDesa = document.getElementById('filter-peta-desa').value;
@@ -552,21 +571,20 @@
                     XLSX.utils.book_append_sheet(wb, ws, "Data_GPS");
                     XLSX.writeFile(wb, `Data_GPS_KPM${filterDesa ? '_'+filterDesa : ''}.xlsx`);
                     Swal.close();
-                });
+                }).catch(handleFirebaseError);
             },
 
             // ================= P2K2 (ABSENSI) =================
             bukaFormP2K2: () => { document.getElementById('p2k2-list-view').classList.add('hidden'); document.getElementById('p2k2-form-view').classList.remove('hidden'); },
             tutupFormP2K2: () => { document.getElementById('p2k2-form-view').classList.add('hidden'); document.getElementById('p2k2-list-view').classList.remove('hidden'); },
             p2k2LoadKPM: () => { const desa = document.getElementById('p2k2-desa').value; const list = document.getElementById('p2k2-kpm-list'); list.innerHTML = ''; if(desa && dataMasterKPM[desa]) { dataMasterKPM[desa].forEach((nama, i) => { list.innerHTML += `<tr class="bg-white border-b"><td class="p-3 md:p-5 font-black text-slate-800 uppercase text-[10px] md:text-[12px]">${nama} <input type="hidden" class="kpm-nama" value="${nama}"></td><td class="p-3 md:p-5 text-center"><label class="mr-2 md:mr-4 font-black text-emerald-600 text-[10px] md:text-xs"><input type="radio" name="abs_${i}" value="hadir" checked onchange="document.getElementById('ket_${i}').disabled=true; document.getElementById('ket_${i}').value=''"> HADIR</label><label class="font-black text-rose-600 text-[10px] md:text-xs"><input type="radio" name="abs_${i}" value="absen" onchange="document.getElementById('ket_${i}').disabled=false"> ALFA</label></td><td class="p-3 md:p-5"><input type="text" id="ket_${i}" disabled class="kpm-ket w-full bg-slate-50 border-2 border-slate-100 rounded-lg p-2 md:p-3 font-bold text-[10px] md:text-xs outline-none focus:border-rose-500 transition-all" placeholder="Alasan..."></td></tr>`; }); } else { list.innerHTML = `<tr><td colspan="3" class="text-center py-10 text-slate-400 font-black uppercase tracking-widest text-[10px]">Pilih desa...</td></tr>`; } },
-            simpanP2K2: () => { const nm = document.getElementById('p2k2-nama').value, tgl = document.getElementById('p2k2-tgl').value, desa = document.getElementById('p2k2-desa').value; if(!nm || !tgl || !desa) return Swal.fire('Error', 'Modul, Tanggal, Desa wajib diisi!', 'warning'); const rows = document.getElementById('p2k2-kpm-list').querySelectorAll('tr'); if(rows.length === 0 || rows[0].innerText.includes('Pilih desa')) return Swal.fire('Error', 'Kosong.', 'warning'); let absensiArray = []; let tHadir = 0; let tAbsen = 0; rows.forEach((tr, i) => { let kNama = tr.querySelector('.kpm-nama').value; let isHadir = tr.querySelector(`input[name="abs_${i}"]:checked`).value === 'hadir'; let ket = tr.querySelector('.kpm-ket').value; if(isHadir) tHadir++; else tAbsen++; absensiArray.push({ nama: kNama, hadir: isHadir, ket: ket }); }); Swal.fire({title:'Merekam...', didOpen:()=>Swal.showLoading()}); db.collection("kegiatan_p2k2").add({ modul: nm, tanggal: tgl, desa: desa, sdm: app.currentUser, totalHadir: tHadir, totalAbsen: tAbsen, absensi: absensiArray, waktu: firebase.firestore.FieldValue.serverTimestamp() }).then(() => { Swal.fire('Sukses!', 'P2K2 direkam.', 'success'); app.tutupFormP2K2(); app.loadP2K2(); document.getElementById('p2k2-nama').value=''; document.getElementById('p2k2-desa').value=''; document.getElementById('p2k2-kpm-list').innerHTML=''; app.loadDashboardStats(); }); },
-            loadP2K2: () => { const rWadah = document.getElementById('p2k2-riwayat'); const rkpwadah = document.getElementById('tbody-p2k2-rekap'); rWadah.innerHTML = '<div class="text-center py-4"><i class="fas fa-spinner fa-spin text-indigo-500"></i> Memuat...</div>'; db.collection("kegiatan_p2k2").orderBy("tanggal", "desc").get().then(snap => { rWadah.innerHTML = ''; rkpwadah.innerHTML = ''; let tKeg=0; let tHdr=0; let tAbs=0; if(snap.empty) { rWadah.innerHTML = '<div class="text-center text-slate-400 py-4 font-bold text-xs uppercase tracking-widest">Kosong.</div>'; return; } snap.forEach(doc => { const d = doc.data(); tKeg++; tHdr += d.totalHadir; tAbs += d.totalAbsen; const dateObj = new Date(d.tanggal); const bln = dateObj.toLocaleString('id-ID', { month: 'short' }); const tgl = dateObj.getDate(); rWadah.innerHTML += `<div class="bg-white border border-slate-100 rounded-2xl md:rounded-[2rem] p-4 md:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-indigo-100 transition-all shadow-sm"><div class="flex items-center"><div class="bg-indigo-50 text-indigo-600 w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl flex flex-col items-center justify-center mr-4 border border-indigo-100"><span class="text-[8px] md:text-[10px] font-black uppercase">${bln}</span><span class="text-lg md:text-2xl font-black leading-none">${tgl}</span></div><div><h4 class="text-sm md:text-lg font-black text-slate-800 tracking-tight">${d.modul}</h4><p class="text-[9px] md:text-xs text-slate-500 font-bold mt-1 uppercase tracking-wider"><i class="fas fa-map-marker-alt text-rose-500 mr-1 md:mr-2"></i> ${d.desa} • Hadir: <span class="text-emerald-500">${d.totalHadir}</span> | Alfa: <span class="text-rose-500">${d.totalAbsen}</span></p></div></div><button onclick="app.hapusP2K2('${doc.id}')" class="bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all"><i class="fas fa-trash-alt"></i></button></div>`; if(d.absensi && d.absensi.length > 0) { d.absensi.forEach(abs => { if(!abs.hadir) { rkpwadah.innerHTML += `<tr class="bg-white border-b"><td class="p-4 md:p-5 font-black text-rose-600 uppercase text-[9px] md:text-xs">${abs.nama}</td><td class="p-4 md:p-5 text-[9px] md:text-xs font-bold text-slate-500 uppercase">${d.desa}</td><td class="p-4 md:p-5 text-[9px] md:text-xs font-bold text-slate-500 truncate max-w-[100px] uppercase">${d.modul}</td><td class="p-4 md:p-5 text-[9px] md:text-xs font-black text-slate-700">${abs.ket || '-'}</td></tr>`; } }); } }); document.getElementById('p2k2-tot-keg').innerText = tKeg; document.getElementById('p2k2-tot-hdr').innerText = tHdr; document.getElementById('p2k2-tot-absen').innerText = tAbs; }); },
-            hapusP2K2: (id) => { Swal.fire({title: 'Hapus Kegiatan?', icon: 'warning', showCancelButton: true}).then(r => { if(r.isConfirmed) db.collection("kegiatan_p2k2").doc(id).delete().then(() => { app.loadP2K2(); app.loadDashboardStats(); }); }); },
+            simpanP2K2: () => { const nm = document.getElementById('p2k2-nama').value, tgl = document.getElementById('p2k2-tgl').value, desa = document.getElementById('p2k2-desa').value; if(!nm || !tgl || !desa) return Swal.fire('Error', 'Modul, Tanggal, Desa wajib diisi!', 'warning'); const rows = document.getElementById('p2k2-kpm-list').querySelectorAll('tr'); if(rows.length === 0 || rows[0].innerText.includes('Pilih desa')) return Swal.fire('Error', 'Kosong.', 'warning'); let absensiArray = []; let tHadir = 0; let tAbsen = 0; rows.forEach((tr, i) => { let kNama = tr.querySelector('.kpm-nama').value; let isHadir = tr.querySelector(`input[name="abs_${i}"]:checked`).value === 'hadir'; let ket = tr.querySelector('.kpm-ket').value; if(isHadir) tHadir++; else tAbsen++; absensiArray.push({ nama: kNama, hadir: isHadir, ket: ket }); }); Swal.fire({title:'Merekam...', didOpen:()=>Swal.showLoading()}); db.collection("kegiatan_p2k2").add({ modul: nm, tanggal: tgl, desa: desa, sdm: app.currentUser, totalHadir: tHadir, totalAbsen: tAbsen, absensi: absensiArray, waktu: firebase.firestore.FieldValue.serverTimestamp() }).then(() => { Swal.fire('Sukses!', 'P2K2 direkam.', 'success'); app.tutupFormP2K2(); app.loadP2K2(); document.getElementById('p2k2-nama').value=''; document.getElementById('p2k2-desa').value=''; document.getElementById('p2k2-kpm-list').innerHTML=''; app.loadDashboardStats(); }).catch(handleFirebaseError); },
+            loadP2K2: () => { const rWadah = document.getElementById('p2k2-riwayat'); const rkpwadah = document.getElementById('tbody-p2k2-rekap'); rWadah.innerHTML = '<div class="text-center py-4"><i class="fas fa-spinner fa-spin text-indigo-500"></i> Memuat...</div>'; db.collection("kegiatan_p2k2").orderBy("tanggal", "desc").get().then(snap => { rWadah.innerHTML = ''; rkpwadah.innerHTML = ''; let tKeg=0; let tHdr=0; let tAbs=0; if(snap.empty) { rWadah.innerHTML = '<div class="text-center text-slate-400 py-4 font-bold text-xs uppercase tracking-widest">Kosong.</div>'; return; } snap.forEach(doc => { const d = doc.data(); tKeg++; tHdr += d.totalHadir; tAbs += d.totalAbsen; const dateObj = new Date(d.tanggal); const bln = dateObj.toLocaleString('id-ID', { month: 'short' }); const tgl = dateObj.getDate(); rWadah.innerHTML += `<div class="bg-white border border-slate-100 rounded-2xl md:rounded-[2rem] p-4 md:p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-indigo-100 transition-all shadow-sm"><div class="flex items-center"><div class="bg-indigo-50 text-indigo-600 w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl flex flex-col items-center justify-center mr-4 border border-indigo-100"><span class="text-[8px] md:text-[10px] font-black uppercase">${bln}</span><span class="text-lg md:text-2xl font-black leading-none">${tgl}</span></div><div><h4 class="text-sm md:text-lg font-black text-slate-800 tracking-tight">${d.modul}</h4><p class="text-[9px] md:text-xs text-slate-500 font-bold mt-1 uppercase tracking-wider"><i class="fas fa-map-marker-alt text-rose-500 mr-1 md:mr-2"></i> ${d.desa} • Hadir: <span class="text-emerald-500">${d.totalHadir}</span> | Alfa: <span class="text-rose-500">${d.totalAbsen}</span></p></div></div><button onclick="app.hapusP2K2('${doc.id}')" class="bg-rose-50 text-rose-500 hover:bg-rose-500 hover:text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all"><i class="fas fa-trash-alt"></i></button></div>`; if(d.absensi && d.absensi.length > 0) { d.absensi.forEach(abs => { if(!abs.hadir) { rkpwadah.innerHTML += `<tr class="bg-white border-b"><td class="p-4 md:p-5 font-black text-rose-600 uppercase text-[9px] md:text-xs">${abs.nama}</td><td class="p-4 md:p-5 text-[9px] md:text-xs font-bold text-slate-500 uppercase">${d.desa}</td><td class="p-4 md:p-5 text-[9px] md:text-xs font-bold text-slate-500 truncate max-w-[100px] uppercase">${d.modul}</td><td class="p-4 md:p-5 text-[9px] md:text-xs font-black text-slate-700">${abs.ket || '-'}</td></tr>`; } }); } }); document.getElementById('p2k2-tot-keg').innerText = tKeg; document.getElementById('p2k2-tot-hdr').innerText = tHdr; document.getElementById('p2k2-tot-absen').innerText = tAbs; }).catch(handleFirebaseError); },
+            hapusP2K2: (id) => { Swal.fire({title: 'Hapus Kegiatan?', icon: 'warning', showCancelButton: true}).then(r => { if(r.isConfirmed) db.collection("kegiatan_p2k2").doc(id).delete().then(() => { app.loadP2K2(); app.loadDashboardStats(); }).catch(handleFirebaseError); }); },
 
             // ================= UPLOAD DATA (XLSX, XLS, CSV, TXT) =================
             smartMapRow: (rowArr, headersArr) => {
-                let obj = {};
-                const dict = { no_kk: ['kk', 'kartu keluarga'], nik: ['nik'], nama: ['nama'], ttl: ['ttl', 'tempat lahir', 'tanggal lahir'], alamat: ['alamat', 'domisili', 'rt'], kategori: ['kategori', 'bantuan', 'pkh', 'sembako'], bank: ['bank', 'penyalur'], nominal: ['nominal', 'uang', 'rp', 'jumlah'], status: ['status', 'aktif', 'graduasi'], kohor: ['kohor', 'tahun kepesertaan'], masa: ['masa', 'kepesertaan', 'lama'], pekerjaan: ['kerja', 'pekerjaan'], kebisaan: ['bisa', 'kebisaan', 'skill', 'keterampilan'], hobi: ['hobi', 'hobbi'], omset: ['omset', 'pendapatan', 'penghasilan'] };
+                let obj = {}; const dict = { no_kk: ['kk', 'kartu keluarga'], nik: ['nik'], nama: ['nama'], ttl: ['ttl', 'tempat lahir', 'tanggal lahir'], alamat: ['alamat', 'domisili', 'rt'], kategori: ['kategori', 'bantuan', 'pkh', 'sembako'], bank: ['bank', 'penyalur'], nominal: ['nominal', 'uang', 'rp', 'jumlah'], status: ['status', 'aktif', 'graduasi'], kohor: ['kohor', 'tahun kepesertaan'], masa: ['masa', 'kepesertaan', 'lama'], pekerjaan: ['kerja', 'pekerjaan'], kebisaan: ['bisa', 'kebisaan', 'skill', 'keterampilan'], hobi: ['hobi', 'hobbi'], omset: ['omset', 'pendapatan', 'penghasilan'] };
                 for(let key in dict) { let foundIdx = -1; for(let i=0; i<headersArr.length; i++){ let h = String(headersArr[i]).toLowerCase(); if(dict[key].some(alias => h.includes(alias))) { foundIdx = i; break; } } obj[key] = foundIdx !== -1 && rowArr[foundIdx] ? String(rowArr[foundIdx]).trim() : ''; }
                 return obj;
             },
@@ -578,7 +596,7 @@
                         const objData = app.smartMapRow(row, headers);
                         if(objData.nama && objData.nik) { objData.waktu_upload = firebase.firestore.FieldValue.serverTimestamp(); objData.is_synced_with_master = false; janjiSimpan.push(db.collection("data_pengurus").doc(objData.nik).set(objData)); successCount++; }
                     }
-                    if(janjiSimpan.length > 0) { Promise.all(janjiSimpan).then(() => Swal.fire('Sukses!', `${successCount} Data Pengurus tersimpan.`, 'success')); } else { Swal.fire('Gagal', 'Tidak ada NIK / Nama yg sesuai.', 'error'); }
+                    if(janjiSimpan.length > 0) { Promise.all(janjiSimpan).then(() => Swal.fire('Sukses!', `${successCount} Data Pengurus tersimpan.`, 'success')).catch(handleFirebaseError); } else { Swal.fire('Gagal', 'Tidak ada NIK / Nama yg sesuai.', 'error'); }
                 });
             },
             prosesUploadMaster70k: (e) => {
@@ -594,11 +612,10 @@
                             if(successCount <= 20) { tbody.innerHTML += `<tr class="bg-white border-b"><td class="p-4 md:p-6 font-black text-slate-800 uppercase text-[10px] md:text-xs">${kpmObj.nama}</td><td class="p-4 md:p-6 font-mono text-[9px] md:text-xs font-bold text-indigo-600">${kpmObj.nik}</td><td class="p-4 md:p-6 font-mono text-[9px] md:text-xs font-bold text-slate-600">${kpmObj.no_kk||'-'}</td><td class="p-4 md:p-6 text-center"><span class="bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-full text-[8px] md:text-[10px] font-black uppercase tracking-widest">Tersinkron</span></td></tr>`; }
                         }
                     }
-                    if(janjiSimpan.length > 0) { Promise.all(janjiSimpan).then(() => { Swal.fire('Sinkronisasi Sukses!', `Total Tersimpan: ${successCount} Data.`, 'success'); }); } else { Swal.fire('Gagal', 'Tidak ada NIK/Nama valid.', 'error'); }
+                    if(janjiSimpan.length > 0) { Promise.all(janjiSimpan).then(() => { Swal.fire('Sinkronisasi Sukses!', `Total Tersimpan: ${successCount} Data.`, 'success'); }).catch(handleFirebaseError); } else { Swal.fire('Gagal', 'Tidak ada NIK/Nama valid.', 'error'); }
                 });
             },
 
-            // ================= MATA CERDAS SDM (AUTO GABUNG) =================
             smartMapSDM: (rowArr, headersArr) => {
                 let obj = {}; const dict = { nama: ['nama', 'pendamping', 'sdm'], desa: ['desa', 'wilayah', 'kelurahan', 'dampingan', 'tugas'] };
                 for(let key in dict) { let foundIdx = -1; for(let i=0; i<headersArr.length; i++) { let h = String(headersArr[i]).toLowerCase(); if(dict[key].some(alias => h.includes(alias))) { foundIdx = i; break; } } obj[key] = foundIdx !== -1 && rowArr[foundIdx] ? String(rowArr[foundIdx]).trim() : ''; } return obj;
@@ -617,18 +634,16 @@
                         proms.push(db.collection("users_sdm").doc(usr).set({ nama: nm, username: usr, password: "12345", desa: desaStr, role: "SDM" })); count++; 
                     } 
                     if(count === 0) return Swal.fire('Gagal', 'Gagal menemukan Header Nama dan Desa.', 'error');
-                    Promise.all(proms).then(() => { Swal.fire('Sukses Mata Cerdas!', `${count} Akun SDM dibuat otomatis!`, 'success'); app.loadDataSDM(); }); 
+                    Promise.all(proms).then(() => { Swal.fire('Sukses Mata Cerdas!', `${count} Akun SDM dibuat otomatis!`, 'success'); app.loadDataSDM(); }).catch(handleFirebaseError); 
                 });
             },
             
-            loadDataSDM: () => { const t = document.getElementById('tbody-sdm-list'); t.innerHTML = '<tr><td colspan="4" class="text-center py-10 md:py-20 font-black text-purple-400 text-xs uppercase tracking-widest">Menarik Database...</td></tr>'; db.collection("users_sdm").get().then(snap => { t.innerHTML = ''; let ds = 0; snap.forEach(doc => { const d = doc.data(); ds++; t.innerHTML += `<tr class="bg-white border-b hover:bg-slate-50 transition-all"><td class="px-4 md:px-8 py-4 md:py-6 font-black text-slate-800 uppercase text-[10px] md:text-xs">${d.nama}</td><td class="px-4 md:px-8 py-4 md:py-6 font-mono text-[10px] md:text-xs text-indigo-600 font-bold">${d.username}</td><td class="px-4 md:px-8 py-4 md:py-6 text-[9px] md:text-[10px] font-black text-slate-500 max-w-[150px] md:max-w-xs truncate uppercase tracking-widest" title="${d.desa}">${d.desa}</td><td class="px-4 md:px-8 py-4 md:py-6 text-center"><button onclick="app.hapusSDM('${doc.id}')" class="text-rose-400 hover:text-rose-600 bg-rose-50 w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl transition-all"><i class="fas fa-trash-alt"></i></button></td></tr>`; }); document.getElementById('dash-sdm-tot').innerText = ds; }); },
-            hapusSDM: (id) => { db.collection("users_sdm").doc(id).delete().then(() => app.loadDataSDM()); },
+            loadDataSDM: () => { const t = document.getElementById('tbody-sdm-list'); t.innerHTML = '<tr><td colspan="4" class="text-center py-10 md:py-20 font-black text-purple-400 text-xs uppercase tracking-widest">Menarik Database...</td></tr>'; db.collection("users_sdm").get().then(snap => { t.innerHTML = ''; let ds = 0; snap.forEach(doc => { const d = doc.data(); ds++; t.innerHTML += `<tr class="bg-white border-b hover:bg-slate-50 transition-all"><td class="px-4 md:px-8 py-4 md:py-6 font-black text-slate-800 uppercase text-[10px] md:text-xs">${d.nama}</td><td class="px-4 md:px-8 py-4 md:py-6 font-mono text-[10px] md:text-xs text-indigo-600 font-bold">${d.username}</td><td class="px-4 md:px-8 py-4 md:py-6 text-[9px] md:text-[10px] font-black text-slate-500 max-w-[150px] md:max-w-xs truncate uppercase tracking-widest" title="${d.desa}">${d.desa}</td><td class="px-4 md:px-8 py-4 md:py-6 text-center"><button onclick="app.hapusSDM('${doc.id}')" class="text-rose-400 hover:text-rose-600 bg-rose-50 w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl transition-all"><i class="fas fa-trash-alt"></i></button></td></tr>`; }); document.getElementById('dash-sdm-tot').innerText = ds; }).catch(handleFirebaseError); },
+            hapusSDM: (id) => { db.collection("users_sdm").doc(id).delete().then(() => app.loadDataSDM()).catch(handleFirebaseError); },
 
-            loadDataKPMFirebase: () => { const t = document.getElementById('tbody-kpm-firebase'); t.innerHTML = '<tr><td colspan="4" class="text-center py-10 md:py-20 font-black text-blue-400 text-xs uppercase tracking-widest">Membuka Cloud...</td></tr>'; db.collection("data_kpm").orderBy("waktu", "desc").get().then(snap => { t.innerHTML = ''; snap.forEach(doc => { const d = doc.data(); t.innerHTML += `<tr class="bg-white border-b"><td class="p-4 md:p-6 font-black text-slate-800 uppercase text-[10px] md:text-xs">${d.nama}</td><td class="p-4 md:p-6 font-mono text-[9px] md:text-xs font-bold text-rose-500">${d.latitude}, ${d.longitude}</td><td class="p-4 md:p-6 text-[8px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest">${d.sdm}</td><td class="p-4 md:p-6 text-center"><button onclick="app.hapusDataKPM('${doc.id}')" class="bg-rose-50 text-rose-400 hover:text-rose-600 w-8 h-8 md:w-10 md:h-10 rounded-xl transition-all"><i class="fas fa-trash-alt"></i></button></td></tr>`; }); }); },
-            hapusDataKPM: (id) => { db.collection("data_kpm").doc(id).delete().then(() => app.loadDataKPMFirebase()); }
+            loadDataKPMFirebase: () => { const t = document.getElementById('tbody-kpm-firebase'); t.innerHTML = '<tr><td colspan="4" class="text-center py-10 md:py-20 font-black text-blue-400 text-xs uppercase tracking-widest">Membuka Cloud...</td></tr>'; db.collection("data_kpm").orderBy("waktu", "desc").get().then(snap => { t.innerHTML = ''; snap.forEach(doc => { const d = doc.data(); t.innerHTML += `<tr class="bg-white border-b"><td class="p-4 md:p-6 font-black text-slate-800 uppercase text-[10px] md:text-xs">${d.nama}</td><td class="p-4 md:p-6 font-mono text-[9px] md:text-xs font-bold text-rose-500">${d.latitude}, ${d.longitude}</td><td class="p-4 md:p-6 text-[8px] md:text-[10px] font-black text-slate-500 uppercase tracking-widest">${d.sdm}</td><td class="p-4 md:p-6 text-center"><button onclick="app.hapusDataKPM('${doc.id}')" class="bg-rose-50 text-rose-400 hover:text-rose-600 w-8 h-8 md:w-10 md:h-10 rounded-xl transition-all"><i class="fas fa-trash-alt"></i></button></td></tr>`; }); }).catch(handleFirebaseError); },
+            hapusDataKPM: (id) => { db.collection("data_kpm").doc(id).delete().then(() => app.loadDataKPMFirebase()).catch(handleFirebaseError); }
         };
     </script>
 </body>
 </html>
-
-
