@@ -100,7 +100,7 @@
                     </div>
                     <div class="bg-gradient-to-r from-indigo-600 to-blue-500 rounded-[1.5rem] p-6 shadow-lg text-white mb-6">
                         <h4 class="text-xl font-bold mb-2">Penambahan Menu DTKS 2022 Sukses!</h4>
-                        <p class="text-indigo-100 text-sm">Semua data yang telah berhasil terupload dapat langsung dilihat melalui menu baru "DTKS 2022" dengan daftar kolom lengkap sesuai dengan Header Data Master Bapak.</p>
+                        <p class="text-indigo-100 text-sm">Semua data yang telah berhasil terupload dapat langsung dilihat melalui menu baru "DTKS 2022" dengan daftar kolom lengkap dan fitur Pagingasi Data Per Halaman.</p>
                     </div>
                 </div>
 
@@ -109,9 +109,16 @@
                     <div class="bg-white rounded-[1.5rem] shadow-sm p-6 border border-slate-100 mb-6">
                         <div class="flex flex-col md:flex-row justify-between mb-6 gap-4">
                             <div><h3 class="text-lg font-bold text-slate-800"><i class="fas fa-list-alt text-indigo-500 mr-2"></i> Database DTKS 2022</h3><p class="text-xs text-slate-500">Tampilan lengkap data master KPM</p></div>
-                            <div class="relative flex-1 md:w-64"><i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i><input type="text" oninput="app.loadDTKS(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 p-2 text-sm outline-none focus:border-indigo-500 uppercase" placeholder="Cari Nama / NIK / KK..."></div>
+                            <div class="flex flex-col md:flex-row items-start md:items-center gap-3">
+                                <select id="dtks-limit" onchange="app.changeDTKSLimit()" class="bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm font-bold text-slate-600 outline-none focus:border-indigo-500">
+                                    <option value="10">Tampilkan 10 Baris</option>
+                                    <option value="50">Tampilkan 50 Baris</option>
+                                    <option value="100">Tampilkan 100 Baris</option>
+                                </select>
+                                <div class="relative w-full md:w-64"><i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i><input type="text" oninput="app.loadDTKS(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 p-2.5 text-sm outline-none focus:border-indigo-500 uppercase" placeholder="Cari Nama / NIK / KK..."></div>
+                            </div>
                         </div>
-                        <div class="overflow-x-auto rounded-xl border border-slate-200">
+                        <div class="overflow-x-auto rounded-xl border border-slate-200" style="max-width: 100%;">
                             <table class="w-full text-sm text-left text-slate-600 whitespace-nowrap">
                                 <thead class="text-xs text-slate-700 uppercase bg-slate-50 border-b">
                                     <tr>
@@ -127,14 +134,28 @@
                                         <th class="px-4 py-4">Usaha</th>
                                         <th class="px-4 py-4">Pekerjaan</th>
                                         <th class="px-4 py-4">Hobi</th>
+                                        <th class="px-4 py-4">Minat</th>
+                                        <th class="px-4 py-4">Bakat</th>
                                         <th class="px-4 py-4">Kebisaan/Skill</th>
+                                        <th class="px-4 py-4">Aset</th>
                                         <th class="px-4 py-4">No. HP</th>
                                         <th class="px-4 py-4">Ket Pengurus</th>
                                         <th class="px-4 py-4">Kohor</th>
+                                        <th class="px-4 py-4">Masa Kepesertaan</th>
+                                        <th class="px-4 py-4">TTL</th>
+                                        <th class="px-4 py-4">Nominal</th>
+                                        <th class="px-4 py-4">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody id="tbody-dtks2022"></tbody>
                             </table>
+                        </div>
+                        <div class="flex justify-between items-center mt-5">
+                            <span class="text-xs font-bold text-slate-500" id="dtks-info-page">Menampilkan 0 data</span>
+                            <div class="flex gap-2">
+                                <button onclick="app.prevDTKSPage()" class="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 rounded-lg text-xs font-bold text-indigo-600 border border-indigo-200 shadow-sm transition-all"><i class="fas fa-chevron-left mr-1"></i> Prev</button>
+                                <button onclick="app.nextDTKSPage()" class="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 rounded-lg text-xs font-bold text-indigo-600 border border-indigo-200 shadow-sm transition-all">Next <i class="fas fa-chevron-right ml-1"></i></button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -220,7 +241,7 @@
                 <div id="page-master-pengurus" class="page-section">
                     <div class="bg-white rounded-[1.5rem] shadow-sm p-6 border border-slate-100 mb-6">
                         <div class="flex flex-col md:flex-row justify-between mb-6 gap-4">
-                            <div><h3 class="text-lg font-bold text-slate-800"><i class="fas fa-database text-amber-500 mr-2"></i> Database KPM (Pengurus)</h3><p class="text-xs text-slate-500">Data lengkap yang bisa diubah/dicari</p></div>
+                            <div><h3 class="text-lg font-bold text-slate-800"><i class="fas fa-database text-amber-500 mr-2"></i> Database KPM (Pengurus)</h3><p class="text-xs text-slate-500">Data tabel ringkas Pengurus PKH</p></div>
                             <div class="relative flex-1 md:w-64"><i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i><input type="text" oninput="app.loadMasterPengurus(this.value)" class="w-full bg-slate-50 border border-slate-200 rounded-lg pl-9 p-2 text-sm outline-none focus:border-amber-500 uppercase" placeholder="Cari Nama / NIK..."></div>
                         </div>
                         <div class="overflow-x-auto rounded-xl border border-slate-200"><table class="w-full text-sm text-left text-slate-600 whitespace-nowrap"><thead class="text-xs text-slate-700 uppercase bg-slate-50"><tr><th class="px-4 py-4">NIK Utama</th><th class="px-4 py-4">No. KK</th><th class="px-4 py-4">Nama Pengurus</th><th class="px-4 py-4">Kategori Bansos</th><th class="px-4 py-4 text-center">Aksi</th></tr></thead><tbody id="tbody-master-pengurus"></tbody></table></div>
@@ -447,6 +468,7 @@
 
         window.app = {
             mapObj: null, currentUser: null, isAdmin: false, currentKPMNik: null, userDesa: '', currentSDMId: null,
+            dtksData: [], dtksCurrentPage: 1, dtksRowsPerPage: 10,
 
             checkSession: () => {
                 const session = localStorage.getItem('pkh_session');
@@ -538,46 +560,102 @@
             toggleSidebar: () => { document.getElementById('sidebar').classList.toggle('-translate-x-full'); document.getElementById('sidebar-overlay').classList.toggle('hidden'); },
             simpanAlert: (msg) => Swal.fire('Sukses', msg, 'success'),
 
-            // ================= MENU DTKS 2022 =================
+            // ================= MENU DTKS 2022 DENGAN PAGINATION =================
             loadDTKS: (searchQuery = '') => {
                 if(!db) return; 
                 const tb = document.getElementById('tbody-dtks2022'); 
-                tb.innerHTML = '<tr><td colspan="16" class="text-center py-10 font-bold text-slate-400 text-xs">Memuat Database DTKS 2022...</td></tr>';
+                tb.innerHTML = '<tr><td colspan="23" class="text-center py-10 font-bold text-slate-400 text-xs"><i class="fas fa-spinner fa-spin mr-2"></i> Memuat Database DTKS 2022...</td></tr>';
                 
-                db.collection("master_kpm").limit(300).get().then(snap => {
-                    tb.innerHTML = ''; 
-                    if(snap.empty) { tb.innerHTML = '<tr><td colspan="16" class="text-center py-10 font-bold text-slate-400 text-xs">Database Masih Kosong</td></tr>'; return; }
+                db.collection("master_kpm").limit(1000).get().then(snap => {
+                    app.dtksData = []; 
+                    if(snap.empty) { 
+                        tb.innerHTML = '<tr><td colspan="23" class="text-center py-10 font-bold text-slate-400 text-xs">Database Masih Kosong</td></tr>'; 
+                        document.getElementById('dtks-info-page').innerText = 'Menampilkan 0 data';
+                        return; 
+                    }
                     
                     snap.forEach(doc => { 
                         const d = doc.data(); 
                         if(searchQuery && !d.nama.toLowerCase().includes(searchQuery.toLowerCase()) && !(d.nik||'').includes(searchQuery) && !(d.no_kk||'').includes(searchQuery)) return;
-                        
-                        let skill = [];
-                        if(d.kebisaan) skill.push(d.kebisaan);
-                        if(d.minat) skill.push(d.minat);
-                        if(d.bakat) skill.push(d.bakat);
-                        let skillStr = skill.length > 0 ? skill.join(', ') : '-';
-                        
-                        tb.innerHTML += `<tr class="bg-white border-b hover:bg-slate-50">
-                            <td class="px-4 md:px-6 py-4 font-mono text-[10px] md:text-xs text-slate-500">${d.no_kk||'-'}</td>
-                            <td class="px-4 md:px-6 py-4 font-mono text-[10px] md:text-xs text-indigo-600 font-bold">${d.nik||'-'}</td>
-                            <td class="px-4 md:px-6 py-4 font-black text-[10px] md:text-xs text-slate-800 uppercase">${d.nama||'-'}</td>
-                            <td class="px-4 md:px-6 py-4 text-[9px] md:text-[10px] font-bold text-emerald-600 uppercase">${d.kategori||'-'}</td>
-                            <td class="px-4 md:px-6 py-4 text-[9px] md:text-[10px] font-bold text-slate-600 uppercase">${d.bank||'-'}</td>
-                            <td class="px-4 md:px-6 py-4 text-[9px] md:text-[10px] font-bold text-slate-600 uppercase max-w-[150px] truncate" title="${d.alamat||'-'}">${d.alamat||'-'}</td>
-                            <td class="px-4 md:px-6 py-4 text-[9px] md:text-[10px] font-bold text-slate-600 uppercase">${d.kecamatan||'-'}</td>
-                            <td class="px-4 md:px-6 py-4 text-[9px] md:text-[10px] font-bold text-slate-600 uppercase">${d.desa||'-'}</td>
-                            <td class="px-4 md:px-6 py-4 text-[9px] md:text-[10px] font-bold text-slate-600 uppercase">${d.pendapatan||d.omset||'-'}</td>
-                            <td class="px-4 md:px-6 py-4 text-[9px] md:text-[10px] font-bold text-slate-600 uppercase">${d.usaha||'-'}</td>
-                            <td class="px-4 md:px-6 py-4 text-[9px] md:text-[10px] font-bold text-slate-600 uppercase">${d.pekerjaan||'-'}</td>
-                            <td class="px-4 md:px-6 py-4 text-[9px] md:text-[10px] font-bold text-slate-600 uppercase">${d.hobi||'-'}</td>
-                            <td class="px-4 md:px-6 py-4 text-[9px] md:text-[10px] font-bold text-slate-600 uppercase">${d.kebisaan||d.skill||'-'}</td>
-                            <td class="px-4 md:px-6 py-4 font-mono text-[10px] md:text-xs text-slate-600">${d.no_hp||d.hp||'-'}</td>
-                            <td class="px-4 md:px-6 py-4 text-[9px] md:text-[10px] font-bold text-slate-600 uppercase">${d.ket_pengurus||d.keterangan||'-'}</td>
-                            <td class="px-4 md:px-6 py-4 text-[9px] md:text-[10px] font-bold text-slate-600 uppercase">${d.kohor||'-'}</td>
-                        </tr>`;
+                        app.dtksData.push(d);
                     });
+                    
+                    app.dtksCurrentPage = 1;
+                    app.renderDTKSTable();
                 }).catch(handleFirebaseError);
+            },
+
+            renderDTKSTable: () => {
+                const tb = document.getElementById('tbody-dtks2022');
+                tb.innerHTML = '';
+                const total = app.dtksData.length;
+                
+                if(total === 0) {
+                    tb.innerHTML = '<tr><td colspan="23" class="text-center py-10 font-bold text-slate-400 text-xs">Tidak ada data ditemukan</td></tr>';
+                    document.getElementById('dtks-info-page').innerText = 'Menampilkan 0 data';
+                    return;
+                }
+
+                const startIdx = (app.dtksCurrentPage - 1) * app.dtksRowsPerPage;
+                const endIdx = Math.min(startIdx + app.dtksRowsPerPage, total);
+                const pageData = app.dtksData.slice(startIdx, endIdx);
+
+                pageData.forEach(d => {
+                    let skill = [];
+                    if(d.kebisaan) skill.push(d.kebisaan);
+                    if(d.skill) skill.push(d.skill);
+                    let skillStr = skill.length > 0 ? skill.join(', ') : '-';
+                    
+                    tb.innerHTML += `<tr class="bg-white border-b hover:bg-slate-50">
+                        <td class="px-4 py-3 font-mono text-[10px] md:text-xs text-slate-500">${d.no_kk||'-'}</td>
+                        <td class="px-4 py-3 font-mono text-[10px] md:text-xs text-indigo-600 font-bold">${d.nik||'-'}</td>
+                        <td class="px-4 py-3 font-black text-[10px] md:text-xs text-slate-800 uppercase">${d.nama||'-'}</td>
+                        <td class="px-4 py-3 text-[10px] md:text-xs font-bold text-emerald-600 uppercase">${d.kategori||'-'}</td>
+                        <td class="px-4 py-3 text-[10px] md:text-xs font-bold text-slate-600 uppercase">${d.bank||'-'}</td>
+                        <td class="px-4 py-3 text-[10px] md:text-xs font-bold text-slate-600 uppercase max-w-[150px] truncate" title="${d.alamat||'-'}">${d.alamat||'-'}</td>
+                        <td class="px-4 py-3 text-[10px] md:text-xs font-bold text-slate-600 uppercase">${d.kecamatan||'-'}</td>
+                        <td class="px-4 py-3 text-[10px] md:text-xs font-bold text-slate-600 uppercase">${d.desa||'-'}</td>
+                        <td class="px-4 py-3 text-[10px] md:text-xs font-bold text-slate-600 uppercase">${d.pendapatan||d.omset||'-'}</td>
+                        <td class="px-4 py-3 text-[10px] md:text-xs font-bold text-slate-600 uppercase">${d.usaha||'-'}</td>
+                        <td class="px-4 py-3 text-[10px] md:text-xs font-bold text-slate-600 uppercase">${d.pekerjaan||'-'}</td>
+                        <td class="px-4 py-3 text-[10px] md:text-xs font-bold text-slate-600 uppercase">${d.hobi||'-'}</td>
+                        <td class="px-4 py-3 text-[10px] md:text-xs font-bold text-slate-600 uppercase">${d.minat||'-'}</td>
+                        <td class="px-4 py-3 text-[10px] md:text-xs font-bold text-slate-600 uppercase">${d.bakat||'-'}</td>
+                        <td class="px-4 py-3 text-[10px] md:text-xs font-bold text-slate-600 uppercase">${skillStr}</td>
+                        <td class="px-4 py-3 text-[10px] md:text-xs font-bold text-slate-600 uppercase">${d.aset||'-'}</td>
+                        <td class="px-4 py-3 font-mono text-[10px] md:text-xs text-slate-600">${d.no_hp||d.hp||'-'}</td>
+                        <td class="px-4 py-3 text-[10px] md:text-xs font-bold text-slate-600 uppercase">${d.ket_pengurus||d.keterangan||'-'}</td>
+                        <td class="px-4 py-3 text-[10px] md:text-xs font-bold text-slate-600 uppercase">${d.kohor||'-'}</td>
+                        <td class="px-4 py-3 text-[10px] md:text-xs font-bold text-slate-600 uppercase">${d.masa||'-'}</td>
+                        <td class="px-4 py-3 text-[10px] md:text-xs font-bold text-slate-600 uppercase">${d.ttl||'-'}</td>
+                        <td class="px-4 py-3 text-[10px] md:text-xs font-bold text-rose-600 uppercase">${d.nominal||'-'}</td>
+                        <td class="px-4 py-3 text-[10px] md:text-xs font-bold text-emerald-600 uppercase">${d.status||'-'}</td>
+                    </tr>`;
+                });
+
+                document.getElementById('dtks-info-page').innerText = `Menampilkan ${startIdx + 1} - ${endIdx} dari ${total} data`;
+            },
+
+            changeDTKSLimit: () => {
+                const select = document.getElementById('dtks-limit');
+                app.dtksRowsPerPage = parseInt(select.value);
+                app.dtksCurrentPage = 1;
+                app.renderDTKSTable();
+            },
+
+            nextDTKSPage: () => {
+                const maxPage = Math.ceil(app.dtksData.length / app.dtksRowsPerPage);
+                if (app.dtksCurrentPage < maxPage) {
+                    app.dtksCurrentPage++;
+                    app.renderDTKSTable();
+                }
+            },
+
+            prevDTKSPage: () => {
+                if (app.dtksCurrentPage > 1) {
+                    app.dtksCurrentPage--;
+                    app.renderDTKSTable();
+                }
             },
 
             // ================= PROFIL & CRUD (TERKUNCI AMAN) =================
