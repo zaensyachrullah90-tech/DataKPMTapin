@@ -423,7 +423,7 @@
         // Pelindung Firebase (Mencegah Layar Blank jika Aturan Terkunci)
         function handleFirebaseError(err) {
             console.error(err);
-            if (err.message && err.message.includes("Missing or insufficient permissions")) {
+            if (err && err.message && err.message.includes("Missing or insufficient permissions")) {
                 Swal.fire({
                     icon: 'error',
                     title: 'AKSES DATABASE DITOLAK',
@@ -431,7 +431,7 @@
                     confirmButtonText: 'Saya Mengerti'
                 });
             } else {
-                Swal.fire('Gagal Menyimpan', err.message || 'Terjadi kesalahan sistem/jaringan.', 'error');
+                Swal.fire('Gagal Menyimpan', (err && err.message) ? err.message : 'Terjadi kesalahan sistem/jaringan.', 'error');
             }
         }
 
@@ -920,10 +920,14 @@
                         const workbook = XLSX.read(data, {type: 'array'});
                         const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
                         const jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1, defval: "", raw: false}); 
-                        if(jsonData.length < 2) throw new Error("Data Kosong");
+                        if(jsonData.length < 2) return Swal.fire('Error', 'Data Excel kosong atau salah format.', 'error');
                         await callback(jsonData);
                         e.target.value = ''; // Reset input agar bisa upload file yg sama lagi
-                    } catch(err) { Swal.fire('Error', 'Gagal membaca format. Pastikan file Excel/CSV/TXT yang diupload benar.', 'error'); }
+                    } catch(err) { 
+                        console.error(err);
+                        Swal.fire('Error Parsing', 'Gagal membaca isi Excel. Pastikan file tidak rusak.', 'error'); 
+                        e.target.value = '';
+                    }
                 };
                 reader.readAsArrayBuffer(f);
             },
@@ -939,12 +943,16 @@
                     const headers = lines[0].map(h => String(h).trim()); 
                     let successCount = 0; let opCount = 0; let currentBatch = db.batch();
 
+                    Swal.fire({title: 'Mengunggah ke Database...', html: 'Tersimpan: <b class="text-indigo-600 text-2xl">0</b> baris', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+
                     for(let i=1; i<lines.length; i++) {
                         if (!lines[i] || !Array.isArray(lines[i])) continue;
                         const row = lines[i].map(v => v !== undefined && v !== null ? String(v).trim() : ''); 
                         if(row.join('') === '') continue;
                         
                         const objData = app.smartMapRow(row, headers);
+                        objData.nik = String(objData.nik || '').replace(/[^a-zA-Z0-9]/g, ''); // Anti-Bug Karakter
+                        
                         if(objData.nama && objData.nik) { 
                             objData.waktu_upload = firebase.firestore.FieldValue.serverTimestamp(); 
                             objData.is_synced_with_master = false; 
@@ -954,15 +962,18 @@
                             successCount++; opCount++;
 
                             if(opCount === 400) { 
-                                Swal.update({html: `Mengunggah ke Database:<br><b class="text-indigo-600 text-2xl">${successCount}</b> baris tersimpan...`});
-                                try { await currentBatch.commit(); } catch(err) { return handleFirebaseError(err); }
+                                try { 
+                                    await currentBatch.commit(); 
+                                    const b = Swal.getHtmlContainer().querySelector('b');
+                                    if(b) b.textContent = successCount;
+                                } catch(err) { return handleFirebaseError(err); }
                                 currentBatch = db.batch(); opCount = 0; 
                             }
                         }
                     }
                     if(opCount > 0) { try { await currentBatch.commit(); } catch(err) { return handleFirebaseError(err); } }
 
-                    if(successCount > 0) { Swal.fire('Sukses!', `${successCount} Data Pengurus berhasil terunggah ke Firebase.`, 'success'); } 
+                    if(successCount > 0) { Swal.fire('Sukses!', `${successCount} Data Pengurus berhasil terunggah ke Firebase.`, 'success'); app.loadMasterPengurus(); } 
                     else { Swal.fire('Gagal', 'Tidak ada NIK / Nama yg sesuai di Excel.', 'error'); }
                 });
             },
@@ -973,12 +984,16 @@
                     let successCount = 0; let opCount = 0; let currentBatch = db.batch();
                     const tbody = document.getElementById('tbody-master-sync'); tbody.innerHTML = '';
                     
+                    Swal.fire({title: 'Sinkronisasi Master 70k...', html: 'Terunggah: <b class="text-indigo-600 text-2xl">0</b> baris', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+
                     for(let i=1; i<lines.length; i++) {
                         if (!lines[i] || !Array.isArray(lines[i])) continue;
                         const row = lines[i].map(v => v !== undefined && v !== null ? String(v).trim() : ''); 
                         if(row.join('') === '') continue;
                         
                         const kpmObj = app.smartMapRow(row, headers);
+                        kpmObj.nik = String(kpmObj.nik || '').replace(/[^a-zA-Z0-9]/g, ''); // Anti-Bug Karakter
+                        
                         if(kpmObj.nama && kpmObj.nik) {
                             kpmObj.waktu_sync = firebase.firestore.FieldValue.serverTimestamp();
                             
@@ -989,8 +1004,11 @@
                             if(successCount <= 20) { tbody.innerHTML += `<tr class="bg-white border-b"><td class="p-4 md:p-6 font-black text-slate-800 uppercase text-[10px] md:text-xs">${kpmObj.nama}</td><td class="p-4 md:p-6 font-mono text-[9px] md:text-xs font-bold text-indigo-600">${kpmObj.nik}</td><td class="p-4 md:p-6 font-mono text-[9px] md:text-xs font-bold text-slate-600">${kpmObj.no_kk||'-'}</td><td class="p-4 md:p-6 text-center"><span class="bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-full text-[8px] md:text-[10px] font-black uppercase tracking-widest">Tersinkron</span></td></tr>`; }
                             
                             if(opCount === 400) { 
-                                Swal.update({html: `Menyimpan Master Data:<br><b class="text-indigo-600 text-2xl">${successCount}</b> baris terunggah...`});
-                                try { await currentBatch.commit(); } catch(err) { return handleFirebaseError(err); }
+                                try { 
+                                    await currentBatch.commit(); 
+                                    const b = Swal.getHtmlContainer().querySelector('b');
+                                    if(b) b.textContent = successCount;
+                                } catch(err) { return handleFirebaseError(err); }
                                 currentBatch = db.batch(); opCount = 0; 
                             }
                         }
@@ -1020,14 +1038,19 @@
                     
                     let count = 0; let opCount = 0; let currentBatch = db.batch();
                     
+                    Swal.fire({title: 'Membuat Akun SDM...', html: 'Terbuat: <b class="text-indigo-600 text-2xl">0</b> akun', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+
                     for(let nm in grps) { 
                         const usr = generateUsernameCerdes(nm); const desaStr = Array.from(grps[nm].desas).join(' / '); const sData = grps[nm].data;
                         let docRef = db.collection("users_sdm").doc(usr);
                         currentBatch.set(docRef, { nama: nm, username: usr, password: "12345", desa: desaStr, role: "SDM", nip: sData.nip||'', nik: sData.nik||'', ttl: sData.ttl||'', alamat: sData.alamat||'', kecamatan: sData.kecamatan||'', minat: sData.minat||'', bakat: sData.bakat||'', hobi: sData.hobi||'', jabatan: sData.jabatan||'', pendidikan: sData.pendidikan||'' }); 
                         count++; opCount++;
                         if(opCount === 400) { 
-                            Swal.update({html: `Membuat Akun SDM:<br><b class="text-indigo-600 text-2xl">${count}</b> akun...`});
-                            try { await currentBatch.commit(); } catch(err) { return handleFirebaseError(err); }
+                            try { 
+                                await currentBatch.commit(); 
+                                const b = Swal.getHtmlContainer().querySelector('b');
+                                if(b) b.textContent = count;
+                            } catch(err) { return handleFirebaseError(err); }
                             currentBatch = db.batch(); opCount = 0; 
                         }
                     } 
