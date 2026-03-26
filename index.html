@@ -909,7 +909,7 @@
             },
             hapusP2K2: (btnEl) => { const id = btnEl.getAttribute('data-id'); Swal.fire({title: 'Hapus Kegiatan?', icon: 'warning', showCancelButton: true}).then(r => { if(r.isConfirmed) db.collection("kegiatan_p2k2").doc(id).delete().then(() => { app.loadP2K2(); app.loadDashboardStats(); }).catch(handleFirebaseError); }); },
 
-            // ================= MESIN UPLOAD ANTI BLANK (ASYNC BATCHING) =================
+            // ================= MESIN UPLOAD ANTI BLANK (ASYNC BATCHING) & PENCARI HEADER =================
             universalFileParser: (e, title, callback) => {
                 const f = e.target.files[0]; if(!f) return;
                 Swal.fire({title: title, html: 'Membaca format file...', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
@@ -922,7 +922,7 @@
                         const jsonData = XLSX.utils.sheet_to_json(firstSheet, {header: 1, defval: "", raw: false}); 
                         if(jsonData.length < 2) return Swal.fire('Error', 'Data Excel kosong atau salah format.', 'error');
                         await callback(jsonData);
-                        e.target.value = ''; // Reset input agar bisa upload file yg sama lagi
+                        e.target.value = ''; // Reset input
                     } catch(err) { 
                         console.error(err);
                         Swal.fire('Error Parsing', 'Gagal membaca isi Excel. Pastikan file tidak rusak.', 'error'); 
@@ -940,12 +940,14 @@
             
             prosesUploadPengurus: (e) => {
                 app.universalFileParser(e, 'Memproses Data Pengurus...', async (lines) => {
-                    const headers = lines[0].map(h => String(h).trim()); 
+                    let hIdx = 0;
+                    for(let i=0; i<Math.min(20, lines.length); i++) { if(!lines[i]) continue; let str = lines[i].join('').toLowerCase(); if(str.includes('nama') && (str.includes('nik') || str.includes('kk'))) { hIdx = i; break; } }
+                    const headers = lines[hIdx].map(h => String(h).trim()); 
                     let successCount = 0; let opCount = 0; let currentBatch = db.batch();
 
                     Swal.fire({title: 'Mengunggah ke Database...', html: 'Tersimpan: <b class="text-indigo-600 text-2xl">0</b> baris', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
 
-                    for(let i=1; i<lines.length; i++) {
+                    for(let i = hIdx + 1; i < lines.length; i++) {
                         if (!lines[i] || !Array.isArray(lines[i])) continue;
                         const row = lines[i].map(v => v !== undefined && v !== null ? String(v).trim() : ''); 
                         if(row.join('') === '') continue;
@@ -974,19 +976,21 @@
                     if(opCount > 0) { try { await currentBatch.commit(); } catch(err) { return handleFirebaseError(err); } }
 
                     if(successCount > 0) { Swal.fire('Sukses!', `${successCount} Data Pengurus berhasil terunggah ke Firebase.`, 'success'); app.loadMasterPengurus(); } 
-                    else { Swal.fire('Gagal', 'Tidak ada NIK / Nama yg sesuai di Excel.', 'error'); }
+                    else { Swal.fire('Gagal', 'Sistem tidak mendeteksi kolom "NIK" dan "Nama" di file Excel Anda.', 'error'); }
                 });
             },
             
             prosesUploadMaster70k: (e) => {
                 app.universalFileParser(e, 'Menganalisis Master 70k...', async (lines) => {
-                    const headers = lines[0].map(h => String(h).trim()); 
+                    let hIdx = 0;
+                    for(let i=0; i<Math.min(20, lines.length); i++) { if(!lines[i]) continue; let str = lines[i].join('').toLowerCase(); if(str.includes('nama') && (str.includes('nik') || str.includes('kk'))) { hIdx = i; break; } }
+                    const headers = lines[hIdx].map(h => String(h).trim()); 
                     let successCount = 0; let opCount = 0; let currentBatch = db.batch();
                     const tbody = document.getElementById('tbody-master-sync'); tbody.innerHTML = '';
                     
                     Swal.fire({title: 'Sinkronisasi Master 70k...', html: 'Terunggah: <b class="text-indigo-600 text-2xl">0</b> baris', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
 
-                    for(let i=1; i<lines.length; i++) {
+                    for(let i = hIdx + 1; i < lines.length; i++) {
                         if (!lines[i] || !Array.isArray(lines[i])) continue;
                         const row = lines[i].map(v => v !== undefined && v !== null ? String(v).trim() : ''); 
                         if(row.join('') === '') continue;
@@ -1016,7 +1020,7 @@
                     if(opCount > 0) { try { await currentBatch.commit(); } catch(err) { return handleFirebaseError(err); } }
 
                     if(successCount > 0) { Swal.fire('Sinkronisasi Sukses!', `Total Data Terunggah: ${successCount} Baris.`, 'success'); } 
-                    else { Swal.fire('Gagal', 'Tidak ada NIK/Nama valid.', 'error'); }
+                    else { Swal.fire('Gagal', 'Sistem tidak mendeteksi kolom "NIK" dan "Nama" di file Excel Anda.', 'error'); }
                 });
             },
 
@@ -1027,8 +1031,12 @@
             
             prosesUploadSDM: (e) => {
                 app.universalFileParser(e, 'Merangkai Akun SDM...', async (lines) => {
-                    const headers = lines[0].map(h => String(h).trim()); let grps = {};
-                    for(let i=1; i<lines.length; i++) { 
+                    let hIdx = 0;
+                    for(let i=0; i<Math.min(20, lines.length); i++) { if(!lines[i]) continue; let str = lines[i].join('').toLowerCase(); if((str.includes('nama') || str.includes('sdm')) && (str.includes('desa') || str.includes('wilayah') || str.includes('kecamatan'))) { hIdx = i; break; } }
+                    const headers = lines[hIdx].map(h => String(h).trim()); 
+                    let grps = {};
+                    
+                    for(let i = hIdx + 1; i < lines.length; i++) { 
                         if (!lines[i] || !Array.isArray(lines[i])) continue;
                         const c = lines[i].map(v => v !== undefined && v !== null ? String(v).trim() : ''); 
                         if(c.join('') === '') continue; 
@@ -1056,11 +1064,12 @@
                     } 
                     if(opCount > 0) { try { await currentBatch.commit(); } catch(err) { return handleFirebaseError(err); } }
 
-                    if(count === 0) return Swal.fire('Gagal', 'Gagal menemukan Header Nama dan Desa di Excel.', 'error');
+                    if(count === 0) return Swal.fire('Gagal', 'Tidak menemukan kolom "Nama" dan "Desa" di Excel Bapak.', 'error');
                     Swal.fire('Sukses Mata Cerdas!', `${count} Akun SDM berhasil dibuat ke Database!`, 'success'); app.loadDataSDM(); 
                 });
             },
             
+            // ------------- FITUR ADMIN: HAPUS TOTAL SDM -------------
             hapusSemuaSDM: () => {
                 if(!db) return;
                 Swal.fire({title: 'Kosongkan Semua Akun SDM?', text: 'Seluruh data pendamping tidak dapat dikembalikan!', icon: 'warning', showCancelButton: true}).then(r => {
